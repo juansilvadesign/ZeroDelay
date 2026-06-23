@@ -5,6 +5,10 @@
    "author": {
       "email": "joao@solitus.com.br"
    },
+   "background": {
+      "service_worker": "background.js",
+      "type": "module"
+   },
    "content_scripts": [ {
       "all_frames": true,
       "js": [ "content.js" ],
@@ -24,7 +28,7 @@
       "open_in_tab": true,
       "page": "popup.html"
    },
-   "permissions": [ "storage" ],
+   "permissions": [ "alarms", "storage" ],
    "version": "1.0",
    "web_accessible_resources": [ {
       "matches": [ "https://www.youtube.com/*" ],

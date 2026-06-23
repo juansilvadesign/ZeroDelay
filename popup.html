@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="popup.css" />
+    <script src="vendor/qrcode.js"></script>
     <script src="popup.js" type="module"></script>
     <title>ZeroDelay</title>
 </head>
@@ -19,7 +20,36 @@
                     <p id="brand-tagline" class="brand-tagline"></p>
                 </div>
             </div>
+            <button id="coffee-toggle" class="coffee-toggle" type="button" aria-expanded="false"
+                aria-controls="support-panel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" />
+                    <path d="M17 10h2a2.5 2.5 0 0 1 0 5h-2" />
+                    <path d="M7 2.5c-.5 1 .5 1.5 0 2.5M11 2.5c-.5 1 .5 1.5 0 2.5M15 2.5c-.5 1 .5 1.5 0 2.5" />
+                </svg>
+            </button>
         </header>
+
+        <section id="support-panel" class="support" aria-labelledby="support-title" hidden>
+            <div class="support-head">
+                <h2 id="support-title" class="support-title"></h2>
+                <p id="support-note" class="support-note"></p>
+            </div>
+            <p id="support-nudge" class="support-nudge" hidden></p>
+            <div id="support-amounts" class="support-amounts" role="radiogroup"></div>
+            <input id="support-custom" class="support-custom" type="number" min="0" step="0.5" inputmode="decimal"
+                hidden />
+            <div class="support-pix">
+                <div id="support-qr" class="support-qr" aria-hidden="true"></div>
+                <p id="support-scan" class="support-scan"></p>
+                <button id="support-copy" class="support-copy" type="button"></button>
+            </div>
+            <div id="support-nudge-actions" class="support-nudge-actions" hidden>
+                <button id="support-later" class="support-mini" type="button"></button>
+                <button id="support-optout" class="support-mini" type="button"></button>
+            </div>
+        </section>
 
         <section class="modes" aria-labelledby="modes-title">
             <h2 id="modes-title" class="section-title"></h2>

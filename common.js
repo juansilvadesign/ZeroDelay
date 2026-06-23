@@ -58,6 +58,23 @@ export const label = {
     // Reset
     reset: msg('reset', 'Restaurar padrões'),
     resetHint: msg('resetHint', 'Segure por 1 segundo para restaurar.'),
+
+    // Support / coffee
+    supportTitle: msg('supportTitle', 'Me pague um café'),
+    supportNote: msg('supportNote', 'Curtiu a extensão? Me ajude com um cafezinho via PIX.'),
+    supportCustom: msg('supportCustom', 'Outro'),
+    supportCustomPlaceholder: msg('supportCustomPlaceholder', 'Valor em R$'),
+    supportScan: msg('supportScan', 'Aponte a câmera do app do seu banco, ou copie o código:'),
+    supportCopy: msg('supportCopy', 'Copiar código PIX'),
+    supportCopied: msg('supportCopied', 'Copiado!'),
+
+    // Donation nudge (gentle, optional)
+    donateNudge: msg('donateNudge', 'Curtindo o ZeroDelay? Se ele te ajuda, considere apoiar com um café — é totalmente opcional. 🙂'),
+    donateLater: msg('donateLater', 'Lembrar depois'),
+    donateOptOut: msg('donateOptOut', 'Não mostrar novamente'),
+    donateBannerText: msg('donateBannerText', 'Curtindo o ZeroDelay? Apoie com um café.'),
+    donateBannerCta: msg('donateBannerCta', 'Apoiar'),
+    donateBannerClose: msg('donateBannerClose', 'Fechar'),
 };
 
 // ---------------------------------------------------------------------------
@@ -69,6 +86,28 @@ export const label = {
 // ---------------------------------------------------------------------------
 export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'showCurrent', 'bufferTarget', 'auto', 'skip', 'skipThreathold'];
 
+// ---------------------------------------------------------------------------
+// Donation nudge — gentle, optional, NEVER restricts usage. These keys live
+// OUTSIDE `storage` so the engine ignores them and "Restore defaults" keeps the
+// user's opt-out / snooze choices.
+// ---------------------------------------------------------------------------
+export const donateKeys = ['donateInstalledAt', 'donateUsageSeconds', 'donateOptOut', 'donateSnoozeUntil', 'donateBannerShown'];
+export const donateUsageThreshold = 2 * 60 * 60;   // ~2h of active use (seconds)
+export const donateDaysThreshold = 7;              // ...or 7 days since install
+export const donateSnoozeDays = 21;                // "remind me later"
+export const donateSoftSnoozeDays = 3;             // after simply seeing the invite
+
+// Whether the user is eligible to be *offered* a donation (whichever trigger
+// comes first). This only gates the gentle invite — the extension always works.
+export function donateEligible(d, now) {
+    if (!d || d.donateOptOut) return false;
+    if (d.donateSnoozeUntil && now < d.donateSnoozeUntil) return false;
+    const usage = d.donateUsageSeconds || 0;
+    const installedAt = d.donateInstalledAt || now;
+    const days = (now - installedAt) / 86400000;
+    return usage >= donateUsageThreshold || days >= donateDaysThreshold;
+}
+
 export const defaultEnabled = true;
 
 export const defaultPlaybackRate = 1.25;
@@ -76,9 +115,9 @@ export const minPlaybackRate = 1.05;
 export const maxPlaybackRate = 16.0;
 export const stepPlaybackRate = 0.05;
 
-export const defaultShowPlaybackRate = false;
-export const defaultShowLatency = false;
-export const defaultShowHealth = false;
+export const defaultShowPlaybackRate = true;
+export const defaultShowLatency = true;
+export const defaultShowHealth = true;
 export const defaultShowEstimation = false;
 export const defaultShowCurrent = false;
 

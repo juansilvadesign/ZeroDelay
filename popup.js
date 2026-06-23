@@ -2,6 +2,7 @@
 // Author: João Gustavo França <joao@solitus.com.br> (https://github.com/joaogfc)
 
 import * as common from './common.js';
+import * as pix from './pix.js';
 
 const L = common.label;
 
@@ -175,9 +176,165 @@ function renderReset() {
 }
 
 function doReset() {
-    chrome.storage.local.clear();
+    // Only clear engine settings — keep the donation opt-out / snooze choices.
+    chrome.storage.local.remove(common.storage);
     state = resolve({});
     refresh();
+}
+
+// --------------------------------------------------------------- Support (PIX)
+function renderSupport() {
+    const toggle = $('#coffee-toggle');
+    const panel = $('#support-panel');
+    const amountsBox = $('#support-amounts');
+    const custom = $('#support-custom');
+    const qrBox = $('#support-qr');
+    const copyBtn = $('#support-copy');
+
+    toggle.title = L.supportTitle;
+    toggle.setAttribute('aria-label', L.supportTitle);
+    $('#support-title').textContent = L.supportTitle;
+    $('#support-note').textContent = L.supportNote;
+    $('#support-scan').textContent = L.supportScan;
+    custom.placeholder = L.supportCustomPlaceholder;
+    copyBtn.textContent = L.supportCopy;
+
+    let amount = pix.PIX_DEFAULT_AMOUNT;
+    const chips = {};
+    let copyTimer;
+
+    const selectChip = key => {
+        for (const [k, c] of Object.entries(chips)) c.setAttribute('aria-checked', String(k === key));
+    };
+
+    const updatePix = () => {
+        const code = pix.buildPixCode(amount);
+        copyBtn.dataset.code = code;
+        copyBtn.classList.remove('copied');
+        copyBtn.textContent = L.supportCopy;
+        if (typeof window.qrcode === 'function') {
+            try {
+                const qr = window.qrcode(0, 'M');
+                qr.addData(code);
+                qr.make();
+                qrBox.innerHTML = qr.createSvgTag({ cellSize: 4, scalable: true });
+                qrBox.hidden = false;
+            } catch {
+                qrBox.hidden = true;
+            }
+        } else {
+            qrBox.hidden = true;
+        }
+    };
+
+    for (const value of pix.PIX_AMOUNTS) {
+        const key = String(value);
+        const chip = el('button', {
+            class: 'support-chip', type: 'button', role: 'radio', 'aria-checked': 'false',
+            onclick: () => { amount = value; custom.hidden = true; selectChip(key); updatePix(); },
+        }, 'R$ ' + value);
+        chips[key] = chip;
+        amountsBox.append(chip);
+    }
+
+    chips.custom = el('button', {
+        class: 'support-chip', type: 'button', role: 'radio', 'aria-checked': 'false',
+        onclick: () => {
+            custom.hidden = false;
+            custom.focus();
+            selectChip('custom');
+            const v = parseFloat(custom.value);
+            amount = (Number.isFinite(v) && v > 0) ? v : 0;
+            updatePix();
+        },
+    }, L.supportCustom);
+    amountsBox.append(chips.custom);
+
+    custom.addEventListener('input', () => {
+        const v = parseFloat(custom.value);
+        amount = (Number.isFinite(v) && v > 0) ? v : 0;
+        updatePix();
+    });
+
+    copyBtn.addEventListener('click', async () => {
+        const code = copyBtn.dataset.code || pix.buildPixCode(amount);
+        let ok = false;
+        try {
+            await navigator.clipboard.writeText(code);
+            ok = true;
+        } catch {
+            try {
+                const ta = el('textarea', { class: '' });
+                ta.value = code;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.append(ta);
+                ta.select();
+                ok = document.execCommand('copy');
+                ta.remove();
+            } catch { ok = false; }
+        }
+        if (ok) {
+            copyBtn.classList.add('copied');
+            copyBtn.textContent = L.supportCopied;
+            clearTimeout(copyTimer);
+            copyTimer = setTimeout(() => {
+                copyBtn.classList.remove('copied');
+                copyBtn.textContent = L.supportCopy;
+            }, 1600);
+        }
+    });
+
+    const setOpen = open => {
+        toggle.setAttribute('aria-expanded', String(open));
+        panel.hidden = !open;
+        if (open) updatePix();
+    };
+    toggle.addEventListener('click', () => setOpen(panel.hidden));
+
+    // ----- Gentle, optional donation invite ---------------------------------
+    const nudge = $('#support-nudge');
+    const nudgeActions = $('#support-nudge-actions');
+    const laterBtn = $('#support-later');
+    const optoutBtn = $('#support-optout');
+    nudge.textContent = L.donateNudge;
+    laterBtn.textContent = L.donateLater;
+    optoutBtn.textContent = L.donateOptOut;
+
+    const showNudge = on => { nudge.hidden = !on; nudgeActions.hidden = !on; };
+
+    laterBtn.addEventListener('click', () => {
+        chrome.storage.local.set({ donateSnoozeUntil: Date.now() + common.donateSnoozeDays * 86400000 });
+        showNudge(false);
+        setOpen(false);
+    });
+    optoutBtn.addEventListener('click', () => {
+        chrome.storage.local.set({ donateOptOut: true });
+        showNudge(false);
+        setOpen(false);
+    });
+
+    selectChip(String(pix.PIX_DEFAULT_AMOUNT));
+
+    const forceDonate = new URLSearchParams(location.search).get('donate') === '1';
+    chrome.storage.local.get(common.donateKeys, d => {
+        const now = Date.now();
+        if (!d.donateInstalledAt) chrome.storage.local.set({ donateInstalledAt: now });
+        // Opening the popup clears the toolbar dot.
+        try { chrome.action.setBadgeText({ text: '' }); } catch { }
+        try { chrome.runtime.sendMessage({ type: 'donate-seen' }); } catch { }
+
+        if (forceDonate) {
+            setOpen(true);
+        } else if (common.donateEligible(d, now)) {
+            showNudge(true);
+            setOpen(true);
+            // Simply seeing the invite softly snoozes it for a few days.
+            chrome.storage.local.set({ donateSnoozeUntil: now + common.donateSoftSnoozeDays * 86400000 });
+        } else {
+            updatePix(); // pre-render the QR so a manual open is instant
+        }
+    });
 }
 
 // --------------------------------------------------------------- Refresh
@@ -199,5 +356,6 @@ function refresh() {
     renderIndicators();
     renderAdvancedToggle();
     renderReset();
+    renderSupport();
     refresh();
 })();

@@ -36,6 +36,7 @@ function boot() {
 chrome.runtime.onInstalled.addListener(boot);
 chrome.runtime.onStartup.addListener(boot);
 
+
 chrome.alarms.onAlarm.addListener(a => {
     if (a.name === 'donate-eval') evalBadge();
 });

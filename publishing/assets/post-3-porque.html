@@ -1,0 +1,60 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body {
+    font-family: "Segoe UI", Roboto, system-ui, sans-serif; color: #fff;
+    background:
+      radial-gradient(82% 56% at 16% 6%, rgba(0, 175, 78, .44), transparent 55%),
+      radial-gradient(95% 70% at 105% 102%, rgba(255, 210, 0, .22), transparent 52%),
+      linear-gradient(160deg, #06381e, #041d0f 72%);
+    display: flex; flex-direction: column; padding: 82px 72px;
+  }
+  .brandrow { display: flex; align-items: center; justify-content: space-between; margin-bottom: 54px; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand img { width: 56px; height: 56px; filter: drop-shadow(0 8px 20px rgba(0, 0, 0, .55)); }
+  .brand .wm { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+  .brand .wm b { color: #FFD400; }
+  .tag { font-size: 20px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; color: #FFD400; }
+  h2 { font-size: 70px; line-height: 1.04; font-weight: 800; letter-spacing: -.025em; margin-bottom: 56px; }
+  h2 .hl { color: #FFD400; }
+  .list { display: flex; flex-direction: column; gap: 40px; }
+  .item { display: flex; gap: 24px; align-items: flex-start; }
+  .check { flex: none; width: 60px; height: 60px; border-radius: 50%; background: #FFD400; display: grid; place-items: center; }
+  .check svg { width: 32px; height: 32px; }
+  .item .txt { font-size: 33px; line-height: 1.34; color: #eaf7ee; font-weight: 500; padding-top: 4px; }
+  .item .txt b { color: #fff; font-weight: 800; }
+  .foot { margin-top: auto; display: flex; flex-direction: column; gap: 18px; }
+  .pill { align-self: flex-start; display: inline-flex; align-items: center; gap: 13px; background: #FFD400; color: #05371d;
+    font-weight: 800; font-size: 28px; padding: 20px 32px; border-radius: 999px; box-shadow: 0 18px 50px -16px rgba(255, 210, 0, .5); }
+  .pill svg { width: 25px; height: 25px; }
+  .os { font-size: 23px; color: #9fcfb0; font-weight: 600; }
+  .os b { color: #FFD400; }
+</style></head><body>
+  <div class="brandrow">
+    <div class="brand"><img src="__LOGO__"><div class="wm">Zero<b>Delay</b></div></div>
+    <span class="tag">Por que instalar</span>
+  </div>
+  <h2>Leve, esperto<br>e <span class="hl">de graça</span>.</h2>
+  <div class="list">
+    <div class="item">
+      <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#05371d" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg></span>
+      <div class="txt"><b>Automático</b> — mede sua internet e se ajusta sozinho. Escolhe um modo e esquece.</div>
+    </div>
+    <div class="item">
+      <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#05371d" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg></span>
+      <div class="txt"><b>Não trava</b> — só acelera quando tem buffer sobrando, e descansa ao alcançar.</div>
+    </div>
+    <div class="item">
+      <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#05371d" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg></span>
+      <div class="txt"><b>Privado e aberto</b> — não coleta nada, não tem servidor e é código aberto (GPL-3.0).</div>
+    </div>
+  </div>
+  <div class="foot">
+    <span class="pill">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5l12 7-12 7z"/></svg>
+      Grátis na Chrome Web Store
+    </span>
+    <span class="os">Crie sua versão ou contribua: <b>github.com/joaogfc/ZeroDelay</b></span>
+  </div>
+</body></html>

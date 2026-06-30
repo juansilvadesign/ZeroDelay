@@ -1,0 +1,69 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+  body {
+    font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+    background:
+      radial-gradient(70% 90% at 80% 14%, rgba(255, 0, 51, .22), transparent 55%),
+      radial-gradient(80% 100% at 0% 100%, rgba(255, 45, 82, .12), transparent 45%),
+      #0a0a0c;
+    color: #f5f5f7; display: grid; grid-template-columns: 1.12fr .88fr; align-items: center;
+  }
+  .left { padding: 0 0 0 90px; }
+  .brand { display: flex; align-items: center; gap: 13px; margin-bottom: 30px; }
+  .brand img { width: 54px; height: 54px; filter: drop-shadow(0 8px 20px rgba(255, 0, 51, .5)); }
+  .brand .wm { font-size: 27px; font-weight: 800; letter-spacing: -.02em; }
+  .brand .wm b { color: #ff3355; }
+  h1 { font-size: 60px; line-height: 1.03; font-weight: 800; letter-spacing: -.03em; margin-bottom: 22px; }
+  h1 .hl { color: #ff3a59; }
+  p { font-size: 21px; line-height: 1.5; color: #c2c2cc; max-width: 510px; }
+  .right { display: flex; align-items: center; justify-content: center; height: 100%; }
+  .pop { width: 384px; background: #0f0f0f; border: 1px solid #2c2c30; border-radius: 18px; padding: 18px 16px;
+    box-shadow: 0 40px 90px -30px rgba(255, 0, 51, .5), 0 20px 60px rgba(0, 0, 0, .6); }
+  .ph { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .ph .dot { width: 12px; height: 12px; border-radius: 50%; background: #ff0033; box-shadow: 0 0 0 4px rgba(255, 0, 51, .14); flex: none; }
+  .ph .nm { font-size: 16px; font-weight: 700; }
+  .ph .tg { font-size: 12px; color: #aaa; margin-top: 1px; }
+  .ph .cf { margin-left: auto; width: 36px; height: 36px; border-radius: 50%; border: 1px solid #3a3a3a; display: flex; align-items: center; justify-content: center; color: #ffc43d; font-size: 17px; }
+  .sec { font-size: 11px; letter-spacing: .09em; color: #717179; text-transform: uppercase; font-weight: 700; margin: 2px 2px 10px; }
+  .card { display: flex; align-items: center; gap: 13px; padding: 13px 14px; border: 1px solid #3a3a3a; border-radius: 14px; background: #1c1c1c; margin-bottom: 8px; }
+  .card.sel { border-color: #ff0033; background: linear-gradient(180deg, rgba(255, 0, 51, .12), transparent 140%); box-shadow: 0 0 0 1px #ff0033, 0 10px 26px -12px rgba(255, 0, 51, .6); }
+  .ic { width: 38px; height: 38px; flex: none; border-radius: 50%; background: #323232; color: #bdbdbd; display: flex; align-items: center; justify-content: center; }
+  .card.sel .ic { background: #ff0033; color: #fff; }
+  .ic svg { width: 20px; height: 20px; }
+  .cb { flex: 1; min-width: 0; }
+  .ct { font-size: 14px; font-weight: 600; }
+  .cd { font-size: 12px; color: #aaa; margin-top: 2px; }
+  .cpill { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; background: rgba(255, 0, 51, .14); color: #ff5d77; }
+  .chk { width: 20px; height: 20px; flex: none; border-radius: 50%; border: 2px solid #3a3a3a; }
+  .card.sel .chk { border-color: #ff0033; background: #ff0033; display: flex; align-items: center; justify-content: center; }
+  .card.sel .chk svg { width: 12px; height: 12px; }
+</style></head><body>
+  <div class="left">
+    <div class="brand"><img src="__LOGO__"><div class="wm">Zero<b>Delay</b></div></div>
+    <h1>Kill the delay on<br>live <span class="hl">streams</span>.</h1>
+    <p>ZeroDelay gently speeds up playback to bring you back to the live edge — and rests on its own once it catches up. Short bursts, never sped up the whole time.</p>
+  </div>
+  <div class="right">
+    <div class="pop">
+      <div class="ph"><span class="dot"></span><div><div class="nm">Live Sync</div><div class="tg">Keep YouTube live streams in real time</div></div><span class="cf">☕</span></div>
+      <div class="sec">Mode</div>
+      <div class="card sel">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.9z"/><path d="M5.5 15l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z"/></svg></span>
+        <div class="cb"><div class="ct">Automatic</div><div class="cd">Analyzes your connection and adjusts itself.</div><div class="cpill">adaptive</div></div>
+        <span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg></span>
+      </div>
+      <div class="card">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18a8 8 0 0 1 16 0"/><path d="M12 18l4.5-5"/></svg></span>
+        <div class="cb"><div class="ct">Balanced</div><div class="cd">Cuts latency while keeping ~6s of buffer.</div></div>
+        <span class="chk"></span>
+      </div>
+      <div class="card">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.5 13.5H10l-1 8.5L19.5 10H14z"/></svg></span>
+        <div class="cb"><div class="ct">Minimum Latency</div><div class="cd">As close to live as possible.</div></div>
+        <span class="chk"></span>
+      </div>
+    </div>
+  </div>
+</body></html>

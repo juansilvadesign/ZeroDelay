@@ -549,38 +549,83 @@ body {
 /* ---------------------------------------------------------------- Coffee / support */
 .coffee-toggle {
     flex: none;
-    width: 38px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     height: 38px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-dim);
+    padding: 0 15px;
+    border-radius: 999px;
+    border: 1px solid var(--warn);
+    background: rgba(255, 196, 61, 0.14);
+    color: var(--warn);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
-    transition: color 160ms var(--ease), border-color 160ms var(--ease),
-        background 160ms var(--ease), transform 120ms var(--ease);
+    transition: background 160ms var(--ease), transform 120ms var(--ease);
+}
+
+.coffee-label {
+    white-space: nowrap;
 }
 
 .coffee-toggle:hover {
-    color: var(--warn);
-    border-color: var(--warn);
-    background: var(--surface-2);
+    background: rgba(255, 196, 61, 0.24);
 }
 
 .coffee-toggle:active {
-    transform: scale(0.94);
+    transform: scale(0.96);
 }
 
 .coffee-toggle[aria-expanded="true"] {
-    color: var(--warn);
-    border-color: var(--warn);
-    background: rgba(255, 196, 61, 0.12);
+    background: rgba(255, 196, 61, 0.24);
 }
 
 .coffee-toggle svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+}
+
+/* ---------------------------------------------------------------- Support CTA (always visible) */
+.support-cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 196, 61, 0.38);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, rgba(255, 196, 61, 0.13), rgba(255, 196, 61, 0.04));
+}
+
+.support-cta-text {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.support-cta-btn {
+    flex: none;
+    padding: 9px 15px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 150ms var(--ease), transform 120ms var(--ease);
+}
+
+.support-cta-btn:hover {
+    background: var(--accent-strong);
+}
+
+.support-cta-btn:active {
+    transform: scale(0.96);
 }
 
 .support {
@@ -715,6 +760,53 @@ body {
     border-color: var(--ok);
     background: rgba(43, 166, 64, 0.15);
     color: var(--ok);
+}
+
+.support-intl {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.support-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter 150ms var(--ease), transform 80ms var(--ease);
+}
+
+.support-link:hover {
+    filter: brightness(1.07);
+}
+
+.support-link:active {
+    transform: translateY(1px);
+}
+
+.support-link-icon {
+    display: inline-flex;
+    flex: none;
+}
+
+.support-link-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+/* Buy Me a Coffee brand colours */
+.support-link--bmc {
+    background: #ffdd00;
+    color: #0d0c22;
 }
 
 .support-nudge {

@@ -1,0 +1,53 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body {
+    font-family: "Segoe UI", Roboto, system-ui, sans-serif; color: #fff;
+    background:
+      radial-gradient(85% 55% at 85% 6%, rgba(0, 175, 78, .42), transparent 55%),
+      radial-gradient(95% 70% at -5% 102%, rgba(255, 210, 0, .20), transparent 52%),
+      linear-gradient(160deg, #06381e, #041d0f 72%);
+    display: flex; flex-direction: column; padding: 82px 72px;
+  }
+  .brandrow { display: flex; align-items: center; justify-content: space-between; margin-bottom: 56px; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand img { width: 56px; height: 56px; filter: drop-shadow(0 8px 20px rgba(0, 0, 0, .55)); }
+  .brand .wm { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+  .brand .wm b { color: #FFD400; }
+  .tag { font-size: 20px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; color: #FFD400; }
+  h2 { font-size: 64px; line-height: 1.05; font-weight: 800; letter-spacing: -.02em; margin-bottom: 50px; }
+  .steps { display: flex; flex-direction: column; gap: 36px; }
+  .step { display: flex; gap: 24px; align-items: flex-start; }
+  .num { flex: none; width: 60px; height: 60px; border-radius: 50%; background: #FFD400; color: #05371d;
+    font-weight: 800; font-size: 32px; display: grid; place-items: center; }
+  .step p { font-size: 33px; line-height: 1.36; color: #eaf7ee; font-weight: 500; }
+  .step b { color: #FFD400; font-weight: 800; }
+  .metric { margin-top: auto; background: rgba(0, 0, 0, .26); border: 1px solid rgba(255, 210, 0, .32);
+    border-radius: 26px; padding: 38px 42px; display: flex; align-items: center; justify-content: space-between; }
+  .metric .pct { font-size: 96px; font-weight: 800; color: #FFD400; line-height: .95; letter-spacing: -.03em; }
+  .metric .pct small { display: block; font-size: 27px; color: #c4e7cf; font-weight: 700; letter-spacing: .02em; margin-top: 8px; }
+  .metric .nums { text-align: right; }
+  .metric .nums .old { font-size: 40px; font-weight: 800; color: #6fa483; text-decoration: line-through; }
+  .metric .nums .arrow { font-size: 40px; color: #8fcaa0; margin: 0 8px; }
+  .metric .nums .now { font-size: 64px; font-weight: 800; color: #fff; }
+  .metric .nums .lbl { margin-top: 6px; font-size: 22px; color: #9fcfb0; font-weight: 600; }
+</style></head><body>
+  <div class="brandrow">
+    <div class="brand"><img src="__LOGO__"><div class="wm">Zero<b>Delay</b></div></div>
+    <span class="tag">A solução</span>
+  </div>
+  <h2>Como o ZeroDelay<br>te leva ao tempo real</h2>
+  <div class="steps">
+    <div class="step"><span class="num">1</span><p>Pra não travar, o YouTube entrega a live com segundos já baixados na frente — um <b>"colchão" de buffer</b>, ainda maior em 4K.</p></div>
+    <div class="step"><span class="num">2</span><p>O ZeroDelay acelera de leve a reprodução <b>(1,25x)</b> só o necessário pra consumir esse buffer.</p></div>
+    <div class="step"><span class="num">3</span><p>Você encosta no <b>ao vivo</b> — e ele descansa sozinho. Nunca acelera com o buffer baixo, então não trava.</p></div>
+  </div>
+  <div class="metric">
+    <div class="pct">−80%<small>de delay</small></div>
+    <div class="nums">
+      <span class="old">20s</span><span class="arrow">→</span><span class="now">4s</span>
+      <div class="lbl">mais perto do ao vivo</div>
+    </div>
+  </div>
+</body></html>

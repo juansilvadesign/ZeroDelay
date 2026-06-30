@@ -74,7 +74,7 @@ Criado por **João Gustavo França**
 - GitHub: [@joaogfc](https://github.com/joaogfc)
 - E-mail: [joao@solitus.com.br](mailto:joao@solitus.com.br)
 
-Curtiu? Toque no botão ☕ no popup para me pagar um café via PIX. O QR Code e o
+Curtiu? Toque no botão "Apoiar" no popup para me pagar um café via PIX. O QR Code e o
 "copia e cola" são gerados localmente — nenhum dado sai do seu navegador.
 
 ## Licença

@@ -111,7 +111,7 @@
       "message": "Buy me a coffee"
    },
    "supportNote": {
-      "message": "Enjoying the extension? Support me with a coffee via PIX (Brazil)."
+      "message": "Enjoying the extension? Support its development with a small donation."
    },
    "supportCustom": {
       "message": "Other"
@@ -127,6 +127,9 @@
    },
    "supportCopied": {
       "message": "Copied!"
+   },
+   "supportBmc": {
+      "message": "Buy me a coffee"
    },
    "donateNudge": {
       "message": "Enjoying ZeroDelay? If it helps you, consider supporting it with a coffee — entirely optional. 🙂"
@@ -145,5 +148,23 @@
    },
    "donateBannerClose": {
       "message": "Close"
+   },
+   "stallTitle": {
+      "message": "The stream keeps buffering"
+   },
+   "stallDesc": {
+      "message": "A lighter mode keeps more buffer and steadies it."
+   },
+   "stallSwitch": {
+      "message": "Switch to"
+   },
+   "supportBtn": {
+      "message": "Support"
+   },
+   "supportCtaText": {
+      "message": "Enjoying it? Buy me a coffee 🙏"
+   },
+   "supportCtaBtn": {
+      "message": "Support"
    }
 }

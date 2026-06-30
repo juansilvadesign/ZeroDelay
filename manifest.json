@@ -29,7 +29,7 @@
       "page": "popup.html"
    },
    "permissions": [ "alarms", "storage" ],
-   "version": "1.0",
+   "version": "1.1",
    "web_accessible_resources": [ {
       "matches": [ "https://www.youtube.com/*" ],
       "resources": [ "common.js", "inject.js" ]

@@ -323,9 +323,36 @@
     let seekableEnds = [];
     let msg_current_timeout;
     let showCurrent;
+    let current_settings;
+    let last_active_ping = 0;
+
+    // --- Stall watchdog ------------------------------------------------------
+    // If the live keeps buffering while the extension is enabled, the chosen
+    // mode is probably too aggressive for this connection. We notify the content
+    // script, which offers a one-tap switch to a calmer, more-buffered mode.
+    let stall_times = [];
+    let last_stall = 0;
+    let stall_cooldown_until = 0;
+    function on_video_waiting() {
+        if (!current_settings?.enabled) return;
+        const now = Date.now();
+        if (now < stall_cooldown_until || now - last_stall < 5000) return;
+        last_stall = now;
+        stall_times = stall_times.filter(t => now - t < 90000);
+        stall_times.push(now);
+        if (stall_times.length >= 2) {
+            stall_times = [];
+            stall_cooldown_until = now + 300000; // ~5 min before offering again
+            document.dispatchEvent(new CustomEvent('_live_catch_up_stall'));
+        }
+    }
 
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
+        current_settings = settings;
+        if (settings.copiedLabel) {
+            msg_current.innerHTML = HTMLPolicy.createHTML(`<span translate="no">${settings.copiedLabel}</span>`);
+        }
         clearInterval(interval);
         showCurrent = settings.showCurrent;
         if (settings.enabled || settings.skip || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent) {
@@ -336,6 +363,15 @@
                         const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
                         const progress_state = player.getProgressState();
+
+                        // Throttled "watching a live" ping — drives usage tracking
+                        // in the content script (so only real live time counts).
+                        const active_now = Date.now();
+                        if (active_now - last_active_ping > 2000) {
+                            last_active_ping = active_now;
+                            document.dispatchEvent(new CustomEvent('_live_catch_up_active'));
+                        }
+
                         if (settings.enabled) {
                             set_playbackRate(settings.playbackRate, latency, health, settings.bufferTarget, settings.auto);
                         } else {
@@ -402,6 +438,7 @@
         clearInterval(detect_interval);
 
         video.addEventListener('ratechange', onPlaybackRateChange);
+        video.addEventListener('waiting', on_video_waiting);
 
         let prev = undefined;
         for (const elem of [button_live_badge, button_playbackrate, button_latency, button_health, button_current, msg_current, button_estimation].reverse()) {

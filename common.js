@@ -9,6 +9,10 @@ const msg = (key, fallback) => {
     return m || fallback || '';
 };
 
+// pt_BR sees PIX; any other browser UI language sees the international donation
+// links instead. Decided automatically — there is no manual switcher.
+export const isBrazil = () => /^pt/i.test(chrome.i18n.getUILanguage() || '');
+
 export const label = {
     // App
     appName: msg('appName', 'Sincronizador de Live'),
@@ -68,6 +72,9 @@ export const label = {
     supportCopy: msg('supportCopy', 'Copiar código PIX'),
     supportCopied: msg('supportCopied', 'Copiado!'),
 
+    // Support — international donation link (non-pt_BR)
+    supportBmc: msg('supportBmc', 'Buy me a coffee'),
+
     // Donation nudge (gentle, optional)
     donateNudge: msg('donateNudge', 'Curtindo o ZeroDelay? Se ele te ajuda, considere apoiar com um café — é totalmente opcional. 🙂'),
     donateLater: msg('donateLater', 'Lembrar depois'),
@@ -75,6 +82,16 @@ export const label = {
     donateBannerText: msg('donateBannerText', 'Curtindo o ZeroDelay? Apoie com um café.'),
     donateBannerCta: msg('donateBannerCta', 'Apoiar'),
     donateBannerClose: msg('donateBannerClose', 'Fechar'),
+
+    // Stall watchdog
+    stallTitle: msg('stallTitle', 'A transmissão está travando'),
+    stallDesc: msg('stallDesc', 'Um modo mais leve mantém mais buffer e estabiliza.'),
+    stallSwitch: msg('stallSwitch', 'Trocar para'),
+
+    // Support — always-visible CTA
+    supportBtn: msg('supportBtn', 'Apoiar'),
+    supportCtaText: msg('supportCtaText', 'Curtindo? Me ajuda com um cafezinho 🙏'),
+    supportCtaBtn: msg('supportCtaBtn', 'Apoiar via PIX'),
 };
 
 // ---------------------------------------------------------------------------
@@ -92,20 +109,32 @@ export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLate
 // user's opt-out / snooze choices.
 // ---------------------------------------------------------------------------
 export const donateKeys = ['donateInstalledAt', 'donateUsageSeconds', 'donateOptOut', 'donateSnoozeUntil', 'donateBannerShown'];
-export const donateUsageThreshold = 2 * 60 * 60;   // ~2h of active use (seconds)
-export const donateDaysThreshold = 7;              // ...or 7 days since install
+export const donateUsageThreshold = 50 * 60;       // ~50 min watching a live (seconds)
 export const donateSnoozeDays = 21;                // "remind me later"
 export const donateSoftSnoozeDays = 3;             // after simply seeing the invite
 
-// Whether the user is eligible to be *offered* a donation (whichever trigger
-// comes first). This only gates the gentle invite — the extension always works.
+// International donation links — shown to users whose browser is NOT in pt_BR
+// (see `isBrazil`). Replace the placeholders with your own usernames/links.
+// Leave a value as '' (or keep the REPLACE placeholder) to hide that button.
+export const donateLinks = {
+    bmc: 'https://buymeacoffee.com/zerodelay',
+};
+
+// Whether the user is eligible to be *offered* a donation: after ~50 min of
+// actually watching a live with the extension on. Only gates the gentle invite —
+// the extension always works.
 export function donateEligible(d, now) {
     if (!d || d.donateOptOut) return false;
     if (d.donateSnoozeUntil && now < d.donateSnoozeUntil) return false;
-    const usage = d.donateUsageSeconds || 0;
-    const installedAt = d.donateInstalledAt || now;
-    const days = (now - installedAt) / 86400000;
-    return usage >= donateUsageThreshold || days >= donateDaysThreshold;
+    return (d.donateUsageSeconds || 0) >= donateUsageThreshold;
+}
+
+// When the stream keeps stalling, the mode to suggest instead — one that keeps
+// more buffer (more stable). Returns null if already at the calmest mode (or off).
+export function calmerMode(mode) {
+    if (mode === 'off' || mode === 'suave') return null;
+    if (mode === 'auto') return 'suave';
+    return 'auto';
 }
 
 export const defaultEnabled = true;

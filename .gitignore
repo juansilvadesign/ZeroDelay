@@ -9,6 +9,9 @@ node_modules/
 # Node tooling (dev-only; installed for lint/CI)
 node_modules/
 
+# Marketing/store assets — não versionados (gerados a partir dos HTML localmente).
+publishing/assets/
+
 # OS / editor / cloud cruft
 .DS_Store
 Thumbs.db

@@ -42,6 +42,14 @@ function main(common) {
             skip,
             skipThreathold,
             copiedLabel: common.label.supportCopied,
+            // Localized aria-labels shipped to the engine (page world has no chrome.i18n).
+            a11yLabels: {
+                playbackRate: common.label.a11yPlaybackRate,
+                latency: common.label.a11yLatency,
+                health: common.label.a11yHealth,
+                estimation: common.label.a11yEstimation,
+                current: common.label.a11yCurrent,
+            },
         };
         const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
         document.dispatchEvent(new CustomEvent('_live_catch_up_load_settings', { detail }));

@@ -336,6 +336,24 @@
         hide_current();
     }
 
+    let a11y_labeled = false;
+    /**
+     * Set screen-reader labels on the player indicators (once; they're static).
+     * @param {{playbackRate: string, latency: string, health: string, estimation: string, current: string}} labels - Localized strings from the settings detail (the engine has no chrome.i18n).
+     */
+    function apply_a11y_labels(labels) {
+        if (a11y_labeled || !labels) return;
+        const pairs = [
+            [button_playbackrate, labels.playbackRate],
+            [button_latency, labels.latency],
+            [button_health, labels.health],
+            [button_estimation, labels.estimation],
+            [button_current, labels.current],
+        ];
+        for (const [el, text] of pairs) if (text) el.setAttribute('aria-label', text);
+        a11y_labeled = true;
+    }
+
     // Give up until the next navigation, once, without spamming the console. A
     // fresh (re)attach — initial load or SPA nav — clears this and retries.
     function degrade(reason) {
@@ -416,6 +434,7 @@
         if (settings.copiedLabel) {
             setChip(msg_current, settings.copiedLabel);
         }
+        apply_a11y_labels(settings.a11yLabels);
         clearInterval(interval);
         if (settings.enabled || settings.skip || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent) {
             interval = setInterval(guarded_tick, 250);

@@ -31,6 +31,38 @@ function parseSvg(markup) {
 
 const getStorage = keys => new Promise(res => chrome.storage.local.get(keys, res));
 
+/**
+ * Wire ARIA radiogroup keyboard behavior: one tab-stop for the group (roving
+ * tabindex) plus arrow/Home/End navigation that also activates the option.
+ * @param {HTMLElement} container - The radiogroup element; receives the keydown listener.
+ * @param {HTMLElement[]} items - Ordered radio elements.
+ * @param {(index: number) => void} activate - Selects the item at `index`.
+ * @returns {(index: number) => void} `roving(index)` - keeps the single tab-stop on the selected item when it changes externally (e.g. after a refresh).
+ */
+function wireRadiogroup(container, items, activate) {
+    const roving = i => items.forEach((el, j) => { el.tabIndex = j === i ? 0 : -1; });
+    roving(0);
+    items.forEach((el, i) => el.addEventListener('click', () => roving(i)));
+    container.addEventListener('keydown', e => {
+        const cur = items.indexOf(document.activeElement);
+        if (cur === -1) return;
+        const last = items.length - 1;
+        let next;
+        switch (e.key) {
+            case 'ArrowRight': case 'ArrowDown': next = cur >= last ? 0 : cur + 1; break;
+            case 'ArrowLeft': case 'ArrowUp': next = cur <= 0 ? last : cur - 1; break;
+            case 'Home': next = 0; break;
+            case 'End': next = last; break;
+            default: return;
+        }
+        e.preventDefault();
+        roving(next);
+        items[next].focus();
+        activate(next);
+    });
+    return roving;
+}
+
 // --------------------------------------------------------------- Icons
 const ICONS = {
     off: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v9"/><path d="M6.6 6.6a8 8 0 1 0 10.8 0"/></svg>',
@@ -49,6 +81,7 @@ const ICONS = {
 let state = {};
 const updaters = [];          // fn() -> sync a control's display
 const modeCards = {};         // mode name -> card element
+let rovingModes = null;       // wireRadiogroup roving-tabindex setter for modes
 
 function resolve(d) {
     return {
@@ -109,6 +142,8 @@ function renderModes() {
         modeCards[name] = card;
         container.append(card);
     }
+    const modeItems = common.modeOrder.map(n => modeCards[n]);
+    rovingModes = wireRadiogroup(container, modeItems, idx => applyPreset(common.modeOrder[idx]));
 }
 
 function buildRow({ label, control }) {
@@ -379,9 +414,14 @@ function renderSupport() {
 // --------------------------------------------------------------- Refresh
 function refresh() {
     const mode = common.deriveMode(state);
-    for (const [name, card] of Object.entries(modeCards)) {
-        card.setAttribute('aria-checked', String(name === mode));
-    }
+    let activeIndex = -1;
+    common.modeOrder.forEach((name, i) => {
+        const on = name === mode;
+        modeCards[name].setAttribute('aria-checked', String(on));
+        if (on) activeIndex = i;
+    });
+    // Keep the group's single tab-stop on the selected mode (first card if none).
+    if (rovingModes) rovingModes(activeIndex >= 0 ? activeIndex : 0);
     $('#mode-warning').hidden = true;
     for (const u of updaters) u();
 }

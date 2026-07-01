@@ -44,7 +44,7 @@ O ponto único de falha era o acoplamento do motor a APIs internas do YouTube, a
 | ✅ H4 | ESLint + CI (lint/test/build) — *Prettier adiado* | **P1** | 2 h | Médio |
 | ✅ H5 | Remover código morto (`calc_threathold`/`calc_segduration`) | **P1** | 15 min | Baixo |
 | ✅ U1 | Atalhos de teclado (`commands`: liga/desliga, ir ao vivo) | P2 | 2 h | Médio |
-| U2 | A11y: navegação por setas no radiogroup + `aria-label` nos indicadores | P2 | 2 h | Médio |
+| ✅ U2 | A11y: navegação por setas no radiogroup + `aria-label` nos indicadores | P2 | 2 h | Médio |
 | U3 | Suporte a Firefox (`browser_specific_settings`) | P2 | 1–2 h | Médio |
 | U4 | Docs de dev (README dev, CHANGELOG, CONTRIBUTING) | P2 | 2 h | Baixo |
 | U5 | Memória de modo por canal + chip “ir ao vivo” no popup | P2 | 3–4 h | Baixo |
@@ -172,11 +172,14 @@ Maior alavanca de qualidade. Tudo abaixo é determinístico e testável sem DOM:
   (`Alt+Shift+L` / `⌘+Shift+L`) grava um sinal (`common.emitGoLive`) que o
   `content.js` encaminha ao motor (`seek_to_live`).
 
-### U2 — Acessibilidade
+### U2 — Acessibilidade — ✅ Concluída
 - Cards de modo são `role="radio"` (`popup.js:90`) mas sem navegação por setas nem
   tab-stop único; implementar o padrão radiogroup (setas movem, um só tab-stop).
 - Botões de indicador no player (`inject.js:294-306`) sem `aria-label`; adicionar
   rótulos (“velocidade”, “latência”, “buffer”).
+- **Feito:** helper `wireRadiogroup` (roving tabindex + setas/Home/End) nos cartões
+  de modo; `aria-label` localizados nos indicadores (viajam no detalhe das
+  settings, pois o motor não acessa `chrome.i18n`).
 
 ### U3 — Firefox
 - `content.js:46` já usa `cloneInto` (intenção de Firefox), mas falta

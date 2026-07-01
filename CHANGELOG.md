@@ -12,6 +12,8 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - **Atalhos de teclado** para ativar/desativar o ZeroDelay (`Alt+Shift+Y`) e
   pular para o ao vivo (`Alt+Shift+L`) — `⌘+Shift+…` no Mac —, sem abrir o popup.
   Reconfiguráveis em `chrome://extensions/shortcuts`.
+- **Acessibilidade**: navegação por setas (padrão ARIA radiogroup, um único
+  tab-stop) nos cartões de modo e `aria-label` nos indicadores do player.
 - Suporte ao **Firefox Desktop**: `manifest.firefox.json`, build em Node e
   tooling `web-ext` (`run:firefox`, `lint:firefox`, `package:firefox`).
 - Pipeline de **CI** (GitHub Actions) rodando lint, testes e build a cada push e

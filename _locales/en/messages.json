@@ -172,5 +172,20 @@
    },
    "commandGoLiveDesc": {
       "message": "Jump to live"
+   },
+   "a11yPlaybackRate": {
+      "message": "Playback speed"
+   },
+   "a11yLatency": {
+      "message": "Live latency"
+   },
+   "a11yHealth": {
+      "message": "Buffer health"
+   },
+   "a11yEstimation": {
+      "message": "Estimated time to catch up to live"
+   },
+   "a11yCurrent": {
+      "message": "Current time (click to copy the link)"
    }
 }

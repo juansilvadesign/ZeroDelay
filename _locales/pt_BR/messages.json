@@ -172,5 +172,20 @@
    },
    "commandGoLiveDesc": {
       "message": "Pular para o ao vivo"
+   },
+   "a11yPlaybackRate": {
+      "message": "Velocidade de reprodução"
+   },
+   "a11yLatency": {
+      "message": "Latência ao vivo"
+   },
+   "a11yHealth": {
+      "message": "Saúde do buffer"
+   },
+   "a11yEstimation": {
+      "message": "Horário estimado para alcançar o ao vivo"
+   },
+   "a11yCurrent": {
+      "message": "Tempo atual (clique para copiar o link)"
    }
 }

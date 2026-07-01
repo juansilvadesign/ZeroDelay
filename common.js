@@ -94,6 +94,13 @@ export const label = {
     supportBtn: msg('supportBtn', 'Apoiar'),
     supportCtaText: msg('supportCtaText', 'Curtindo? Me ajuda com um cafezinho 🙏'),
     supportCtaBtn: msg('supportCtaBtn', 'Apoiar via PIX'),
+
+    // Player-indicator accessibility labels
+    a11yPlaybackRate: msg('a11yPlaybackRate', 'Velocidade de reprodução'),
+    a11yLatency: msg('a11yLatency', 'Latência ao vivo'),
+    a11yHealth: msg('a11yHealth', 'Saúde do buffer'),
+    a11yEstimation: msg('a11yEstimation', 'Horário estimado para alcançar o ao vivo'),
+    a11yCurrent: msg('a11yCurrent', 'Tempo atual (clique para copiar o link)'),
 };
 
 // ---------------------------------------------------------------------------

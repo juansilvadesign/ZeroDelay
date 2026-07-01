@@ -123,6 +123,7 @@ function renderStatic() {
     $('#reset-label').textContent = L.reset;
     $('#reset').title = L.resetHint;
     $('#mode-warning').textContent = L.minWarning;
+    $('#go-live-label').textContent = L.goLiveBtn;
 }
 
 function renderModes() {
@@ -429,6 +430,17 @@ function refresh() {
     for (const u of updaters) u();
 }
 
+function renderGoLive() {
+    const btn = $('#go-live-action');
+    btn.addEventListener('click', () => {
+        common.emitGoLive(v => chrome.storage.local.set(v));
+        
+        // Visual feedback
+        btn.classList.add('active');
+        setTimeout(() => btn.classList.remove('active'), 500);
+    });
+}
+
 // --------------------------------------------------------------- Init
 (async function init() {
     const data = await getStorage(common.storage);
@@ -439,5 +451,6 @@ function refresh() {
     renderAdvancedToggle();
     renderReset();
     renderSupport();
+    renderGoLive();
     refresh();
 })();

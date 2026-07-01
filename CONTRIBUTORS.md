@@ -26,6 +26,7 @@ atualizado a cada nova contribuição mesclada.
 - **MoreiraGustav** ([@MoreiraGustav](https://github.com/MoreiraGustav)) — atalhos
   de teclado (**PR #10**); a abordagem de "ir ao vivo" agir só na aba ativa ficou
   registrada como melhoria a incorporar.
+- **Guilherme** ([@ventgui28](https://github.com/ventgui28)) — **Botão "Ir ao Vivo"** de ação rápida diretamente no popup da extensão — **PR (mesclada)**.
 
 ## Ideias e relatos
 - **Habini86** ([@Habini86](https://github.com/Habini86)) — ideia do gerenciamento

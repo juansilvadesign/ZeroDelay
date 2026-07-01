@@ -843,6 +843,46 @@ body {
     color: var(--text-dim);
 }
 
+/* ---------------------------------------------------------------- Quick Actions */
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.go-live-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 160ms var(--ease), transform 120ms var(--ease), color 160ms var(--ease), border-color 160ms var(--ease);
+}
+
+.go-live-action:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+.go-live-action:active {
+    transform: scale(0.99);
+}
+
+.go-live-action.active {
+    background: var(--ok);
+    border-color: var(--ok);
+    color: #fff;
+}
+
 @media (prefers-reduced-motion: reduce) {
 
     *,

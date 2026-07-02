@@ -618,20 +618,23 @@ body {
 }
 
 .reset:hover {
-    color: var(--accent-strong);
-    border-color: var(--accent);
+    color: var(--sync-strong);
+    border-color: var(--sync);
 }
 
 .reset-label {
     position: relative;
     z-index: 1;
+    /* Slight tracking so the "hold to reset" label reads as a control tally. */
+    letter-spacing: 0.02em;
 }
 
+/* The hold gauge "charges" in live-red, then confirms in ok-green on release. */
 .reset-fill {
     position: absolute;
     inset: 0;
     width: 0;
-    background: var(--accent);
+    background: var(--sync);
     opacity: 0.25;
     z-index: 0;
 }

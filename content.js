@@ -277,20 +277,39 @@ function showStallOffer(common, target) {
 // (isolated world) we decide and apply — the theme CSS lives in hexa/theme.js
 // and toggles behind a single <html> class, so this only flips a boolean.
 async function initHexa(common) {
-    let hexa = null;       // set once hexa/theme.js loads
+    const L = common.label;
+    let hexa = null;         // set once hexa/theme.js loads
     let meta = { title: '', isLive: false, video_id: '' };
-    let override = null;   // null = auto (detect), true = force on, false = force off
-    let applied = false;
+    let override = null;     // null = auto (detect+offer, never auto-apply); true/false = forced
+    let applied = false;     // current theme on/off state
+    let suggest = true;      // preference: offer the opt-in invite on Brazil games
+    let invitedVideo = null; // video_id already offered (invite shows once per video)
 
     const autoActive = () => meta.isLive && common.detectBrazilMatch(meta.title);
-    const shouldTheme = () => (override === null ? autoActive() : override);
 
+    function apply(on) {
+        if (on === applied) return;
+        applied = on;
+        hexa.setActive(on, L.hexaActivated);
+    }
+
+    // The theme ONLY turns on when explicitly chosen (opt-in). Auto-detection
+    // just OFFERS an invite; it never dresses the page by itself.
     function reevaluate() {
         if (!hexa) return; // buffer decisions until the theme module is ready
-        const want = shouldTheme();
-        if (want === applied) return;
-        applied = want;
-        hexa.setActive(want);
+        apply(override === true);
+
+        const offering = override === null && suggest && autoActive();
+        if (offering && invitedVideo !== meta.video_id) {
+            invitedVideo = meta.video_id;         // one invite per video, not a nag
+            hexa.showInvite({
+                message: L.hexaInvite, cta: L.hexaInviteCta, dismiss: L.hexaDismiss,
+                onAccept: () => { override = true; reevaluate(); },
+                onDismiss: () => { override = false; reevaluate(); }, // "agora não" = off for this video
+            });
+        } else if (!offering) {
+            hexa.hideInvite();
+        }
     }
 
     // Attach listeners SYNCHRONOUSLY (before the await): the engine dedupes its
@@ -299,8 +318,8 @@ async function initHexa(common) {
     document.addEventListener('_live_catch_up_video_meta', e => {
         const d = e.detail;
         if (!d) return;
-        // The manual override is scoped to the current video ("na aba"): moving
-        // to a new video clears it so auto-detection takes back over.
+        // Override + invite are scoped to the current video ("na aba"): moving to
+        // a new video clears them so a new game is offered fresh.
         if (d.video_id !== meta.video_id) override = null;
         meta = { title: d.title || '', isLive: !!d.isLive, video_id: d.video_id || '' };
         reevaluate();
@@ -314,6 +333,20 @@ async function initHexa(common) {
     chrome.runtime.onMessage.addListener(msg => {
         if (msg?.type === 'toggle-hexa') {
             override = !applied;
+            reevaluate();
+        }
+    });
+
+    // Preference: whether to offer the invite at all (popup toggle writes this).
+    if (extensionAlive()) {
+        chrome.storage.local.get([common.hexaSuggestKey], d => {
+            suggest = d[common.hexaSuggestKey] !== false; // default on
+            reevaluate();
+        });
+    }
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'local' && changes[common.hexaSuggestKey]) {
+            suggest = changes[common.hexaSuggestKey].newValue !== false;
             reevaluate();
         }
     });

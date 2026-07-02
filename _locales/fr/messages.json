@@ -173,6 +173,18 @@
    "commandHexaDesc": {
       "message": "Activer/désactiver MODO HEXA"
    },
+   "hexaInvite": {
+      "message": "Le Brésil joue en direct. Activer le Mode Hexa ?"
+   },
+   "hexaInviteCta": {
+      "message": "Activer"
+   },
+   "hexaDismiss": {
+      "message": "Plus tard"
+   },
+   "hexaActivated": {
+      "message": "Mode Hexa activé"
+   },
    "a11yPlaybackRate": {
       "message": "Vitesse de lecture"
    },

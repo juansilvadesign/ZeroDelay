@@ -173,6 +173,18 @@
    "commandHexaDesc": {
       "message": "Turn MODO HEXA on/off"
    },
+   "hexaInvite": {
+      "message": "Brazil playing live. Turn on Hexa Mode?"
+   },
+   "hexaInviteCta": {
+      "message": "Turn on"
+   },
+   "hexaDismiss": {
+      "message": "Not now"
+   },
+   "hexaActivated": {
+      "message": "Hexa Mode on"
+   },
    "a11yPlaybackRate": {
       "message": "Playback speed"
    },

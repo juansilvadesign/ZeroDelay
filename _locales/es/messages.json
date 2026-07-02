@@ -173,6 +173,18 @@
    "commandHexaDesc": {
       "message": "Activar/desactivar MODO HEXA"
    },
+   "hexaInvite": {
+      "message": "Brasil jugando en vivo. ¿Activar el Modo Hexa?"
+   },
+   "hexaInviteCta": {
+      "message": "Activar"
+   },
+   "hexaDismiss": {
+      "message": "Ahora no"
+   },
+   "hexaActivated": {
+      "message": "Modo Hexa activado"
+   },
    "a11yPlaybackRate": {
       "message": "Velocidad de reproducción"
    },

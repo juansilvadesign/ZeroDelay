@@ -102,11 +102,39 @@ html.${ROOT_CLASS} yt-live-chat-author-chip #author-name{color:#FFE44D!important
 @keyframes zd-hexa-fall{to{transform:translateY(110vh) rotate(600deg);opacity:.85;}}
 @keyframes zd-hexa-pop{from{opacity:0;transform:scale(.85);}to{opacity:1;}}
 
+/* Opt-in invite: shown (theme still OFF) when a live Brazil game is detected.
+   Clearly ZeroDelay's (carries the badge), never posing as YouTube. */
+.zd-hexa-invite{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(10px);
+  z-index:2147483646;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  max-width:min(92vw,460px);padding:12px 14px;border-radius:14px;
+  background:#02391C;border:1px solid #FFDF00;color:#FFF6D5;
+  font:600 13px/1.35 Roboto,"Segoe UI",system-ui,sans-serif;
+  box-shadow:0 10px 30px rgba(0,0,0,.55);
+  opacity:0;transition:opacity .3s ease,transform .3s ease;
+}
+.zd-hexa-invite.zd-hexa-in{opacity:1;transform:translateX(-50%) translateY(0);}
+.zd-hexa-invite-msg{flex:1 1 170px;min-width:0;}
+.zd-hexa-invite-cta{
+  flex:none;border:0;border-radius:999px;padding:8px 16px;cursor:pointer;
+  background:linear-gradient(#FFDF00,#F5C400);color:#04140A;
+  font:800 13px/1 Roboto,system-ui,sans-serif;letter-spacing:.3px;
+}
+.zd-hexa-invite-no{
+  flex:none;border:0;background:transparent;color:#CFE3C9;cursor:pointer;
+  padding:8px 6px;font:600 12px/1 Roboto,system-ui,sans-serif;
+  text-decoration:underline;text-underline-offset:2px;
+}
+.zd-hexa-invite-cta:focus-visible,.zd-hexa-invite-no:focus-visible{
+  outline:2px solid #FFF6D5;outline-offset:2px;
+}
+
 /* ===== Accessibility: honor reduced motion & forced colors ===== */
 @media (prefers-reduced-motion: reduce){
   html.${ROOT_CLASS},html.${ROOT_CLASS} body,html.${ROOT_CLASS} ytd-app,
   html.${ROOT_CLASS} #masthead-container,html.${ROOT_CLASS} ytd-masthead{transition:none!important;}
   .zd-hexa-badge,.zd-hexa-gol,.zd-hexa-toast{animation:none!important;}
+  .zd-hexa-invite{transition:none!important;opacity:1!important;transform:translateX(-50%)!important;}
   .zd-hexa-gol,.zd-hexa-confetti{display:none!important;} /* no confetti -> hide its trigger */
 }
 @media (forced-colors: active){
@@ -121,7 +149,8 @@ const reduceMotion = () =>
 let installed = false;
 let active = false;
 let keepAlive = null;              // re-attaches decorative nodes after re-renders
-const nodes = { badgeMast: null, gol: null };
+let inviteTimer = null;            // auto-dismiss timer for the opt-in invite
+const nodes = { badgeMast: null, gol: null, invite: null };
 
 /** Insert the dormant <style> once. Cheap; does nothing on repeat calls. */
 export function install() {
@@ -134,21 +163,62 @@ export function install() {
     (document.head || document.documentElement).appendChild(style);
 }
 
-/** Turn the theme on/off by toggling the single root class + managing nodes. */
-export function setActive(on) {
+/**
+ * Turn the theme on/off by toggling the single root class + managing nodes.
+ * @param {boolean} on
+ * @param {string} [activatedLabel] - Localized "activated" toast text (page world has no chrome.i18n).
+ */
+export function setActive(on, activatedLabel) {
     on = !!on;
     if (on === active) return;
     active = on;
     document.documentElement.classList.toggle(ROOT_CLASS, on);
     if (on) {
+        hideInvite();
         ensureNodes();
         keepAlive = setInterval(ensureNodes, 1000);
-        showToast();
+        showToast(activatedLabel);
     } else {
         clearInterval(keepAlive);
         keepAlive = null;
         removeNodes();
     }
+}
+
+/**
+ * Show the opt-in invite (theme stays OFF until the user accepts). Content.js
+ * passes localized strings and the callbacks; this module owns only the DOM.
+ * @param {{message:string, cta:string, dismiss:string, onAccept:Function, onDismiss:Function}} opts
+ */
+export function showInvite({ message, cta, dismiss, onAccept, onDismiss } = {}) {
+    if (active) return;               // already on — nothing to offer
+    hideInvite();
+    const card = make('div', 'zd-hexa-invite');
+    card.setAttribute('role', 'dialog');
+    card.setAttribute('aria-label', message || 'Modo Hexa');
+    const yes = make('button', 'zd-hexa-invite-cta', cta || 'Ativar');
+    yes.type = 'button';
+    const no = make('button', 'zd-hexa-invite-no', dismiss || 'Agora não');
+    no.type = 'button';
+    yes.addEventListener('click', () => { hideInvite(); if (onAccept) onAccept(); });
+    no.addEventListener('click', () => { hideInvite(); if (onDismiss) onDismiss(); });
+    card.append(buildBadge(), make('span', 'zd-hexa-invite-msg', message), yes, no);
+    document.body.appendChild(card);
+    requestAnimationFrame(() => card.classList.add('zd-hexa-in'));
+    nodes.invite = card;
+    clearTimeout(inviteTimer);
+    inviteTimer = setTimeout(hideInvite, 15000);   // an offer, not a nag
+}
+
+/** Dismiss the invite (no-op if none is showing). */
+export function hideInvite() {
+    clearTimeout(inviteTimer);
+    inviteTimer = null;
+    const card = nodes.invite;
+    if (!card) return;
+    nodes.invite = null;
+    card.classList.remove('zd-hexa-in');
+    setTimeout(() => card.remove(), 300);
 }
 
 // --- DOM helpers (textContent only — no innerHTML) --------------------------
@@ -160,7 +230,7 @@ function make(tag, cls, text) {
 }
 
 function buildBadge() {
-    const b = make('span', 'zd-hexa-badge zd-hexa-badge--masthead');
+    const b = make('span', 'zd-hexa-badge');
     b.append(make('span', null, 'RUMO AO HEXA'));
     b.append(make('span', 'zd-hexa-stars', '★★★★★☆')); // 5 titles + the aspirational 6th
     return b;
@@ -179,6 +249,7 @@ function ensureMastheadBadge() {
     const host = document.querySelector('ytd-masthead #end');
     if (!host) return;
     nodes.badgeMast = buildBadge();
+    nodes.badgeMast.classList.add('zd-hexa-badge--masthead');
     host.insertBefore(nodes.badgeMast, host.firstChild);
 }
 
@@ -198,7 +269,9 @@ function removeNodes() {
     for (const k of Object.keys(nodes)) {
         if (nodes[k]) { nodes[k].remove(); nodes[k] = null; }
     }
-    document.querySelectorAll('.zd-hexa-confetti,.zd-hexa-toast').forEach(n => n.remove());
+    clearTimeout(inviteTimer);
+    inviteTimer = null;
+    document.querySelectorAll('.zd-hexa-confetti,.zd-hexa-toast,.zd-hexa-invite').forEach(n => n.remove());
 }
 
 // Goal celebration — explicit, user-triggered via the GOL! button. Skipped
@@ -219,8 +292,8 @@ function fireConfetti() {
     setTimeout(() => layer.remove(), 3200);
 }
 
-function showToast() {
-    const t = make('div', 'zd-hexa-toast', '🇧🇷 MODO HEXA ativado');
+function showToast(text) {
+    const t = make('div', 'zd-hexa-toast', '🇧🇷 ' + (text || 'Modo Hexa ativado'));
     document.body.appendChild(t);
     requestAnimationFrame(() => t.classList.add('zd-hexa-in'));
     setTimeout(() => {

@@ -121,6 +121,13 @@ export const label = {
     a11yHealth: msg('a11yHealth', 'Saúde do buffer'),
     a11yEstimation: msg('a11yEstimation', 'Horário estimado para alcançar o ao vivo'),
     a11yCurrent: msg('a11yCurrent', 'Tempo atual (clique para copiar o link)'),
+
+    // MODO HEXA — opt-in invite + activation toast. Festive display strings
+    // (GOL, RUMO AO HEXA) stay hardcoded in hexa/theme.js on purpose.
+    hexaInvite: msg('hexaInvite', 'Jogo do Brasil ao vivo. Ativar o Modo Hexa?'),
+    hexaInviteCta: msg('hexaInviteCta', 'Ativar'),
+    hexaDismiss: msg('hexaDismiss', 'Agora não'),
+    hexaActivated: msg('hexaActivated', 'Modo Hexa ativado'),
 };
 
 // ---------------------------------------------------------------------------
@@ -166,6 +173,13 @@ export function ensureInstalledAt() {
 export const goLiveSignalKey = 'goLiveSignal';
 /** Mode to restore when the toggle shortcut re-enables playback after Off. */
 export const lastModeKey = 'lastMode';
+
+/**
+ * MODO HEXA — whether to OFFER the opt-in invite when a live Brazil game is
+ * detected. Default on; the theme itself never turns on by itself. Kept out of
+ * `storage` (engine ignores it) and `donateKeys` ("Restore defaults" leaves it).
+ */
+export const hexaSuggestKey = 'hexaSuggest';
 
 /**
  * Write a one-shot "jump to live" signal to storage.

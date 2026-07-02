@@ -489,6 +489,10 @@
         tick_errors = 0;
 
         if (bound_video !== v) {
+            if (bound_video) {
+                bound_video.removeEventListener('ratechange', onPlaybackRateChange);
+                bound_video.removeEventListener('waiting', on_video_waiting);
+            }
             v.addEventListener('ratechange', onPlaybackRateChange);
             v.addEventListener('waiting', on_video_waiting);
             bound_video = v;

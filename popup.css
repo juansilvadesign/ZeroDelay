@@ -139,17 +139,23 @@ body {
 .app::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 66px;
+    inset: 0;
     z-index: -1;
     pointer-events: none;
     background: repeating-conic-gradient(var(--degraded-soft) 0% 25%, transparent 0% 50%) 0 0 / 6px 6px;
-    -webkit-mask-image: linear-gradient(180deg, #000, transparent);
-    mask-image: linear-gradient(180deg, #000, transparent);
+    /* Scatter only at the top and bottom extremities, clearing toward the middle. */
+    -webkit-mask-image: linear-gradient(180deg, #000 0, transparent 16%, transparent 84%, #000 100%);
+    mask-image: linear-gradient(180deg, #000 0, transparent 16%, transparent 84%, #000 100%);
     opacity: 1;
     transition: opacity 600ms var(--ease);
+    /* Slow chunky drift — the pixels keep shuffling, like a settling signal. */
+    animation: scatter-drift 5s steps(6, end) infinite;
+}
+
+@keyframes scatter-drift {
+    to {
+        background-position: 12px 6px;
+    }
 }
 
 .app[data-signal="synced"]::before {
@@ -353,6 +359,7 @@ body {
 
 .mode-card {
     position: relative;
+    isolation: isolate;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -375,6 +382,36 @@ body {
 .mode-card:nth-child(4) { animation-delay: 190ms; }
 .mode-card:nth-child(5) { animation-delay: 240ms; }
 .mode-card:nth-child(6) { animation-delay: 290ms; }
+
+/* On selection the card "materialises": a pixel grid flickers out in chunky
+ * steps to reveal the clean synced card — the degraded → sharp idea, per click.
+ * Sits above the card background but below its content (z-index -1 + isolation). */
+.mode-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: repeating-conic-gradient(var(--surface-3) 0% 25%, transparent 0% 50%) 0 0 / 7px 7px;
+    opacity: 0;
+}
+
+.mode-card[aria-checked="true"]::before {
+    animation: card-materialize 480ms steps(5, end) forwards;
+}
+
+@keyframes card-materialize {
+    0% {
+        opacity: 0.85;
+        background-position: 0 0;
+    }
+
+    100% {
+        opacity: 0;
+        background-position: 7px 7px;
+    }
+}
 
 .mode-card:hover {
     border-color: var(--text-faint);

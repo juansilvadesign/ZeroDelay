@@ -3,6 +3,17 @@
  * Author: João Gustavo França <joao@solitus.com.br> (https://github.com/joaogfc)
  */
 
+/* Departure Mono — self-hosted (MV3: no remote resources). Monospace, tabular by
+ * nature, and a natural match for the pixel/degraded → sharp/synced language.
+ * © 2022–2024 Helena Zhang, SIL OFL 1.1 (see THIRD-PARTY-NOTICES.md, fonts/OFL.txt). */
+@font-face {
+    font-family: "Departure Mono";
+    src: url("fonts/DepartureMono-Regular.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     color-scheme: dark;
 
@@ -18,10 +29,24 @@
     --text-dim: #aaaaaa;
     --text-faint: #717171;
 
+    /* Signal axis — mirrors YouTube's own live badge:
+     * SYNCED / live / caught-up = red; DEGRADED / behind live = desaturated gray.
+     * The whole UI resolves from --degraded (raw) toward --sync (locked). */
     --accent: #ff0033;
     --accent-strong: #ff2d52;
     --accent-soft: rgba(255, 0, 51, 0.14);
     --accent-glow: rgba(255, 0, 51, 0.35);
+
+    /* Semantic aliases for the "synced/HD" state (currently the red accent). */
+    --sync: var(--accent);
+    --sync-strong: var(--accent-strong);
+    --sync-soft: var(--accent-soft);
+    --sync-glow: var(--accent-glow);
+
+    /* The "behind live / raw signal" state — YouTube's grayed-out live badge. */
+    --degraded: #909090;
+    --degraded-strong: #b0b0b0;
+    --degraded-soft: rgba(144, 144, 144, 0.14);
 
     --ok: #2ba640;
     --warn: #ffc43d;
@@ -29,7 +54,9 @@
     --radius: 14px;
     --radius-sm: 10px;
     --ease: cubic-bezier(0.2, 0, 0, 1);
-    --font: "Roboto", "Segoe UI", system-ui, -apple-system, sans-serif;
+    /* Overshoot spring for the degraded → sharp morph ("focus arriving"). */
+    --spring: cubic-bezier(0.2, 0.9, 0.25, 1.18);
+    --font: "Departure Mono", "Roboto", "Segoe UI", ui-monospace, monospace;
 }
 
 @media (prefers-color-scheme: light) {
@@ -45,6 +72,10 @@
         --text-dim: #606060;
         --text-faint: #909090;
         --accent-soft: rgba(255, 0, 51, 0.10);
+        --sync-soft: rgba(255, 0, 51, 0.10);
+        --degraded: #6f6f6f;
+        --degraded-strong: #505050;
+        --degraded-soft: rgba(96, 96, 96, 0.10);
     }
 }
 

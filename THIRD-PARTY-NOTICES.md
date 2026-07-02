@@ -77,3 +77,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+---
+
+## 3. Departure Mono (`fonts/DepartureMono-Regular.woff2`)
+
+The self-hosted interface typeface. Only the WOFF2 web font is bundled; the full
+license text travels with it in [`fonts/OFL.txt`](fonts/OFL.txt).
+
+> Copyright 2022–2024 Helena Zhang (https://helenazhang.com)
+>
+> This Font Software is licensed under the **SIL Open Font License, Version 1.1**.
+> The full license (with FAQ) is available at https://openfontlicense.org and is
+> reproduced in `fonts/OFL.txt`. "Departure Mono" is a Reserved Font Name under
+> the OFL.

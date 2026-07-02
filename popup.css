@@ -59,7 +59,10 @@
     --ease: cubic-bezier(0.2, 0, 0, 1);
     /* Overshoot spring for the degraded → sharp morph ("focus arriving"). */
     --spring: cubic-bezier(0.2, 0.9, 0.25, 1.18);
-    --font: "Departure Mono", "Roboto", "Segoe UI", ui-monospace, monospace;
+    /* Clean sans for body/reading; Departure Mono reserved for titles + numbers
+     * (the "soft meets hard" mix — pixel character only where it earns it). */
+    --font: "Roboto", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-mono: "Departure Mono", ui-monospace, monospace;
 }
 
 @media (prefers-color-scheme: light) {
@@ -212,6 +215,7 @@ body {
 
 .brand-name {
     margin: 0;
+    font-family: var(--font-mono);
     font-size: 15px;
     font-weight: 600;
     /* Mono wordmark: no negative tracking (Departure Mono is fixed-pitch). */
@@ -227,6 +231,7 @@ body {
 /* ---------------------------------------------------------------- Sections */
 .section-title {
     margin: 0 0 10px;
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -348,7 +353,8 @@ body {
 }
 
 .mode-name {
-    font-size: 14px;
+    font-family: var(--font-mono);
+    font-size: 13px;
     font-weight: 600;
 }
 
@@ -397,7 +403,8 @@ body {
     margin-top: 8px;
     padding: 3px 10px 3px 7px;
     border-radius: 999px;
-    font-size: 11px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
     font-weight: 700;
     background: var(--degraded-soft);
     color: var(--degraded-strong);
@@ -490,8 +497,8 @@ body {
     border-radius: var(--radius);
     background: var(--surface);
     color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
+    font-family: var(--font-mono);
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: background 160ms var(--ease), border-color 160ms var(--ease);
@@ -804,7 +811,7 @@ body {
     border-radius: 999px;
     background: var(--surface-2);
     color: var(--text);
-    font-family: inherit;
+    font-family: var(--font-mono);
     font-size: 13px;
     font-weight: 600;
     text-align: center;

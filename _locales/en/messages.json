@@ -42,49 +42,49 @@
       "message": "Gentle"
    },
    "modeSuaveDesc": {
-      "message": "Keeps plenty of buffer and trims latency with room to spare. Best for slow or unstable internet."
+      "message": "More buffer for stability, still close to live. Good for unstable internet."
    },
    "modeSuaveConn": {
       "message": "Slow or unstable internet (~3+ Mbps)"
    },
    "modeSuaveGain": {
-      "message": "buffer ~8s"
+      "message": "buffer ~5s"
    },
    "modeBalanced": {
       "message": "Balanced"
    },
    "modeBalancedDesc": {
-      "message": "Cuts latency well while keeping ~6s of buffer. A good middle ground."
+      "message": "A good middle ground: low latency while keeping ~4s of buffer."
    },
    "modeBalancedConn": {
       "message": "Average internet (~5–10 Mbps)"
    },
    "modeBalancedGain": {
-      "message": "buffer ~6s"
+      "message": "buffer ~4s"
    },
    "modeAggressive": {
       "message": "Close"
    },
    "modeAggressiveDesc": {
-      "message": "Gets closer to live, keeping ~4.5s of buffer. Needs stable internet."
+      "message": "Very close to live, with ~3s of buffer. Needs stable internet."
    },
    "modeAggressiveConn": {
       "message": "Stable internet (~15+ Mbps)"
    },
    "modeAggressiveGain": {
-      "message": "buffer ~4.5s"
+      "message": "buffer ~3s"
    },
-   "modeMin": {
-      "message": "Minimum Latency"
+   "modeExtreme": {
+      "message": "Extreme"
    },
-   "modeMinDesc": {
-      "message": "As close to live as possible, with only ~3.5s of buffer. Needs fast, stable internet."
+   "modeExtremeDesc": {
+      "message": "Right at the live edge, with only ~2s of buffer. Only for very fast, stable internet — may stutter."
    },
-   "modeMinConn": {
-      "message": "Fast, stable internet (~25+ Mbps)"
+   "modeExtremeConn": {
+      "message": "Very fast, stable internet (~50+ Mbps)"
    },
-   "modeMinGain": {
-      "message": "buffer ~3.5s"
+   "modeExtremeGain": {
+      "message": "buffer ~2s"
    },
    "sectionIndicators": {
       "message": "Player indicators"

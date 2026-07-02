@@ -36,24 +36,24 @@ export const label = {
     modeAutoGain: msg('modeAutoGain', 'adaptável'),
 
     modeSuave: msg('modeSuave', 'Suave'),
-    modeSuaveDesc: msg('modeSuaveDesc', 'Mantém bastante buffer e reduz a latência com folga. Ideal para internet fraca ou instável.'),
+    modeSuaveDesc: msg('modeSuaveDesc', 'Mais folga de buffer para estabilidade, ainda bem perto do ao vivo. Boa para internet instável.'),
     modeSuaveConn: msg('modeSuaveConn', 'Internet lenta ou instável (~3+ Mbps)'),
-    modeSuaveGain: msg('modeSuaveGain', 'buffer ~8s'),
+    modeSuaveGain: msg('modeSuaveGain', 'buffer ~5s'),
 
     modeBalanced: msg('modeBalanced', 'Equilibrado'),
-    modeBalancedDesc: msg('modeBalancedDesc', 'Reduz bem a latência mantendo ~6s de buffer. Bom meio-termo.'),
+    modeBalancedDesc: msg('modeBalancedDesc', 'Bom meio-termo: latência baixa mantendo ~4s de buffer.'),
     modeBalancedConn: msg('modeBalancedConn', 'Internet comum (~5–10 Mbps)'),
-    modeBalancedGain: msg('modeBalancedGain', 'buffer ~6s'),
+    modeBalancedGain: msg('modeBalancedGain', 'buffer ~4s'),
 
     modeAggressive: msg('modeAggressive', 'Próximo'),
-    modeAggressiveDesc: msg('modeAggressiveDesc', 'Chega mais perto do ao vivo, mantendo ~4,5s de buffer. Precisa de internet estável.'),
+    modeAggressiveDesc: msg('modeAggressiveDesc', 'Bem perto do ao vivo, com ~3s de buffer. Precisa de internet estável.'),
     modeAggressiveConn: msg('modeAggressiveConn', 'Internet estável (~15+ Mbps)'),
-    modeAggressiveGain: msg('modeAggressiveGain', 'buffer ~4,5s'),
+    modeAggressiveGain: msg('modeAggressiveGain', 'buffer ~3s'),
 
-    modeMin: msg('modeMin', 'Latência Mínima'),
-    modeMinDesc: msg('modeMinDesc', 'O mais perto possível do ao vivo, com só ~3,5s de buffer. Precisa de internet rápida e estável.'),
-    modeMinConn: msg('modeMinConn', 'Internet rápida e estável (~25+ Mbps)'),
-    modeMinGain: msg('modeMinGain', 'buffer ~3,5s'),
+    modeExtreme: msg('modeExtreme', 'Extremo'),
+    modeExtremeDesc: msg('modeExtremeDesc', 'No limite do ao vivo, com só ~2s de buffer. Só para internet muito rápida e estável — pode engasgar.'),
+    modeExtremeConn: msg('modeExtremeConn', 'Internet muito rápida e estável (~50+ Mbps)'),
+    modeExtremeGain: msg('modeExtremeGain', 'buffer ~2s'),
 
     // Player indicators
     sectionIndicators: msg('sectionIndicators', 'Indicadores no player'),
@@ -257,7 +257,7 @@ export const presets = {
         enabled: true,
         playbackRate: 1.25,
         auto: false,
-        bufferTarget: 8.0,
+        bufferTarget: 5.0,
         skip: true,
         skipThreathold: 30.0,
     },
@@ -265,7 +265,7 @@ export const presets = {
         enabled: true,
         playbackRate: 1.25,
         auto: false,
-        bufferTarget: 6.0,
+        bufferTarget: 4.0,
         skip: true,
         skipThreathold: 30.0,
     },
@@ -273,22 +273,22 @@ export const presets = {
         enabled: true,
         playbackRate: 1.25,
         auto: false,
-        bufferTarget: 4.5,
+        bufferTarget: 3.0,
         skip: true,
         skipThreathold: 30.0,
     },
-    min: {
+    extreme: {
         enabled: true,
         playbackRate: 1.25,
         auto: false,
-        bufferTarget: 3.5,
+        bufferTarget: 2.0,
         skip: true,
         skipThreathold: 30.0,
     },
 };
 
 // Order shown in the UI, with display metadata.
-export const modeOrder = ['off', 'auto', 'suave', 'balanced', 'aggressive', 'min'];
+export const modeOrder = ['off', 'auto', 'suave', 'balanced', 'aggressive', 'extreme'];
 
 export const modeMeta = {
     off: { title: label.modeOff, desc: label.modeOffDesc, conn: label.modeOffConn, gain: label.modeOffGain },
@@ -296,7 +296,7 @@ export const modeMeta = {
     suave: { title: label.modeSuave, desc: label.modeSuaveDesc, conn: label.modeSuaveConn, gain: label.modeSuaveGain },
     balanced: { title: label.modeBalanced, desc: label.modeBalancedDesc, conn: label.modeBalancedConn, gain: label.modeBalancedGain },
     aggressive: { title: label.modeAggressive, desc: label.modeAggressiveDesc, conn: label.modeAggressiveConn, gain: label.modeAggressiveGain },
-    min: { title: label.modeMin, desc: label.modeMinDesc, conn: label.modeMinConn, gain: label.modeMinGain },
+    extreme: { title: label.modeExtreme, desc: label.modeExtremeDesc, conn: label.modeExtremeConn, gain: label.modeExtremeGain },
 };
 
 /**

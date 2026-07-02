@@ -42,49 +42,49 @@
       "message": "Suave"
    },
    "modeSuaveDesc": {
-      "message": "Mantém bastante buffer e reduz a latência com folga. Ideal para internet fraca ou instável."
+      "message": "Mais folga de buffer para estabilidade, ainda bem perto do ao vivo. Boa para internet instável."
    },
    "modeSuaveConn": {
       "message": "Internet lenta ou instável (~3+ Mbps)"
    },
    "modeSuaveGain": {
-      "message": "buffer ~8s"
+      "message": "buffer ~5s"
    },
    "modeBalanced": {
       "message": "Equilibrado"
    },
    "modeBalancedDesc": {
-      "message": "Reduz bem a latência mantendo ~6s de buffer. Bom meio-termo."
+      "message": "Bom meio-termo: latência baixa mantendo ~4s de buffer."
    },
    "modeBalancedConn": {
       "message": "Internet comum (~5–10 Mbps)"
    },
    "modeBalancedGain": {
-      "message": "buffer ~6s"
+      "message": "buffer ~4s"
    },
    "modeAggressive": {
       "message": "Próximo"
    },
    "modeAggressiveDesc": {
-      "message": "Chega mais perto do ao vivo, mantendo ~4,5s de buffer. Precisa de internet estável."
+      "message": "Bem perto do ao vivo, com ~3s de buffer. Precisa de internet estável."
    },
    "modeAggressiveConn": {
       "message": "Internet estável (~15+ Mbps)"
    },
    "modeAggressiveGain": {
-      "message": "buffer ~4,5s"
+      "message": "buffer ~3s"
    },
-   "modeMin": {
-      "message": "Latência Mínima"
+   "modeExtreme": {
+      "message": "Extremo"
    },
-   "modeMinDesc": {
-      "message": "O mais perto possível do ao vivo, com só ~3,5s de buffer. Precisa de internet rápida e estável."
+   "modeExtremeDesc": {
+      "message": "No limite do ao vivo, com só ~2s de buffer. Só para internet muito rápida e estável — pode engasgar."
    },
-   "modeMinConn": {
-      "message": "Internet rápida e estável (~25+ Mbps)"
+   "modeExtremeConn": {
+      "message": "Internet muito rápida e estável (~50+ Mbps)"
    },
-   "modeMinGain": {
-      "message": "buffer ~3,5s"
+   "modeExtremeGain": {
+      "message": "buffer ~2s"
    },
    "sectionIndicators": {
       "message": "Indicadores no player"

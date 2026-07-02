@@ -51,6 +51,9 @@
     /* Faint CRT scanline texture — shown while degraded, cleared when synced. */
     --scanline: rgba(255, 255, 255, 0.035);
 
+    /* Hard offset "sticker pop" shadow — solid, no blur; buttons lift off it. */
+    --pop: #000000;
+
     --ok: #2ba640;
     --warn: #ffc43d;
 
@@ -692,9 +695,9 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    height: 38px;
-    padding: 0 15px;
-    border-radius: 999px;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--warn);
     background: rgba(255, 196, 61, 0.14);
     color: var(--warn);
@@ -702,7 +705,8 @@ body {
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 160ms var(--ease), transform 120ms var(--ease);
+    box-shadow: 3px 3px 0 0 var(--pop);
+    transition: background 160ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
 }
 
 .coffee-label {
@@ -711,10 +715,13 @@ body {
 
 .coffee-toggle:hover {
     background: rgba(255, 196, 61, 0.24);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 var(--pop);
 }
 
 .coffee-toggle:active {
-    transform: scale(0.96);
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--pop);
 }
 
 .coffee-toggle[aria-expanded="true"] {
@@ -762,26 +769,32 @@ body {
     color: var(--text);
 }
 
+/* "Sticker pop": rests lifted off a hard offset shadow, lifts a touch more on
+ * hover, and presses flat into the shadow on click. */
 .support-cta-btn {
     flex: none;
     padding: 9px 15px;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: var(--accent);
     color: #fff;
     font-family: inherit;
     font-size: 12.5px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 150ms var(--ease), transform 120ms var(--ease);
+    box-shadow: 3px 3px 0 0 var(--pop);
+    transition: background 150ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
 }
 
 .support-cta-btn:hover {
     background: var(--accent-strong);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 var(--pop);
 }
 
 .support-cta-btn:active {
-    transform: scale(0.96);
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--pop);
 }
 
 .support {

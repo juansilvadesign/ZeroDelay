@@ -150,7 +150,9 @@ function applyPreset(name) {
 
 // --------------------------------------------------------------- Render
 function renderStatic() {
-    $('#brand-name').textContent = L.appName;
+    // Wordmark is authored in the HTML as Zer<span.brand-o>Delay (the "o" is the
+    // animated live seal). appName is the same constant "ZeroDelay" in every
+    // locale, so it is not injected here; aria-label keeps the accessible name.
     $('#brand-tagline').textContent = L.tagline;
     $('#modes-title').textContent = L.sectionMode;
     $('#modes-note').textContent = L.modesNote;
@@ -168,7 +170,6 @@ function renderModes() {
             class: 'mode-card', type: 'button', role: 'radio', 'aria-checked': 'false',
             onclick: () => applyPreset(name),
         },
-            el('canvas', { class: 'card-scatter', 'aria-hidden': 'true' }),
             el('span', { class: 'mode-icon', html: ICONS[name] }),
             el('span', { class: 'mode-body' },
                 el('span', { class: 'mode-name', text: meta.title }),

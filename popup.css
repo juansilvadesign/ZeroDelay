@@ -927,20 +927,27 @@ body {
         balloon-nudge 7s var(--ease) 2.6s infinite;
 }
 
-/* Tail — a solid square rotated 45°; its lower half sits inside the balloon and,
- * being the same fill, hides the seam. Only the two outer sides carry the border. */
+/* Tail — two stacked triangles: the outer carries the amber border; the inner
+ * (fill colour) sits 2px INTO the balloon, swallowing the top-border seam so the
+ * tail reads as one continuous shape instead of a floating/inward notch. */
 .support-cta::before {
     content: "";
     position: absolute;
     top: -8px;
-    right: 44px;
-    width: 15px;
-    height: 15px;
-    background: var(--cta-bg);
-    border-top: 2px solid var(--warn);
-    border-left: 2px solid var(--warn);
-    border-radius: 3px 0 0 0;
-    transform: rotate(45deg);
+    right: 40px;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 8px solid var(--warn);
+}
+
+.support-cta::after {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 42px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid var(--cta-bg);
 }
 
 @keyframes balloon-pop {
@@ -1166,9 +1173,9 @@ body {
     box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
-/* PIX area as a real tear-off coupon: a solid border whose left/right edges are
- * punched with a repeating row of notches (mask), plus an inset dashed frame —
- * a "ticket within a ticket". Only shown for Brazil (intl links replace it). */
+/* PIX area as a tear-off coupon: a solid rounded card with a single dashed
+ * perforation line low down (between the QR stub and the copy action) capped by
+ * two punched side notches — the classic ticket read. BR-only (intl replaces). */
 .support-pix {
     position: relative;
     display: flex;
@@ -1178,22 +1185,30 @@ body {
     padding: 16px 14px;
     border: 2px solid var(--border);
     border-radius: var(--radius-sm);
-    background: var(--surface-2);
-    -webkit-mask:
-        radial-gradient(circle 5px at left, #0000 96%, #000) 0 0 / 100% 16px repeat-y,
-        radial-gradient(circle 5px at right, #0000 96%, #000) 0 0 / 100% 16px repeat-y;
-    -webkit-mask-composite: source-in;
-    mask-composite: intersect;
+    background:
+        repeating-linear-gradient(90deg, var(--text-faint) 0 5px, transparent 5px 11px) center bottom 66px / calc(100% - 26px) 2px no-repeat,
+        var(--surface-2);
 }
 
-/* Inset dashed frame — the classic coupon double edge. */
-.support-pix::before {
+/* The two side notches sit on the perforation line and read as punched cut-outs. */
+.support-pix::before,
+.support-pix::after {
     content: "";
     position: absolute;
-    inset: 5px;
-    border: 1px dashed var(--border);
-    border-radius: 6px;
-    pointer-events: none;
+    bottom: 60px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow: inset 0 0 0 2px var(--border);
+}
+
+.support-pix::before {
+    left: -8px;
+}
+
+.support-pix::after {
+    right: -8px;
 }
 
 .support-qr {

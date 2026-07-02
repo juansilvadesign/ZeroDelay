@@ -3,6 +3,17 @@
  * Author: João Gustavo França <joao@solitus.com.br> (https://github.com/joaogfc)
  */
 
+/* Departure Mono — self-hosted (MV3: no remote resources). Monospace, tabular by
+ * nature, and a natural match for the pixel/degraded → sharp/synced language.
+ * © 2022–2024 Helena Zhang, SIL OFL 1.1 (see THIRD-PARTY-NOTICES.md, fonts/OFL.txt). */
+@font-face {
+    font-family: "Departure Mono";
+    src: url("fonts/DepartureMono-Regular.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     color-scheme: dark;
 
@@ -18,18 +29,47 @@
     --text-dim: #aaaaaa;
     --text-faint: #717171;
 
+    /* Signal axis — mirrors YouTube's own live badge:
+     * SYNCED / live / caught-up = red; DEGRADED / behind live = desaturated gray.
+     * The whole UI resolves from --degraded (raw) toward --sync (locked). */
     --accent: #ff0033;
     --accent-strong: #ff2d52;
     --accent-soft: rgba(255, 0, 51, 0.14);
     --accent-glow: rgba(255, 0, 51, 0.35);
 
+    /* Semantic aliases for the "synced/HD" state (currently the red accent). */
+    --sync: var(--accent);
+    --sync-strong: var(--accent-strong);
+    --sync-soft: var(--accent-soft);
+    --sync-glow: var(--accent-glow);
+    /* Solid-ish red for the "sticker" offset shadow of live/selected elements. */
+    --sync-ghost: rgba(255, 0, 51, 0.5);
+
+    /* The "behind live / raw signal" state — YouTube's grayed-out live badge. */
+    --degraded: #909090;
+    --degraded-strong: #b0b0b0;
+    --degraded-soft: rgba(144, 144, 144, 0.14);
+
+    /* Faint CRT scanline texture — shown while degraded, cleared when synced. */
+    --scanline: rgba(255, 255, 255, 0.035);
+
+    /* Hard offset "sticker pop" shadow — solid, no blur; buttons lift off it. */
+    --pop: #000000;
+
     --ok: #2ba640;
     --warn: #ffc43d;
+    /* Solid balloon surface (warm), so the speech tail has no alpha seams. */
+    --cta-bg: #241d0d;
 
-    --radius: 14px;
-    --radius-sm: 10px;
+    --radius: 12px;
+    --radius-sm: 9px;
     --ease: cubic-bezier(0.2, 0, 0, 1);
+    /* Overshoot spring for the degraded → sharp morph ("focus arriving"). */
+    --spring: cubic-bezier(0.2, 0.9, 0.25, 1.18);
+    /* Clean sans for body/reading; Departure Mono reserved for titles + numbers
+     * (the "soft meets hard" mix — pixel character only where it earns it). */
     --font: "Roboto", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-mono: "Departure Mono", ui-monospace, monospace;
 }
 
 @media (prefers-color-scheme: light) {
@@ -45,6 +85,12 @@
         --text-dim: #606060;
         --text-faint: #909090;
         --accent-soft: rgba(255, 0, 51, 0.10);
+        --sync-soft: rgba(255, 0, 51, 0.10);
+        --degraded: #6f6f6f;
+        --degraded-strong: #505050;
+        --degraded-soft: rgba(96, 96, 96, 0.10);
+        --scanline: rgba(0, 0, 0, 0.045);
+        --cta-bg: #fff6db;
     }
 }
 
@@ -73,7 +119,39 @@ body {
     justify-content: center;
 }
 
+/* ---------------------------------------------------------------- Scrollbar */
+/* Thin, minimal, live-red — replaces the chunky default that clashed. */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* A slim red pill: a transparent border + padding-box clip keeps it thin. */
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    transition: background 150ms var(--ease);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-strong);
+    border-width: 2px;
+}
+
 .app {
+    position: relative;
+    isolation: isolate;
     width: 100%;
     min-width: 340px;
     max-width: 440px;
@@ -84,10 +162,63 @@ body {
     animation: rise 220ms var(--ease) both;
 }
 
+/* Signal texture: a faint CRT scanline over the whole popup while the engine is
+ * idle/degraded, clearing to clean HD once a mode is syncing. Purely decorative
+ * (pointer-events: none), driven by the same data-signal hook as the seal. */
+.app::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, var(--scanline) 0 1px, transparent 1px 3px);
+    opacity: 1;
+    transition: opacity 500ms var(--ease);
+}
+
+.app[data-signal="synced"]::after {
+    opacity: 0;
+}
+
 @keyframes rise {
     from {
         opacity: 0;
         transform: translateY(6px);
+    }
+}
+
+/* Cards fade in one after another — a signal coming online channel by channel. */
+@keyframes fade {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+/* Wordmark "locks in" with a hard digital jitter (transform/opacity only). */
+@keyframes signal-lock {
+    0% {
+        opacity: 0;
+        transform: translateX(-3px);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateX(3px);
+    }
+
+    45% {
+        opacity: 0.55;
+        transform: translateX(-2px);
+    }
+
+    70% {
+        opacity: 1;
+        transform: translateX(2px);
+    }
+
+    100% {
+        transform: none;
     }
 }
 
@@ -101,26 +232,51 @@ body {
 
 .brand {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 11px;
 }
 
-.brand-dot {
+/* The "o" of Zer(o)Delay is the live seal, morphing with the signal: a chunky,
+ * near-square PIXEL-ART ring while degraded, resolving to a clean round red disc
+ * (+ glow + pulse) when synced — the degraded → sharp motif on the wordmark
+ * itself. Inline-block, so it flows in the text at the 'o' slot; nudge --o-y to
+ * sit it on the x-height. */
+.brand-o {
+    --o-y: 0.05em;
     position: relative;
-    flex: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 4px var(--accent-soft);
+    display: inline-block;
+    width: 0.58em;
+    height: 0.58em;
+    /* Breathing room so it doesn't glue to the r / D. */
+    margin: 0 0.12em;
+    vertical-align: baseline;
+    transform: translateY(var(--o-y));
+    box-sizing: border-box;
+    border: 0.17em solid currentColor;
+    /* Degraded: hard square corners = clearly a pixel-art "o". */
+    border-radius: 0;
+    transition: border-color 280ms var(--spring), border-radius 320ms var(--spring), background 220ms var(--ease), box-shadow 220ms var(--ease);
 }
 
-.brand-dot::after {
+[data-signal="synced"] .brand-o {
+    border-color: var(--sync);
+    border-radius: 50%;
+    background: var(--sync);
+    box-shadow: 0 0 9px -1px var(--sync-glow);
+}
+
+/* Pulse ring — synced only. */
+.brand-o::after {
     content: "";
     position: absolute;
-    inset: -4px;
+    inset: -0.16em;
     border-radius: 50%;
-    border: 1px solid var(--accent);
+    border: 0.1em solid var(--sync);
+    opacity: 0;
+    pointer-events: none;
+}
+
+[data-signal="synced"] .brand-o::after {
     opacity: 0.6;
     animation: pulse 2s var(--ease) infinite;
 }
@@ -142,10 +298,16 @@ body {
 }
 
 .brand-name {
+    position: relative;
     margin: 0;
-    font-size: 16px;
+    font-family: var(--font-mono);
+    /* Bigger hero wordmark so the "o" seal reads as part of the lockup. */
+    font-size: 19px;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
+    line-height: 1.05;
+    /* Hard digital jitter on open — the wordmark "locks in" like a signal. */
+    animation: signal-lock 480ms steps(1, end) both;
 }
 
 .brand-tagline {
@@ -157,6 +319,7 @@ body {
 /* ---------------------------------------------------------------- Sections */
 .section-title {
     margin: 0 0 10px;
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -164,29 +327,52 @@ body {
     color: var(--text-faint);
 }
 
+/* Bracketed mono labels — the arcade/telemetry "[ LABEL ]" cue. Decorative
+ * punctuation only (no copy/i18n touched). */
+.section-title::before {
+    content: "[";
+    margin-right: 0.5ch;
+    color: var(--sync-strong);
+}
+
+.section-title::after {
+    content: "]";
+    margin-left: 0.5ch;
+    color: var(--sync-strong);
+}
+
 /* ---------------------------------------------------------------- Mode cards */
 .mode-cards {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }
 
 .mode-card {
     position: relative;
+    isolation: isolate;
     display: flex;
     align-items: center;
     gap: 14px;
     width: 100%;
     text-align: left;
     padding: 13px 14px;
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     border-radius: var(--radius);
     background: var(--surface);
     color: inherit;
     cursor: pointer;
     font-family: inherit;
+    animation: fade 300ms var(--ease) both;
     transition: border-color 160ms var(--ease), background 160ms var(--ease), transform 120ms var(--ease);
 }
+
+.mode-card:nth-child(1) { animation-delay: 40ms; }
+.mode-card:nth-child(2) { animation-delay: 90ms; }
+.mode-card:nth-child(3) { animation-delay: 140ms; }
+.mode-card:nth-child(4) { animation-delay: 190ms; }
+.mode-card:nth-child(5) { animation-delay: 240ms; }
+.mode-card:nth-child(6) { animation-delay: 290ms; }
 
 .mode-card:hover {
     border-color: var(--text-faint);
@@ -197,10 +383,13 @@ body {
     transform: scale(0.99);
 }
 
+/* Selected = synced: the card locks to live-red and pops hard off a solid red
+ * offset shadow — part sticker lift, part broadcast chroma-ghost. */
 .mode-card[aria-checked="true"] {
-    border-color: var(--accent);
-    background: linear-gradient(180deg, var(--accent-soft), transparent 140%);
-    box-shadow: 0 0 0 1px var(--accent), 0 8px 24px -12px var(--accent-glow);
+    border-color: var(--sync);
+    background: linear-gradient(180deg, var(--sync-soft), transparent 140%);
+    box-shadow: 0 0 0 2px var(--sync), 7px 7px 0 0 var(--sync-ghost);
+    transform: translate(-2px, -2px);
 }
 
 .mode-icon {
@@ -211,18 +400,62 @@ body {
     place-items: center;
     border-radius: 50%;
     background: var(--surface-3);
-    color: var(--text-dim);
+    /* Raw signal at rest — the pixel glyph reads in degraded gray. */
+    color: var(--degraded);
     transition: background 160ms var(--ease), color 160ms var(--ease);
 }
 
 .mode-card[aria-checked="true"] .mode-icon {
-    background: var(--accent);
+    background: var(--sync);
     color: #fff;
 }
 
-.mode-icon svg {
+/* Degraded → sharp morph. The pixel (Pixelarticons) and clean (Lucide) glyphs
+ * are stacked; at rest the pixel reads sharp and the vector waits blurred +
+ * oversized. On hover, keyboard focus, or when this is the selected/synced mode,
+ * the pixel defocuses out while the vector snaps in with a slight overshoot —
+ * "focus arriving", not "figure swap". Only transform/opacity/filter animate. */
+.mode-icon .ico {
+    position: relative;
     width: 20px;
     height: 20px;
+}
+
+.mode-icon .ico .pixel,
+.mode-icon .ico .clean {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 260ms var(--ease), filter 260ms var(--ease), transform 260ms var(--spring);
+}
+
+.mode-icon .ico .pixel {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+}
+
+.mode-icon .ico .clean {
+    opacity: 0;
+    filter: blur(5px);
+    transform: scale(1.12);
+}
+
+.mode-card:hover .ico .pixel,
+.mode-card:focus-visible .ico .pixel,
+.mode-card[aria-checked="true"] .ico .pixel {
+    opacity: 0;
+    filter: blur(2px);
+    transform: scale(0.9);
+}
+
+.mode-card:hover .ico .clean,
+.mode-card:focus-visible .ico .clean,
+.mode-card[aria-checked="true"] .ico .clean {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
 }
 
 .mode-body {
@@ -233,7 +466,8 @@ body {
 }
 
 .mode-name {
-    font-size: 14px;
+    font-family: var(--font-mono);
+    font-size: 13px;
     font-weight: 600;
 }
 
@@ -253,10 +487,12 @@ body {
     font-weight: 500;
     color: var(--text-faint);
     white-space: normal;
+    /* Connection figures (Mbps) read as telemetry — mono, tabular. */
+    font-variant-numeric: tabular-nums;
 }
 
 .mode-card[aria-checked="true"] .mode-conn {
-    color: var(--accent-strong);
+    color: var(--sync-strong);
 }
 
 .conn-icon {
@@ -271,19 +507,27 @@ body {
     height: 14px;
 }
 
+/* Buffer telemetry badge — degraded gray until this mode is the synced one. */
 .mode-gain {
     display: inline-flex;
     align-items: center;
     align-self: flex-start;
     gap: 5px;
     margin-top: 8px;
-    padding: 3px 10px 3px 7px;
-    border-radius: 999px;
-    font-size: 11px;
+    padding: 3px 9px 3px 7px;
+    /* Squared telemetry tag (not a pill) — reads like an arcade [ … ] readout. */
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
     font-weight: 700;
-    background: var(--accent-soft);
-    color: var(--accent-strong);
+    background: var(--degraded-soft);
+    color: var(--degraded-strong);
     font-variant-numeric: tabular-nums;
+}
+
+.mode-card[aria-checked="true"] .mode-gain:not(.is-none) {
+    background: var(--sync-soft);
+    color: var(--sync-strong);
 }
 
 .mode-gain.is-none {
@@ -319,12 +563,12 @@ body {
     height: 12px;
     opacity: 0;
     transform: scale(0.4);
-    transition: opacity 160ms var(--ease), transform 160ms var(--ease);
+    transition: opacity 160ms var(--ease), transform 220ms var(--spring);
 }
 
 .mode-card[aria-checked="true"] .mode-check {
-    border-color: var(--accent);
-    background: var(--accent);
+    border-color: var(--sync);
+    background: var(--sync);
 }
 
 .mode-card[aria-checked="true"] .mode-check svg {
@@ -349,8 +593,8 @@ body {
     border-radius: var(--radius);
     background: var(--surface);
     color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
+    font-family: var(--font-mono);
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: background 160ms var(--ease), border-color 160ms var(--ease);
@@ -359,6 +603,18 @@ body {
 .advanced-toggle:hover {
     background: var(--surface-2);
     border-color: var(--text-faint);
+}
+
+.advanced-label::before {
+    content: "[";
+    margin-right: 0.5ch;
+    color: var(--sync-strong);
+}
+
+.advanced-label::after {
+    content: "]";
+    margin-left: 0.5ch;
+    color: var(--sync-strong);
 }
 
 .chevron {
@@ -437,12 +693,14 @@ body {
     cursor: pointer;
 }
 
+/* Indicator switches ride the same axis: off = degraded gray, on = live-red
+ * with a faint LED glow. The thumb slides with a slight spring overshoot. */
 .switch .track {
     position: absolute;
     inset: 0;
     border-radius: 999px;
     background: var(--surface-3);
-    transition: background 180ms var(--ease);
+    transition: background 180ms var(--ease), box-shadow 180ms var(--ease);
 }
 
 .switch .thumb {
@@ -454,11 +712,12 @@ body {
     border-radius: 50%;
     background: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    transition: transform 180ms var(--ease);
+    transition: transform 220ms var(--spring);
 }
 
 .switch input:checked~.track {
-    background: var(--accent);
+    background: var(--sync);
+    box-shadow: 0 0 8px -2px var(--sync-glow);
 }
 
 .switch input:checked~.thumb {
@@ -466,7 +725,11 @@ body {
 }
 
 .switch input:focus-visible~.track {
-    box-shadow: 0 0 0 3px var(--accent-soft);
+    box-shadow: 0 0 0 3px var(--sync-soft);
+}
+
+.switch input:checked:focus-visible~.track {
+    box-shadow: 0 0 0 3px var(--sync-soft), 0 0 8px -2px var(--sync-glow);
 }
 
 /* ---------------------------------------------------------------- Footer */
@@ -481,7 +744,7 @@ body {
     overflow: hidden;
     padding: 9px 18px;
     border: 1px solid var(--border);
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: var(--surface);
     color: var(--text-dim);
     font-family: inherit;
@@ -489,24 +752,34 @@ body {
     font-weight: 600;
     cursor: pointer;
     user-select: none;
-    transition: color 160ms var(--ease), border-color 160ms var(--ease);
+    box-shadow: 3px 3px 0 0 var(--pop);
+    transition: color 160ms var(--ease), border-color 160ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
 }
 
 .reset:hover {
-    color: var(--accent-strong);
-    border-color: var(--accent);
+    color: var(--sync-strong);
+    border-color: var(--sync);
+}
+
+/* Presses into its shadow while you hold it down to reset. */
+.reset:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--pop);
 }
 
 .reset-label {
     position: relative;
     z-index: 1;
+    /* Slight tracking so the "hold to reset" label reads as a control tally. */
+    letter-spacing: 0.02em;
 }
 
+/* The hold gauge "charges" in live-red, then confirms in ok-green on release. */
 .reset-fill {
     position: absolute;
     inset: 0;
     width: 0;
-    background: var(--accent);
+    background: var(--sync);
     opacity: 0.25;
     z-index: 0;
 }
@@ -536,15 +809,16 @@ body {
     gap: 7px;
     height: 38px;
     padding: 0 15px;
-    border-radius: 999px;
-    border: 1px solid var(--warn);
-    background: rgba(255, 196, 61, 0.14);
-    color: var(--warn);
+    border-radius: var(--radius-sm);
+    border: 0;
+    background: var(--warn);
+    color: #241d0d;
     font-family: inherit;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
-    transition: background 160ms var(--ease), transform 120ms var(--ease);
+    box-shadow: 4px 4px 0 0 var(--pop);
+    transition: background 160ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
 }
 
 .coffee-label {
@@ -552,31 +826,130 @@ body {
 }
 
 .coffee-toggle:hover {
-    background: rgba(255, 196, 61, 0.24);
+    background: #ffd25e;
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 0 var(--pop);
 }
 
-.coffee-toggle:active {
-    transform: scale(0.96);
-}
-
+.coffee-toggle:active,
 .coffee-toggle[aria-expanded="true"] {
-    background: rgba(255, 196, 61, 0.24);
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 0 var(--pop);
 }
 
 .coffee-toggle svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+}
+
+/* Steam rising off the coffee — clearly drifts up, grows and fades, then loops. */
+@keyframes steam {
+    0% {
+        opacity: 0;
+        transform: translateY(3px) scaleY(0.7);
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-4px) scaleY(1.2);
+    }
+}
+
+.coffee-toggle svg .steam {
+    transform-box: fill-box;
+    transform-origin: bottom center;
+    animation: steam 1.8s var(--ease) infinite;
 }
 
 /* ---------------------------------------------------------------- Support CTA (always visible) */
+/* Speech balloon: reads as the lonely "Apoiar" button (top-right) talking, and
+ * pops hard out of it on open, then nudges now and then for attention. The tail
+ * is a solid rotated square whose inner half merges into the balloon (same solid
+ * fill) — so it composes as one shape, not a floating triangle. */
 .support-cta {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 14px;
-    border: 1px solid rgba(255, 196, 61, 0.38);
+    padding: 13px 15px;
+    border: 2px solid var(--warn);
     border-radius: var(--radius);
-    background: linear-gradient(180deg, rgba(255, 196, 61, 0.13), rgba(255, 196, 61, 0.04));
+    background: var(--cta-bg);
+    box-shadow: 3px 3px 0 0 var(--pop);
+    transform-origin: top right;
+    animation:
+        balloon-pop 560ms var(--spring) 300ms both,
+        balloon-nudge 7s var(--ease) 2.6s infinite;
+}
+
+/* Tail — two stacked triangles: the outer carries the amber border; the inner
+ * (fill colour) sits 2px INTO the balloon, swallowing the top-border seam so the
+ * tail reads as one continuous shape instead of a floating/inward notch. */
+.support-cta::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    right: 40px;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 8px solid var(--warn);
+}
+
+.support-cta::after {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 42px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid var(--cta-bg);
+}
+
+@keyframes balloon-pop {
+    0% {
+        opacity: 0;
+        transform: scale(0.2) translate(8px, -12px);
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    62% {
+        transform: scale(1.06) translate(0, 0);
+    }
+
+    80% {
+        transform: scale(0.985);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Periodic attention nudge — a gentle, elegant sway with a soft breath, around
+ * the tail, then settles. */
+@keyframes balloon-nudge {
+    0%, 13%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    3% {
+        transform: rotate(-1.6deg) scale(1.015);
+    }
+
+    6.5% {
+        transform: rotate(1.1deg) scale(1.008);
+    }
+
+    9.5% {
+        transform: rotate(-0.5deg);
+    }
 }
 
 .support-cta-text {
@@ -588,26 +961,32 @@ body {
     color: var(--text);
 }
 
+/* "Sticker pop": rests lifted off a hard offset shadow, lifts a touch more on
+ * hover, and presses flat into the shadow on click. */
 .support-cta-btn {
     flex: none;
     padding: 9px 15px;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: var(--accent);
     color: #fff;
     font-family: inherit;
     font-size: 12.5px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 150ms var(--ease), transform 120ms var(--ease);
+    box-shadow: 3px 3px 0 0 var(--pop);
+    transition: background 150ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
 }
 
 .support-cta-btn:hover {
     background: var(--accent-strong);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 var(--pop);
 }
 
 .support-cta-btn:active {
-    transform: scale(0.96);
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--pop);
 }
 
 .support {
@@ -640,36 +1019,73 @@ body {
 }
 
 .support-amounts {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 8px;
 }
 
+/* "Outro" (custom amount) gets its own full-width row under the four drinks. */
+.support-chip--custom {
+    grid-column: 1 / -1;
+}
+
+/* Amount chips as chunky sticker tiles — coffee glyph stacked over the value,
+ * squarer and bigger, and they pop off a shadow (red when selected/live). */
 .support-chip {
-    flex: 1 1 auto;
-    min-width: 54px;
-    padding: 8px 10px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 8px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
     background: var(--surface-2);
     color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
     text-align: center;
     cursor: pointer;
     font-variant-numeric: tabular-nums;
-    transition: border-color 150ms var(--ease), background 150ms var(--ease), color 150ms var(--ease);
+    box-shadow: 0 0 0 0 var(--pop);
+    transition: border-color 150ms var(--ease), background 150ms var(--ease), color 150ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
+}
+
+/* Coffee glyph inside each amount chip — grows fancier with the tip. */
+.chip-ico {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+}
+
+.chip-ico svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
+.chip-ico:empty {
+    display: none;
 }
 
 .support-chip:hover {
     border-color: var(--text-faint);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 0 var(--pop);
+}
+
+.support-chip:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--pop);
 }
 
 .support-chip[aria-checked="true"] {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-    color: var(--accent-strong);
+    border-color: var(--sync);
+    background: var(--sync-soft);
+    color: var(--sync-strong);
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 0 var(--sync-ghost);
 }
 
 .support-custom {
@@ -689,11 +1105,32 @@ body {
     box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
+/* PIX area as a tear-off coupon: a solid rounded card with ONE dashed perforation
+ * line and a single clean semicircle notch punched into each side ON that line
+ * (via mask, so the border curves around the bite) — the classic ticket read
+ * (à la the 荷包 / LÉONE refs). BR-only (intl links replace it). */
 .support-pix {
+    --tear: 70px;
+    /* distance of the perforation line from the coupon bottom */
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    padding: 16px 14px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background:
+        repeating-linear-gradient(90deg, var(--text-faint) 0 4px, transparent 4px 9px) center bottom var(--tear) / calc(100% - 30px) 2px no-repeat,
+        var(--surface-2);
+    -webkit-mask:
+        radial-gradient(circle 11px at left calc(100% - var(--tear)), #0000 97%, #000) no-repeat,
+        radial-gradient(circle 11px at right calc(100% - var(--tear)), #0000 97%, #000) no-repeat;
+    mask:
+        radial-gradient(circle 11px at left calc(100% - var(--tear)), #0000 97%, #000) no-repeat,
+        radial-gradient(circle 11px at right calc(100% - var(--tear)), #0000 97%, #000) no-repeat;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
 }
 
 .support-qr {
@@ -713,7 +1150,8 @@ body {
 }
 
 .support-scan {
-    margin: 0;
+    /* Extra room below so the text clears the perforation line under it. */
+    margin: 0 0 16px;
     font-size: 11.5px;
     color: var(--text-faint);
     text-align: center;
@@ -730,12 +1168,20 @@ body {
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 150ms var(--ease), color 150ms var(--ease), border-color 150ms var(--ease);
+    box-shadow: 3px 3px 0 0 var(--pop);
+    transition: background 150ms var(--ease), color 150ms var(--ease), border-color 150ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
 }
 
 .support-copy:hover {
     background: var(--accent);
     color: #fff;
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 var(--pop);
+}
+
+.support-copy:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--pop);
 }
 
 .support-copy.copied {
@@ -763,15 +1209,19 @@ body {
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: filter 150ms var(--ease), transform 80ms var(--ease);
+    box-shadow: 3px 3px 0 0 var(--pop);
+    transition: filter 150ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
 }
 
 .support-link:hover {
     filter: brightness(1.07);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 var(--pop);
 }
 
 .support-link:active {
-    transform: translateY(1px);
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--pop);
 }
 
 .support-link-icon {
@@ -825,6 +1275,24 @@ body {
     color: var(--text-dim);
 }
 
+/* ---------------------------------------------------------------- Focus */
+/* One on-brand focus ring across every custom control — the live-red signal,
+ * offset so it clears rounded corners and the reset's clipped fill. Keyboard
+ * only (:focus-visible), so pointer use stays clean. */
+.mode-card:focus-visible,
+.advanced-toggle:focus-visible,
+.coffee-toggle:focus-visible,
+.reset:focus-visible,
+.support-cta-btn:focus-visible,
+.support-chip:focus-visible,
+.support-copy:focus-visible,
+.support-link:focus-visible,
+.support-mini:focus-visible,
+.go-live-action:focus-visible {
+    outline: 2px solid var(--sync);
+    outline-offset: 2px;
+}
+
 /* ---------------------------------------------------------------- Quick Actions */
 .quick-actions {
     display: flex;
@@ -871,6 +1339,14 @@ body {
     *::before,
     *::after {
         animation-duration: 0.001ms !important;
+        animation-delay: 0ms !important;
         transition-duration: 0.001ms !important;
+    }
+
+    /* Morph degrades to a plain opacity crossfade — no blur or scale motion. */
+    .mode-icon .ico .pixel,
+    .mode-icon .ico .clean {
+        filter: none !important;
+        transform: none !important;
     }
 }

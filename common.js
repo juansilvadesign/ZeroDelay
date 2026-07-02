@@ -36,24 +36,24 @@ export const label = {
     modeAutoGain: msg('modeAutoGain', 'adaptável'),
 
     modeSuave: msg('modeSuave', 'Suave'),
-    modeSuaveDesc: msg('modeSuaveDesc', 'Mantém bastante buffer e reduz a latência com folga. Ideal para internet fraca ou instável.'),
+    modeSuaveDesc: msg('modeSuaveDesc', 'Mais folga de buffer para estabilidade, ainda bem perto do ao vivo. Boa para internet instável.'),
     modeSuaveConn: msg('modeSuaveConn', 'Internet lenta ou instável (~3+ Mbps)'),
-    modeSuaveGain: msg('modeSuaveGain', 'buffer ~8s'),
+    modeSuaveGain: msg('modeSuaveGain', 'buffer ~5s'),
 
     modeBalanced: msg('modeBalanced', 'Equilibrado'),
-    modeBalancedDesc: msg('modeBalancedDesc', 'Reduz bem a latência mantendo ~6s de buffer. Bom meio-termo.'),
+    modeBalancedDesc: msg('modeBalancedDesc', 'Bom meio-termo: latência baixa mantendo ~4s de buffer.'),
     modeBalancedConn: msg('modeBalancedConn', 'Internet comum (~5–10 Mbps)'),
-    modeBalancedGain: msg('modeBalancedGain', 'buffer ~6s'),
+    modeBalancedGain: msg('modeBalancedGain', 'buffer ~4s'),
 
     modeAggressive: msg('modeAggressive', 'Próximo'),
-    modeAggressiveDesc: msg('modeAggressiveDesc', 'Chega mais perto do ao vivo, mantendo ~4,5s de buffer. Precisa de internet estável.'),
+    modeAggressiveDesc: msg('modeAggressiveDesc', 'Bem perto do ao vivo, com ~3s de buffer. Precisa de internet estável.'),
     modeAggressiveConn: msg('modeAggressiveConn', 'Internet estável (~15+ Mbps)'),
-    modeAggressiveGain: msg('modeAggressiveGain', 'buffer ~4,5s'),
+    modeAggressiveGain: msg('modeAggressiveGain', 'buffer ~3s'),
 
-    modeMin: msg('modeMin', 'Latência Mínima'),
-    modeMinDesc: msg('modeMinDesc', 'O mais perto possível do ao vivo, com só ~3,5s de buffer. Precisa de internet rápida e estável.'),
-    modeMinConn: msg('modeMinConn', 'Internet rápida e estável (~25+ Mbps)'),
-    modeMinGain: msg('modeMinGain', 'buffer ~3,5s'),
+    modeExtreme: msg('modeExtreme', 'Extremo'),
+    modeExtremeDesc: msg('modeExtremeDesc', 'No limite do ao vivo, com só ~2s de buffer. Só para internet muito rápida e estável — pode engasgar.'),
+    modeExtremeConn: msg('modeExtremeConn', 'Internet muito rápida e estável (~50+ Mbps)'),
+    modeExtremeGain: msg('modeExtremeGain', 'buffer ~2s'),
 
     // Player indicators
     sectionIndicators: msg('sectionIndicators', 'Indicadores no player'),
@@ -65,9 +65,9 @@ export const label = {
     reset: msg('reset', 'Restaurar padrões'),
     resetHint: msg('resetHint', 'Segure por 1 segundo para restaurar.'),
 
-    // Support / coffee
-    supportTitle: msg('supportTitle', 'Me pague um café'),
-    supportNote: msg('supportNote', 'Curtiu a extensão? Me ajude com um cafezinho via PIX.'),
+    // Support / beer (BR) — café/coffee stays in the non-pt locales
+    supportTitle: msg('supportTitle', 'Me pague uma cerveja'),
+    supportNote: msg('supportNote', 'Curtiu a extensão? Me ajude com uma cervejinha via PIX.'),
     supportCustom: msg('supportCustom', 'Outro'),
     supportCustomPlaceholder: msg('supportCustomPlaceholder', 'Valor em R$'),
     supportScan: msg('supportScan', 'Aponte a câmera do app do seu banco, ou copie o código:'),
@@ -78,10 +78,10 @@ export const label = {
     supportBmc: msg('supportBmc', 'Buy me a coffee'),
 
     // Donation nudge (gentle, optional)
-    donateNudge: msg('donateNudge', 'Curtindo o ZeroDelay? Se ele te ajuda, considere apoiar com um café — é totalmente opcional. 🙂'),
+    donateNudge: msg('donateNudge', 'Curtindo o ZeroDelay? Se ele te ajuda, considere apoiar com uma cerveja — é totalmente opcional. 🙂'),
     donateLater: msg('donateLater', 'Lembrar depois'),
     donateOptOut: msg('donateOptOut', 'Não mostrar novamente'),
-    donateBannerText: msg('donateBannerText', 'Curtindo o ZeroDelay? Apoie com um café.'),
+    donateBannerText: msg('donateBannerText', 'Curtindo o ZeroDelay? Apoie com uma cerveja. 🍺'),
     donateBannerCta: msg('donateBannerCta', 'Apoiar'),
     donateBannerClose: msg('donateBannerClose', 'Fechar'),
 
@@ -92,7 +92,7 @@ export const label = {
 
     // Support — always-visible CTA
     supportBtn: msg('supportBtn', 'Apoiar'),
-    supportCtaText: msg('supportCtaText', 'Curtindo? Me ajuda com um cafezinho 🙏'),
+    supportCtaText: msg('supportCtaText', 'Curtindo? Me paga uma cervejinha 🍺'),
     supportCtaBtn: msg('supportCtaBtn', 'Apoiar via PIX'),
 
     // Player-indicator accessibility labels
@@ -257,7 +257,7 @@ export const presets = {
         enabled: true,
         playbackRate: 1.25,
         auto: false,
-        bufferTarget: 8.0,
+        bufferTarget: 5.0,
         skip: true,
         skipThreathold: 30.0,
     },
@@ -265,7 +265,7 @@ export const presets = {
         enabled: true,
         playbackRate: 1.25,
         auto: false,
-        bufferTarget: 6.0,
+        bufferTarget: 4.0,
         skip: true,
         skipThreathold: 30.0,
     },
@@ -273,22 +273,22 @@ export const presets = {
         enabled: true,
         playbackRate: 1.25,
         auto: false,
-        bufferTarget: 4.5,
+        bufferTarget: 3.0,
         skip: true,
         skipThreathold: 30.0,
     },
-    min: {
+    extreme: {
         enabled: true,
         playbackRate: 1.25,
         auto: false,
-        bufferTarget: 3.5,
+        bufferTarget: 2.0,
         skip: true,
         skipThreathold: 30.0,
     },
 };
 
 // Order shown in the UI, with display metadata.
-export const modeOrder = ['off', 'auto', 'suave', 'balanced', 'aggressive', 'min'];
+export const modeOrder = ['off', 'auto', 'suave', 'balanced', 'aggressive', 'extreme'];
 
 export const modeMeta = {
     off: { title: label.modeOff, desc: label.modeOffDesc, conn: label.modeOffConn, gain: label.modeOffGain },
@@ -296,7 +296,7 @@ export const modeMeta = {
     suave: { title: label.modeSuave, desc: label.modeSuaveDesc, conn: label.modeSuaveConn, gain: label.modeSuaveGain },
     balanced: { title: label.modeBalanced, desc: label.modeBalancedDesc, conn: label.modeBalancedConn, gain: label.modeBalancedGain },
     aggressive: { title: label.modeAggressive, desc: label.modeAggressiveDesc, conn: label.modeAggressiveConn, gain: label.modeAggressiveGain },
-    min: { title: label.modeMin, desc: label.modeMinDesc, conn: label.modeMinConn, gain: label.modeMinGain },
+    extreme: { title: label.modeExtreme, desc: label.modeExtremeDesc, conn: label.modeExtremeConn, gain: label.modeExtremeGain },
 };
 
 /**

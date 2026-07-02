@@ -31,13 +31,37 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Alterado
 
+- **Interface do popup repaginada** com a linguagem visual "degradado → nítido":
+  tipografia **Departure Mono** (self-hosted) em títulos e números; ícones de modo
+  que fazem *morph* de pixelado (**Pixelarticons**) para nítido (**Lucide**) no
+  hover/foco/seleção; paleta de sinal cinza↔vermelho espelhando o selo de "ao
+  vivo" do YouTube; o "o" de Zer**o**Delay como selo LIVE que morfa de pixel-art
+  para um disco vermelho ao sincronizar; sistema de "sticker" com sombra dura nos
+  botões; CTA de apoio como balão que sai do botão; área do PIX como cupom
+  destacável com um ícone de bebida por valor; e textura de scanline que some ao
+  sincronizar. Puramente visual — nenhuma mudança de comportamento, storage ou
+  chaves i18n. Fontes e ícones são vendorados localmente (sem CDN) e creditados no
+  `THIRD-PARTY-NOTICES.md` (Departure Mono — SIL OFL; Pixelarticons — MIT;
+  Lucide — ISC).
 - Maior resiliência do motor de catch-up.
 - Controle de catch-up **preditivo**: além do nível do buffer, o motor agora
   observa a *tendência* (a variação do buffer ao longo do tempo) e recua para
   `1.0x` de forma preventiva quando o buffer está drenando — mesmo ainda alto —
   reduzindo travamentos em redes instáveis (issue #12).
+- **Modos repaginados**: "Latência Mínima" vira **"Extremo"** (buffer ~2s) e os
+  demais ficam mais perto do ao vivo (Suave 8→5, Equilibrado 6→4, Próximo
+  4,5→3s). Sem novas chaves de storage.
+- **Tema cerveja no apoio (Brasil)**: no `pt-BR` o convite de doação usa
+  "cerveja"/"cervejinha" 🍺 (título, nota, CTA, nudge e banner) e ícones de
+  bebida (copo americano → lata → long neck → caneca); os demais idiomas seguem
+  café/coffee. Chips do PIX reorganizados em grade de 4 colunas com "Outro" em
+  linha própria. Ramificado por idioma, como o PIX × doação internacional.
 
 ### Corrigido
+
+- **Build**: a pasta `fonts/` (Departure Mono) passou a ser incluída no pacote
+  (Chrome e Firefox). Sem isso, a fonte ficava de fora do `.zip`/`dist` e a
+  tipografia da repaginação caía no fallback do sistema.
 
 - Ícones dos modos (e demais glifos SVG do popup) não apareciam — sobrava só o
   fundo circular. Os SVG inline sem `xmlns` caíam no namespace nulo ao serem

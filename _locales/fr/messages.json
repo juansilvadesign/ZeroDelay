@@ -42,49 +42,49 @@
       "message": "Doux"
    },
    "modeSuaveDesc": {
-      "message": "Garde beaucoup de tampon et réduit la latence avec de la marge. Idéal pour une connexion lente ou instable."
+      "message": "Plus de tampon pour la stabilité, tout en restant proche du direct. Bien pour une connexion instable."
    },
    "modeSuaveConn": {
       "message": "Connexion lente ou instable (~3+ Mbps)"
    },
    "modeSuaveGain": {
-      "message": "tampon ~8s"
+      "message": "tampon ~5s"
    },
    "modeBalanced": {
       "message": "Équilibré"
    },
    "modeBalancedDesc": {
-      "message": "Réduit bien la latence tout en gardant ~6s de tampon. Un bon compromis."
+      "message": "Un bon compromis : faible latence tout en gardant ~4s de tampon."
    },
    "modeBalancedConn": {
       "message": "Connexion moyenne (~5–10 Mbps)"
    },
    "modeBalancedGain": {
-      "message": "tampon ~6s"
+      "message": "tampon ~4s"
    },
    "modeAggressive": {
       "message": "Proche"
    },
    "modeAggressiveDesc": {
-      "message": "Se rapproche du direct en gardant ~4,5s de tampon. Nécessite une connexion stable."
+      "message": "Très proche du direct, avec ~3s de tampon. Nécessite une connexion stable."
    },
    "modeAggressiveConn": {
       "message": "Connexion stable (~15+ Mbps)"
    },
    "modeAggressiveGain": {
-      "message": "tampon ~4,5s"
+      "message": "tampon ~3s"
    },
-   "modeMin": {
-      "message": "Latence minimale"
+   "modeExtreme": {
+      "message": "Extrême"
    },
-   "modeMinDesc": {
-      "message": "Au plus près du direct, avec seulement ~3,5s de tampon. Nécessite une connexion rapide et stable."
+   "modeExtremeDesc": {
+      "message": "Au ras du direct, avec seulement ~2s de tampon. Uniquement pour une connexion très rapide et stable — peut saccader."
    },
-   "modeMinConn": {
-      "message": "Connexion rapide et stable (~25+ Mbps)"
+   "modeExtremeConn": {
+      "message": "Connexion très rapide et stable (~50+ Mbps)"
    },
-   "modeMinGain": {
-      "message": "tampon ~3,5s"
+   "modeExtremeGain": {
+      "message": "tampon ~2s"
    },
    "sectionIndicators": {
       "message": "Indicateurs du lecteur"

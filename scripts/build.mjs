@@ -30,6 +30,7 @@ const SHIP_DIRS = [
     '_locales',
     'icons',
     'vendor',
+    'fonts',
 ];
 
 function* walk(dir) {

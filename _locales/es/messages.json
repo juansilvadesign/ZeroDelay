@@ -42,49 +42,49 @@
       "message": "Suave"
    },
    "modeSuaveDesc": {
-      "message": "Mantiene bastante búfer y reduce la latencia con margen. Ideal para internet lenta o inestable."
+      "message": "Más búfer para estabilidad, aún muy cerca del directo. Buena para internet inestable."
    },
    "modeSuaveConn": {
       "message": "Internet lenta o inestable (~3+ Mbps)"
    },
    "modeSuaveGain": {
-      "message": "búfer ~8s"
+      "message": "búfer ~5s"
    },
    "modeBalanced": {
       "message": "Equilibrado"
    },
    "modeBalancedDesc": {
-      "message": "Reduce bien la latencia manteniendo ~6s de búfer. Un buen término medio."
+      "message": "Un buen término medio: baja latencia manteniendo ~4s de búfer."
    },
    "modeBalancedConn": {
       "message": "Internet promedio (~5–10 Mbps)"
    },
    "modeBalancedGain": {
-      "message": "búfer ~6s"
+      "message": "búfer ~4s"
    },
    "modeAggressive": {
       "message": "Cercano"
    },
    "modeAggressiveDesc": {
-      "message": "Se acerca más al vivo, manteniendo ~4.5s de búfer. Necesita internet estable."
+      "message": "Muy cerca del directo, con ~3s de búfer. Necesita internet estable."
    },
    "modeAggressiveConn": {
       "message": "Internet estable (~15+ Mbps)"
    },
    "modeAggressiveGain": {
-      "message": "búfer ~4.5s"
+      "message": "búfer ~3s"
    },
-   "modeMin": {
-      "message": "Latencia mínima"
+   "modeExtreme": {
+      "message": "Extremo"
    },
-   "modeMinDesc": {
-      "message": "Lo más cerca posible del vivo, con solo ~3.5s de búfer. Necesita internet rápida y estable."
+   "modeExtremeDesc": {
+      "message": "Justo en el borde del directo, con solo ~2s de búfer. Solo para internet muy rápida y estable — puede entrecortarse."
    },
-   "modeMinConn": {
-      "message": "Internet rápida y estable (~25+ Mbps)"
+   "modeExtremeConn": {
+      "message": "Internet muy rápida y estable (~50+ Mbps)"
    },
-   "modeMinGain": {
-      "message": "búfer ~3.5s"
+   "modeExtremeGain": {
+      "message": "búfer ~2s"
    },
    "sectionIndicators": {
       "message": "Indicadores del reproductor"

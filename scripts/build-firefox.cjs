@@ -30,6 +30,7 @@ const dirs = [
     '_locales',
     'icons',
     'vendor',
+    'fonts',
 ];
 
 function copyDir(src, dst) {

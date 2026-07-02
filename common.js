@@ -101,6 +101,9 @@ export const label = {
     a11yHealth: msg('a11yHealth', 'Saúde do buffer'),
     a11yEstimation: msg('a11yEstimation', 'Horário estimado para alcançar o ao vivo'),
     a11yCurrent: msg('a11yCurrent', 'Tempo atual (clique para copiar o link)'),
+
+    // Go-live quick action (popup button) — reuses the shortcut's i18n string.
+    goLiveBtn: msg('commandGoLiveDesc', 'Jump to live'),
 };
 
 // ---------------------------------------------------------------------------

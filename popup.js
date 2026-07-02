@@ -108,6 +108,7 @@ function renderStatic() {
     $('#advanced-label').textContent = L.sectionIndicators;
     $('#reset-label').textContent = L.reset;
     $('#reset').title = L.resetHint;
+    $('#go-live-label').textContent = L.goLiveBtn;
 }
 
 function renderModes() {
@@ -427,6 +428,19 @@ function refresh() {
     for (const u of updaters) u();
 }
 
+function renderGoLive() {
+    const btn = $('#go-live-action');
+    btn.addEventListener('click', () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+            if (tabs[0]?.id != null) {
+                chrome.tabs.sendMessage(tabs[0].id, { type: 'go-live' });
+            }
+        });
+        btn.classList.add('active');
+        setTimeout(() => btn.classList.remove('active'), 500);
+    });
+}
+
 // --------------------------------------------------------------- Init
 (async function init() {
     // The markup is language-neutral; reflect the real UI language for
@@ -441,6 +455,7 @@ function refresh() {
     renderAdvancedToggle();
     renderReset();
     renderSupport();
+    renderGoLive();
     refresh();
 
     // Keep the UI in sync with changes made elsewhere while the popup is open

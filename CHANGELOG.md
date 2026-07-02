@@ -9,6 +9,7 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Adicionado
 
+- **Botão "Ir ao Vivo"**: Adicionado botão de ação rápida diretamente no popup para saltar manualmente para o tempo real da live.
 - **Idiomas**: interface em espanhol (`es`) e francês (`fr`), além de inglês e
   português. A doação segue o idioma (Buy me a coffee fora do pt-BR). O
   `check:locales` agora valida todos os locales contra o `en`.

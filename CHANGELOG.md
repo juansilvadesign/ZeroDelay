@@ -9,6 +9,14 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Corrigido
 
+- **Aceleração linear e contínua** no motor de catch-up. O controlador voltou a
+  reduzir a latência de forma suave e proporcional ao atraso (quanto mais atrás
+  do ao vivo, mais rápido, até 1.25x), em vez dos "tiros" de velocidade cheia
+  seguidos de longos descansos — que demoravam muito para diminuir o atraso. O
+  buffer agora é apenas uma trava de segurança suave (reduz a taxa gradualmente
+  ao se aproximar do piso de travamento), não mais um liga/desliga travado no
+  alvo de buffer. Removido o freio por tendência (`drain_ema`), que disparava no
+  dreno normal do próprio catch-up e o interrompia no meio.
 - Botão CTA **"Apoiar via PIX"** agora alterna o painel de doação (abre **e**
   fecha), em vez de apenas abrir — mesmo comportamento do botão "Apoiar".
 

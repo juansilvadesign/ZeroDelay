@@ -192,6 +192,13 @@ html.${ROOT_CLASS}.${FULL_CLASS} yt-live-chat-author-chip #author-name{color:#FF
   outline:2px solid #FFF6D5;outline-offset:2px;
 }
 
+/* NEVER cover a fullscreen video. The fixed overlays live under the page root, so
+   when YouTube makes html/ytd-app the fullscreen element they'd render on top of
+   the game — hide them entirely while fullscreen (two rules so an unknown pseudo
+   can't invalidate the other). */
+:fullscreen :is(.zd-hexa-bunting,.zd-hexa-boot,.zd-hexa-confetti,.zd-hexa-toast,.zd-hexa-invite){display:none!important;}
+:-webkit-full-screen :is(.zd-hexa-bunting,.zd-hexa-boot,.zd-hexa-confetti,.zd-hexa-toast,.zd-hexa-invite){display:none!important;}
+
 /* ===== Accessibility: honor reduced motion & forced colors ===== */
 @media (prefers-reduced-motion: reduce){
   html.${ROOT_CLASS}.${FULL_CLASS},html.${ROOT_CLASS}.${FULL_CLASS} body,html.${ROOT_CLASS}.${FULL_CLASS} ytd-app,

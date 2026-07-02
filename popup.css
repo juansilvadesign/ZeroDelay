@@ -769,6 +769,29 @@ body {
     height: 18px;
 }
 
+/* Steam rising off the coffee — the wisps drift up and fade, then loop. */
+@keyframes steam {
+    0% {
+        opacity: 0;
+        transform: translateY(2px);
+    }
+
+    35% {
+        opacity: 0.9;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-2px);
+    }
+}
+
+.coffee-toggle svg .steam {
+    transform-box: fill-box;
+    transform-origin: bottom center;
+    animation: steam 2.4s var(--ease) infinite;
+}
+
 /* ---------------------------------------------------------------- Support CTA (always visible) */
 /* Speech balloon: reads as the lonely "Apoiar" button (top-right) talking. The
  * tail is a small rotated square with two borders, poking up toward the button. */

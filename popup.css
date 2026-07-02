@@ -135,11 +135,11 @@ body {
     animation: rise 220ms var(--ease) both;
 }
 
-/* Pixel-dissolve scatter — real scattered square pixels (Bayer-dithered over a
- * gradient, drawn on a canvas by pixel-dissolve.js), thinning inward from the
- * top and bottom edges. Echoes the "degraded → sharp" motif; sits behind content
- * and clears when synced. Crisp blocks, so image-rendering: pixelated. */
-.app-scatter {
+/* Pixel-dissolve scatter — real scattered square pixels (Bayer-dithered, drawn
+ * per mode card by pixel-dissolve.js), sparse and subtle, hugging the left/right
+ * edges and thinning inward. Waves in when the popup opens. Behind card content
+ * (z-index -1 within the card's isolation), crisp blocks. */
+.card-scatter {
     position: absolute;
     inset: 0;
     z-index: -1;
@@ -147,12 +147,8 @@ body {
     height: 100%;
     pointer-events: none;
     image-rendering: pixelated;
-    opacity: 0.55;
-    transition: opacity 600ms var(--ease);
-}
-
-.app[data-signal="synced"] .app-scatter {
-    opacity: 0;
+    border-radius: inherit;
+    opacity: 0.5;
 }
 
 /* Signal texture: a faint CRT scanline over the whole popup while the engine is

@@ -168,6 +168,7 @@ function renderModes() {
             class: 'mode-card', type: 'button', role: 'radio', 'aria-checked': 'false',
             onclick: () => applyPreset(name),
         },
+            el('canvas', { class: 'card-scatter', 'aria-hidden': 'true' }),
             el('span', { class: 'mode-icon', html: ICONS[name] }),
             el('span', { class: 'mode-body' },
                 el('span', { class: 'mode-name', text: meta.title }),

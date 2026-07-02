@@ -128,6 +128,11 @@ export const label = {
     hexaInviteCta: msg('hexaInviteCta', 'Ativar'),
     hexaDismiss: msg('hexaDismiss', 'Agora não'),
     hexaActivated: msg('hexaActivated', 'Modo Hexa ativado'),
+
+    // MODO HEXA — popup controls
+    hexaSectionTitle: msg('hexaSectionTitle', 'Modo Hexa'),
+    hexaSuggestLabel: msg('hexaSuggestLabel', 'Sugerir nos jogos do Brasil ao vivo'),
+    hexaFullLabel: msg('hexaFullLabel', 'Tema completo no YouTube'),
 };
 
 // ---------------------------------------------------------------------------
@@ -180,6 +185,9 @@ export const lastModeKey = 'lastMode';
  * `storage` (engine ignores it) and `donateKeys` ("Restore defaults" leaves it).
  */
 export const hexaSuggestKey = 'hexaSuggest';
+
+/** MODO HEXA — optional "full theme" (broad page repaint). Default off. */
+export const hexaFullKey = 'hexaFull';
 
 /**
  * Write a one-shot "jump to live" signal to storage.

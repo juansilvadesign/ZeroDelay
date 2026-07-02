@@ -185,6 +185,15 @@
    "hexaActivated": {
       "message": "Mode Hexa activé"
    },
+   "hexaSectionTitle": {
+      "message": "Mode Hexa"
+   },
+   "hexaSuggestLabel": {
+      "message": "Proposer pendant les matchs du Brésil en direct"
+   },
+   "hexaFullLabel": {
+      "message": "Thème complet sur YouTube"
+   },
    "a11yPlaybackRate": {
       "message": "Vitesse de lecture"
    },

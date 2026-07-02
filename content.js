@@ -283,6 +283,7 @@ async function initHexa(common) {
     let override = null;     // null = auto (detect+offer, never auto-apply); true/false = forced
     let applied = false;     // current theme on/off state
     let suggest = true;      // preference: offer the opt-in invite on Brazil games
+    let full = false;        // preference: full-theme repaint (default off)
     let invitedVideo = null; // video_id already offered (invite shows once per video)
 
     const autoActive = () => meta.isLive && common.detectBrazilMatch(meta.title);
@@ -291,6 +292,7 @@ async function initHexa(common) {
         if (on === applied) return;
         applied = on;
         hexa.setActive(on, L.hexaActivated);
+        if (on) hexa.setFull(full);
     }
 
     // The theme ONLY turns on when explicitly chosen (opt-in). Auto-detection
@@ -337,17 +339,24 @@ async function initHexa(common) {
         }
     });
 
-    // Preference: whether to offer the invite at all (popup toggle writes this).
+    // Preferences (popup toggles write these): whether to offer the invite, and
+    // whether the full-theme repaint is on.
     if (extensionAlive()) {
-        chrome.storage.local.get([common.hexaSuggestKey], d => {
+        chrome.storage.local.get([common.hexaSuggestKey, common.hexaFullKey], d => {
             suggest = d[common.hexaSuggestKey] !== false; // default on
+            full = d[common.hexaFullKey] === true;        // default off
             reevaluate();
         });
     }
     chrome.storage.onChanged.addListener((changes, area) => {
-        if (area === 'local' && changes[common.hexaSuggestKey]) {
+        if (area !== 'local') return;
+        if (changes[common.hexaSuggestKey]) {
             suggest = changes[common.hexaSuggestKey].newValue !== false;
             reevaluate();
+        }
+        if (changes[common.hexaFullKey]) {
+            full = changes[common.hexaFullKey].newValue === true;
+            if (hexa && applied) hexa.setFull(full);
         }
     });
 

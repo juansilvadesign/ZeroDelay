@@ -200,6 +200,26 @@ function renderIndicators() {
     }
 }
 
+// MODO HEXA prefs live outside the engine `state`/presets, so this toggle reads
+// and writes chrome.storage.local directly (content.js reacts via onChanged).
+function buildHexaToggle(key, defaultOn) {
+    const input = el('input', { type: 'checkbox', onchange: () => chrome.storage.local.set({ [key]: input.checked }) });
+    const sw = el('label', { class: 'switch' }, input, el('span', { class: 'track' }), el('span', { class: 'thumb' }));
+    const set = v => { input.checked = (v == null) ? defaultOn : !!v; };
+    chrome.storage.local.get([key], d => set(d[key]));
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'local' && changes[key]) set(changes[key].newValue);
+    });
+    return sw;
+}
+
+function renderHexa() {
+    $('#hexa-title').textContent = L.hexaSectionTitle;
+    const rows = $('#hexa-rows');
+    rows.append(buildRow({ label: L.hexaSuggestLabel, control: buildHexaToggle(common.hexaSuggestKey, true) }));
+    rows.append(buildRow({ label: L.hexaFullLabel, control: buildHexaToggle(common.hexaFullKey, false) }));
+}
+
 function renderAdvancedToggle() {
     const toggle = $('#advanced-toggle');
     const panel = $('#advanced-panel');
@@ -487,6 +507,7 @@ function refresh() {
     renderStatic();
     renderModes();
     renderIndicators();
+    renderHexa();
     renderAdvancedToggle();
     renderReset();
     renderSupport();

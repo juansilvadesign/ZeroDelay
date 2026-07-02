@@ -185,6 +185,15 @@
    "hexaActivated": {
       "message": "Modo Hexa activado"
    },
+   "hexaSectionTitle": {
+      "message": "Modo Hexa"
+   },
+   "hexaSuggestLabel": {
+      "message": "Sugerir en los partidos de Brasil en vivo"
+   },
+   "hexaFullLabel": {
+      "message": "Tema completo en YouTube"
+   },
    "a11yPlaybackRate": {
       "message": "Velocidad de reproducción"
    },

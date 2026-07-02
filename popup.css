@@ -976,6 +976,23 @@ body {
     color: var(--text-dim);
 }
 
+/* ---------------------------------------------------------------- Focus */
+/* One on-brand focus ring across every custom control — the live-red signal,
+ * offset so it clears rounded corners and the reset's clipped fill. Keyboard
+ * only (:focus-visible), so pointer use stays clean. */
+.mode-card:focus-visible,
+.advanced-toggle:focus-visible,
+.coffee-toggle:focus-visible,
+.reset:focus-visible,
+.support-cta-btn:focus-visible,
+.support-chip:focus-visible,
+.support-copy:focus-visible,
+.support-link:focus-visible,
+.support-mini:focus-visible {
+    outline: 2px solid var(--sync);
+    outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
 
     *,

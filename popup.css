@@ -251,9 +251,52 @@ body {
     color: #fff;
 }
 
-.mode-icon svg {
+/* Degraded → sharp morph. The pixel (Pixelarticons) and clean (Lucide) glyphs
+ * are stacked; at rest the pixel reads sharp and the vector waits blurred +
+ * oversized. On hover, keyboard focus, or when this is the selected/synced mode,
+ * the pixel defocuses out while the vector snaps in with a slight overshoot —
+ * "focus arriving", not "figure swap". Only transform/opacity/filter animate. */
+.mode-icon .ico {
+    position: relative;
     width: 20px;
     height: 20px;
+}
+
+.mode-icon .ico .pixel,
+.mode-icon .ico .clean {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 260ms var(--ease), filter 260ms var(--ease), transform 260ms var(--spring);
+}
+
+.mode-icon .ico .pixel {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+}
+
+.mode-icon .ico .clean {
+    opacity: 0;
+    filter: blur(5px);
+    transform: scale(1.12);
+}
+
+.mode-card:hover .ico .pixel,
+.mode-card:focus-visible .ico .pixel,
+.mode-card[aria-checked="true"] .ico .pixel {
+    opacity: 0;
+    filter: blur(2px);
+    transform: scale(0.9);
+}
+
+.mode-card:hover .ico .clean,
+.mode-card:focus-visible .ico .clean,
+.mode-card[aria-checked="true"] .ico .clean {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
 }
 
 .mode-body {
@@ -881,5 +924,12 @@ body {
     *::after {
         animation-duration: 0.001ms !important;
         transition-duration: 0.001ms !important;
+    }
+
+    /* Morph degrades to a plain opacity crossfade — no blur or scale motion. */
+    .mode-icon .ico .pixel,
+    .mode-icon .ico .clean {
+        filter: none !important;
+        transform: none !important;
     }
 }

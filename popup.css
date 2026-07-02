@@ -235,31 +235,52 @@ body {
 .brand-dot {
     position: relative;
     flex: none;
-    width: 11px;
-    height: 11px;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: 2px solid var(--degraded);
+    background: var(--surface);
+    display: grid;
+    place-items: center;
+    transition: border-color 220ms var(--ease), box-shadow 220ms var(--ease);
+}
+
+/* The LED inside the housing. */
+.brand-dot::before {
+    content: "";
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     background: var(--degraded);
-    box-shadow: 0 0 0 4px var(--degraded-soft);
     transition: background 220ms var(--ease), box-shadow 220ms var(--ease);
 }
 
+/* Pulse ring — synced only. Centred with margin (not transform) so the pulse
+ * scale animation doesn't fight the centring. */
 .brand-dot::after {
     content: "";
     position: absolute;
-    inset: -4px;
+    inset: 0;
+    margin: auto;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    border: 1px solid var(--degraded);
+    border: 2px solid var(--sync);
     opacity: 0;
 }
 
 [data-signal="synced"] .brand-dot {
+    border-color: var(--sync);
+    box-shadow: 0 0 12px -2px var(--sync-glow);
+}
+
+[data-signal="synced"] .brand-dot::before {
     background: var(--sync);
-    box-shadow: 0 0 0 4px var(--sync-soft), 0 0 10px -1px var(--sync-glow);
+    box-shadow: 0 0 8px 0 var(--sync-glow);
 }
 
 [data-signal="synced"] .brand-dot::after {
-    border-color: var(--sync);
-    opacity: 0.6;
+    opacity: 0.7;
     animation: pulse 2s var(--ease) infinite;
 }
 
@@ -835,31 +856,31 @@ body {
 }
 
 .coffee-toggle svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
 }
 
-/* Steam rising off the coffee — the wisps drift up and fade, then loop. */
+/* Steam rising off the coffee — clearly drifts up, grows and fades, then loops. */
 @keyframes steam {
     0% {
         opacity: 0;
-        transform: translateY(2px);
+        transform: translateY(3px) scaleY(0.7);
     }
 
-    35% {
-        opacity: 0.9;
+    30% {
+        opacity: 1;
     }
 
     100% {
         opacity: 0;
-        transform: translateY(-2px);
+        transform: translateY(-4px) scaleY(1.2);
     }
 }
 
 .coffee-toggle svg .steam {
     transform-box: fill-box;
     transform-origin: bottom center;
-    animation: steam 2.4s var(--ease) infinite;
+    animation: steam 1.8s var(--ease) infinite;
 }
 
 /* ---------------------------------------------------------------- Support CTA (always visible) */

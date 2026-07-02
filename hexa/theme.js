@@ -23,6 +23,8 @@ const ROOT_CLASS = 'zd-hexa';
 // OFF by default — the base theme stays narrow (player + masthead accent + the
 // branded nodes) to avoid noise and impersonating YouTube.
 const FULL_CLASS = 'zd-hexa-full';
+// Overshoot spring, same feel as the extension's popup (--spring).
+const SPRING = 'cubic-bezier(.2,.9,.25,1.18)';
 
 // Brazil flag palette. Yellow is used for FILLS/graphics only (never body text
 // — #FFDF00 on light is unreadable); accent text uses the softer canary #FFE44D.
@@ -93,7 +95,7 @@ html.${ROOT_CLASS}.${FULL_CLASS} yt-live-chat-author-chip #author-name{color:#FF
   display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;
   border:1px solid #FFDF00;border-radius:999px;background:#02391C;color:#FFE44D;
   font:700 11px/1 Roboto,"Segoe UI",system-ui,sans-serif;letter-spacing:.4px;
-  white-space:nowrap;vertical-align:middle;animation:zd-hexa-pop .3s ease both;
+  white-space:nowrap;vertical-align:middle;animation:zd-hexa-pop .34s ${SPRING} both;
 }
 .zd-hexa-badge .zd-hexa-stars{color:#FFDF00;letter-spacing:1px;}
 .zd-hexa-badge--masthead{margin:0 10px;align-self:center;}
@@ -105,17 +107,17 @@ html.${ROOT_CLASS}.${FULL_CLASS} yt-live-chat-author-chip #author-name{color:#FF
   background:linear-gradient(#FFDF00,#F5C400);
   color:#04140A;font:800 12px/1 Roboto,system-ui,sans-serif;letter-spacing:.5px;
   box-shadow:0 2px 8px rgba(0,0,0,.45);opacity:.85;
-  transition:opacity .15s ease,transform .15s ease;animation:zd-hexa-pop .3s ease both;
+  transition:opacity .15s ease,transform .18s ${SPRING};animation:zd-hexa-pop .34s ${SPRING} both;
 }
-.zd-hexa-gol:hover{opacity:1;transform:translateY(-1px);}
-.zd-hexa-gol:active{transform:translateY(0) scale(.96);}
+.zd-hexa-gol:hover{opacity:1;transform:translateY(-2px);}
+.zd-hexa-gol:active{transform:translateY(0) scale(.95);}
 .zd-hexa-gol:focus-visible{outline:2px solid #FFF6D5;outline-offset:2px;}
 .zd-hexa-toast{
   position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);
   z-index:2147483646;display:flex;align-items:center;gap:8px;padding:11px 17px;
   border-radius:999px;background:#02391C;border:1px solid #FFDF00;color:#FFF6D5;
   font:700 13px/1 Roboto,system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.5);
-  opacity:0;transition:opacity .3s ease,transform .3s ease;
+  opacity:0;transition:opacity .3s ease,transform .38s ${SPRING};
 }
 .zd-hexa-toast.zd-hexa-in{opacity:1;transform:translateX(-50%) translateY(0);}
 .zd-hexa-confetti{position:fixed;inset:0;z-index:2147483645;pointer-events:none;overflow:hidden;animation:zd-hexa-resolve .4s ease both;}
@@ -157,7 +159,7 @@ html.${ROOT_CLASS}.${FULL_CLASS} yt-live-chat-author-chip #author-name{color:#FF
   background:#02391C;border:1px solid #FFDF00;color:#FFF6D5;
   font:600 13px/1.35 Roboto,"Segoe UI",system-ui,sans-serif;
   box-shadow:0 10px 30px rgba(0,0,0,.55);
-  opacity:0;transition:opacity .3s ease,transform .3s ease;
+  opacity:0;transition:opacity .3s ease,transform .38s ${SPRING};
 }
 .zd-hexa-invite.zd-hexa-in{opacity:1;transform:translateX(-50%) translateY(0);}
 .zd-hexa-invite-msg{flex:1 1 170px;min-width:0;}
@@ -181,6 +183,7 @@ html.${ROOT_CLASS}.${FULL_CLASS} yt-live-chat-author-chip #author-name{color:#FF
   html.${ROOT_CLASS}.${FULL_CLASS} #masthead-container,html.${ROOT_CLASS}.${FULL_CLASS} ytd-masthead{transition:none!important;}
   .zd-hexa-badge,.zd-hexa-gol,.zd-hexa-toast{animation:none!important;}
   html.${ROOT_CLASS} #masthead-container::after{animation:none!important;}
+  .zd-hexa-toast{transition:none!important;}
   .zd-hexa-invite{transition:none!important;opacity:1!important;transform:translateX(-50%)!important;}
   .zd-hexa-gol,.zd-hexa-confetti,.zd-hexa-boot{display:none!important;} /* no confetti/boot -> hide trigger */
 }

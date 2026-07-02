@@ -99,7 +99,7 @@ license text travels with it in [`fonts/OFL.txt`](fonts/OFL.txt).
 The pixel glyphs stacked under each mode icon (the low-quality/degraded state of
 the "degraded → sharp" morph) are individual SVGs from **Pixelarticons** by
 **Gerrit Halfmann**, inlined in `popup.js` (`ICONS`). Only the glyphs actually
-used are vendored: `power`, `sparkle`, `shield`, `scale`, `forward`, `zap`.
+used are vendored: `power`, `sparkle`, `shield`, `speed-medium`, `arrow-bar-right`, `zap`.
 
 > https://github.com/halfmage/pixelarticons
 
@@ -134,7 +134,7 @@ SOFTWARE.
 The clean vector glyphs (the sharp/synced state of the morph, plus the single
 support/indicator icons) are individual SVGs from **Lucide**, inlined in
 `popup.js` (`ICONS`). Only the glyphs actually used are vendored: `power`,
-`sparkles`, `shield`, `scale`, `fast-forward`, `zap`, `check`, `wifi`,
+`sparkles`, `shield`, `gauge`, `arrow-right-to-line`, `zap`, `check`, `wifi`,
 `sliders-horizontal`, `coffee`.
 
 > https://github.com/lucide-icons/lucide

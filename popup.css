@@ -48,6 +48,9 @@
     --degraded-strong: #b0b0b0;
     --degraded-soft: rgba(144, 144, 144, 0.14);
 
+    /* Faint CRT scanline texture — shown while degraded, cleared when synced. */
+    --scanline: rgba(255, 255, 255, 0.035);
+
     --ok: #2ba640;
     --warn: #ffc43d;
 
@@ -76,6 +79,7 @@
         --degraded: #6f6f6f;
         --degraded-strong: #505050;
         --degraded-soft: rgba(96, 96, 96, 0.10);
+        --scanline: rgba(0, 0, 0, 0.045);
     }
 }
 
@@ -105,6 +109,7 @@ body {
 }
 
 .app {
+    position: relative;
     width: 100%;
     min-width: 340px;
     max-width: 440px;
@@ -113,6 +118,24 @@ body {
     flex-direction: column;
     gap: 18px;
     animation: rise 220ms var(--ease) both;
+}
+
+/* Signal texture: a faint CRT scanline over the whole popup while the engine is
+ * idle/degraded, clearing to clean HD once a mode is syncing. Purely decorative
+ * (pointer-events: none), driven by the same data-signal hook as the seal. */
+.app::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, var(--scanline) 0 1px, transparent 1px 3px);
+    opacity: 1;
+    transition: opacity 500ms var(--ease);
+}
+
+.app[data-signal="synced"]::after {
+    opacity: 0;
 }
 
 @keyframes rise {

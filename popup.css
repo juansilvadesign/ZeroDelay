@@ -1090,39 +1090,34 @@ body {
     box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
-/* PIX area styled as a tear-off coupon: dashed perforation + punched side
- * notches. The notch circles are painted in the panel colour so they read as
- * cut-outs. Only shown for Brazil (the intl links replace it elsewhere). */
+/* PIX area as a real tear-off coupon: a solid border whose left/right edges are
+ * punched with a repeating row of notches (mask), plus an inset dashed frame —
+ * a "ticket within a ticket". Only shown for Brazil (intl links replace it). */
 .support-pix {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 14px;
-    border: 1.5px dashed var(--border);
+    gap: 12px;
+    padding: 16px 14px;
+    border: 2px solid var(--border);
     border-radius: var(--radius-sm);
     background: var(--surface-2);
+    -webkit-mask:
+        radial-gradient(circle 5px at left, #0000 96%, #000) 0 0 / 100% 16px repeat-y,
+        radial-gradient(circle 5px at right, #0000 96%, #000) 0 0 / 100% 16px repeat-y;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
 }
 
-.support-pix::before,
-.support-pix::after {
+/* Inset dashed frame — the classic coupon double edge. */
+.support-pix::before {
     content: "";
     position: absolute;
-    top: 50%;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--surface);
-    transform: translateY(-50%);
-}
-
-.support-pix::before {
-    left: -8px;
-}
-
-.support-pix::after {
-    right: -8px;
+    inset: 5px;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    pointer-events: none;
 }
 
 .support-qr {

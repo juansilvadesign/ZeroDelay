@@ -10,12 +10,6 @@ import * as common from './common.js';
 const BADGE_TEXT = '•';
 const BADGE_COLOR = '#ff2d52';
 
-function ensureInstalledAt() {
-    chrome.storage.local.get(['donateInstalledAt'], d => {
-        if (!d.donateInstalledAt) chrome.storage.local.set({ donateInstalledAt: Date.now() });
-    });
-}
-
 function evalBadge() {
     chrome.storage.local.get(common.donateKeys, d => {
         if (common.donateEligible(d, Date.now())) {
@@ -28,7 +22,7 @@ function evalBadge() {
 }
 
 function boot() {
-    ensureInstalledAt();
+    common.ensureInstalledAt();
     chrome.alarms.create('donate-eval', { periodInMinutes: 30 });
     evalBadge();
 }

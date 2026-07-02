@@ -86,20 +86,6 @@ const updaters = [];          // fn() -> sync a control's display
 const modeCards = {};         // mode name -> card element
 let rovingModes = null;       // wireRadiogroup roving-tabindex setter for modes
 
-function resolve(d) {
-    return {
-        enabled: common.value(d.enabled, common.defaultEnabled),
-        playbackRate: common.limitValue(d.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate),
-        showPlaybackRate: common.value(d.showPlaybackRate, common.defaultShowPlaybackRate),
-        showLatency: common.value(d.showLatency, common.defaultShowLatency),
-        showHealth: common.value(d.showHealth, common.defaultShowHealth),
-        auto: common.value(d.auto, common.defaultAuto),
-        bufferTarget: common.limitValue(d.bufferTarget, common.defaultBufferTarget, common.minBufferTarget, common.maxBufferTarget, common.stepBufferTarget),
-        skip: common.value(d.skip, common.defaultSkip),
-        skipThreathold: common.value(d.skipThreathold, common.defaultSkipThreathold),
-    };
-}
-
 function setOne(key, val) {
     state[key] = val;
     chrome.storage.local.set({ [key]: val });
@@ -122,7 +108,6 @@ function renderStatic() {
     $('#advanced-label').textContent = L.sectionIndicators;
     $('#reset-label').textContent = L.reset;
     $('#reset').title = L.resetHint;
-    $('#mode-warning').textContent = L.minWarning;
 }
 
 function renderModes() {
@@ -223,7 +208,7 @@ function renderReset() {
 function doReset() {
     // Only clear engine settings — keep the donation opt-out / snooze choices.
     chrome.storage.local.remove(common.storage);
-    state = resolve({});
+    state = common.resolveSettings({});
     refresh();
 }
 
@@ -255,7 +240,16 @@ function renderSupport() {
         // ----- PIX (Brazil): suggested amounts + "copia e cola" code + QR ----
         let amount = pix.PIX_DEFAULT_AMOUNT;
         const chips = {};
+        const chipEls = [];   // ordered, for the radiogroup keyboard wiring
         let copyTimer;
+
+        // Parse the custom field; 0 = open amount (payer types it in the bank
+        // app). Capped so a huge number can't push toFixed() into exponential
+        // notation and corrupt the EMV payload.
+        const readCustomAmount = () => {
+            const v = parseFloat(custom.value);
+            return (Number.isFinite(v) && v > 0 && v < 100000) ? v : 0;
+        };
 
         const selectChip = key => {
             for (const [k, c] of Object.entries(chips)) c.setAttribute('aria-checked', String(k === key));
@@ -290,6 +284,7 @@ function renderSupport() {
                 onclick: () => { amount = value; custom.hidden = true; selectChip(key); updatePix(); },
             }, 'R$ ' + value);
             chips[key] = chip;
+            chipEls.push(chip);
             amountsBox.append(chip);
         }
 
@@ -299,16 +294,18 @@ function renderSupport() {
                 custom.hidden = false;
                 custom.focus();
                 selectChip('custom');
-                const v = parseFloat(custom.value);
-                amount = (Number.isFinite(v) && v > 0) ? v : 0;
+                amount = readCustomAmount();
                 updatePix();
             },
         }, L.supportCustom);
+        chipEls.push(chips.custom);
         amountsBox.append(chips.custom);
 
+        // Same ARIA radiogroup keyboard behavior as the mode cards.
+        wireRadiogroup(amountsBox, chipEls, i => chipEls[i].click());
+
         custom.addEventListener('input', () => {
-            const v = parseFloat(custom.value);
-            amount = (Number.isFinite(v) && v > 0) ? v : 0;
+            amount = readCustomAmount();
             updatePix();
         });
 
@@ -319,6 +316,8 @@ function renderSupport() {
                 await navigator.clipboard.writeText(code);
                 ok = true;
             } catch {
+                // execCommand('copy') is deprecated, but it's the only fallback
+                // when the async Clipboard API is unavailable/denied here.
                 try {
                     const ta = el('textarea', { class: '' });
                     ta.value = code;
@@ -394,9 +393,9 @@ function renderSupport() {
     });
 
     const forceDonate = new URLSearchParams(location.search).get('donate') === '1';
+    common.ensureInstalledAt();
     chrome.storage.local.get(common.donateKeys, d => {
         const now = Date.now();
-        if (!d.donateInstalledAt) chrome.storage.local.set({ donateInstalledAt: now });
         // Opening the popup clears the toolbar dot.
         try { chrome.action.setBadgeText({ text: '' }); } catch { /* best-effort; ignore */ }
         try { chrome.runtime.sendMessage({ type: 'donate-seen' }); } catch { /* best-effort; ignore */ }
@@ -425,14 +424,17 @@ function refresh() {
     });
     // Keep the group's single tab-stop on the selected mode (first card if none).
     if (rovingModes) rovingModes(activeIndex >= 0 ? activeIndex : 0);
-    $('#mode-warning').hidden = true;
     for (const u of updaters) u();
 }
 
 // --------------------------------------------------------------- Init
 (async function init() {
+    // The markup is language-neutral; reflect the real UI language for
+    // screen readers and hyphenation (popup.html can't hardcode one).
+    document.documentElement.lang = chrome.i18n.getUILanguage() || 'en';
+
     const data = await getStorage(common.storage);
-    state = resolve(data);
+    state = common.resolveSettings(data);
     renderStatic();
     renderModes();
     renderIndicators();
@@ -440,4 +442,14 @@ function refresh() {
     renderReset();
     renderSupport();
     refresh();
+
+    // Keep the UI in sync with changes made elsewhere while the popup is open
+    // (keyboard shortcut, the player's stall offer, another options window).
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area !== 'local' || !common.storage.some(k => k in changes)) return;
+        getStorage(common.storage).then(d => {
+            state = common.resolveSettings(d);
+            refresh();
+        });
+    });
 })();

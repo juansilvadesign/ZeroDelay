@@ -476,7 +476,7 @@
     // theme but a stable live doesn't spam the isolated world.
     function dispatch_video_meta() {
         const p = document.getElementById('movie_player');
-        let title = '', author = '', isLive = false, video_id = '';
+        let title = '', author = '', isLive = false, video_id = '', channel_id = '';
         if (p && typeof p.getVideoData === 'function') {
             let vd;
             try { vd = p.getVideoData(); } catch { vd = null; }
@@ -484,6 +484,7 @@
                 title = vd.title || '';
                 author = vd.author || '';
                 video_id = vd.video_id || '';
+                channel_id = vd.channel_id || '';   // stable per-channel key (per-channel mode memory)
                 isLive = !!vd.isLive; // false for VOD/replay — blocks non-live Brazil games
             }
         }
@@ -491,7 +492,7 @@
         if (key === last_meta_key) return;
         last_meta_key = key;
         document.dispatchEvent(new CustomEvent('_live_catch_up_video_meta', {
-            detail: { title, author, isLive, video_id },
+            detail: { title, author, isLive, video_id, channel_id },
         }));
     }
 

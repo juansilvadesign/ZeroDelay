@@ -155,6 +155,18 @@
    "stallSwitch": {
       "message": "Passer à"
    },
+   "channelMemoryLabel": {
+      "message": "Mémoriser le mode par chaîne"
+   },
+   "channelMemoryHint": {
+      "message": "Enregistre le mode choisi pour chaque chaîne et le réapplique à votre retour."
+   },
+   "channelRemembered": {
+      "message": "mémorisé pour cette chaîne"
+   },
+   "channelForget": {
+      "message": "oublier"
+   },
    "supportBtn": {
       "message": "Soutenir"
    },

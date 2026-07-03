@@ -582,6 +582,33 @@ html {
     color: var(--text-faint);
 }
 
+/* Per-channel mode memory: the opt-in toggle row + the "remembered here" hint. */
+.channel-memory-rows {
+    margin-top: 6px;
+}
+.channel-remembered {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 2px 0;
+    font-size: 11px;
+    color: var(--text-dim);
+}
+.channel-forget {
+    flex: none;
+    border: 0;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+    color: var(--text-dim);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.channel-forget:hover {
+    color: var(--text);
+}
+
 /* ---------------------------------------------------------------- Advanced */
 .advanced-toggle {
     display: flex;

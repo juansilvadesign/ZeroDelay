@@ -181,3 +181,25 @@ test('nextDonateSnooze escalates the wait, then opts out for good', () => {
     // missing/garbage step is treated as the first (0)
     assert.deepEqual(common.nextDonateSnooze(undefined, now), { snoozeUntil: now + 3 * day, step: 1 });
 });
+
+test('per-channel memory: save (LRU + prune), suggest, forget', () => {
+    const s = modes => ({ [common.channelModesKey]: modes });
+    // add / update; never store 'off' or an unknown mode
+    assert.deepEqual(common.saveChannelMode({}, 'chA', 'suave'), { chA: 'suave' });
+    assert.deepEqual(common.saveChannelMode(s({ chA: 'suave' }), 'chB', 'aggressive'), { chA: 'suave', chB: 'aggressive' });
+    assert.deepEqual(common.saveChannelMode(s({ chA: 'suave' }), 'chA', 'off'), { chA: 'suave' }, "'off' is not remembered");
+    assert.deepEqual(common.saveChannelMode(s({ chA: 'suave' }), 'chA', 'nope'), { chA: 'suave' }, 'unknown mode ignored');
+    // re-saving a channel moves it to newest (LRU order)
+    assert.deepEqual(Object.keys(common.saveChannelMode(s({ chA: 'suave', chB: 'auto' }), 'chA', 'balanced')), ['chB', 'chA']);
+    // prune keeps only the newest `max`
+    assert.deepEqual(Object.keys(common.saveChannelMode(s({ chA: 'suave', chB: 'auto' }), 'chC', 'balanced', 2)), ['chB', 'chC']);
+    // suggest validates shape + that the mode still exists
+    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'suave' }), 'chA'), 'suave');
+    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'suave' }), 'chZ'), null);
+    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'ghost' }), 'chA'), null, 'stale/removed mode ignored');
+    assert.equal(common.getSuggestedModeForChannel(null, 'chA'), null);
+    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'suave' }), ''), null);
+    // forget drops one; unknown channel is a no-op
+    assert.deepEqual(common.forgetChannelMode(s({ chA: 'suave', chB: 'auto' }), 'chA'), { chB: 'auto' });
+    assert.deepEqual(common.forgetChannelMode(s({ chA: 'suave' }), 'chZ'), { chA: 'suave' });
+});

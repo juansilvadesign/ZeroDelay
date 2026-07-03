@@ -155,6 +155,18 @@
    "stallSwitch": {
       "message": "Cambiar a"
    },
+   "channelMemoryLabel": {
+      "message": "Recordar modo por canal"
+   },
+   "channelMemoryHint": {
+      "message": "Guarda el modo que elijas en cada canal y lo reaplica cuando vuelves."
+   },
+   "channelRemembered": {
+      "message": "recordado para este canal"
+   },
+   "channelForget": {
+      "message": "olvidar"
+   },
    "supportBtn": {
       "message": "Apoyar"
    },

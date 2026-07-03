@@ -108,6 +108,16 @@ function main(common) {
     // an iframe's (clipped) body.
     if (window.top === window) {
         document.addEventListener('_live_catch_up_stall', () => onStallDetected(common));
+        // Per-channel mode memory (opt-in): the engine reports the channel via the
+        // video-meta bridge; we remember/restore the explicit mode for it — never
+        // forcing a mode on a channel the user hasn't set.
+        document.addEventListener('_live_catch_up_video_meta', e => onChannelIdUpdate(common, e.detail));
+        // Turning the feature ON should take effect on the channel you're already on.
+        chrome.storage.onChanged.addListener((changes, area) => {
+            if (area === 'local' && changes[common.channelMemoryKey]?.newValue && lastChannelId) {
+                onChannelIdUpdate(common, { channel_id: lastChannelId });
+            }
+        });
     }
 
     // Inject the controller first, then the engine. `async = false` preserves
@@ -280,6 +290,28 @@ function showStallOffer(common, target) {
         closeLabel: L.donateBannerClose,
         autoHideMs: 14000,
         onRemove: () => { stallOfferEl = null; },
+    });
+}
+
+// --------------------------------------------------------- Per-channel memory
+// Opt-in (channelMemory). The engine reports the channel on each change; we note
+// where we are (so the popup knows where a pick lands + can show the "remembered"
+// hint) and, when the feature is on and this channel has a mode the user explicitly
+// saved, we reapply it. An unknown channel is left alone — the current mode stays.
+let lastChannelId = null;
+
+function onChannelIdUpdate(common, detail) {
+    const channelId = detail && detail.channel_id;
+    if (!channelId || !extensionAlive()) return;
+    lastChannelId = channelId;
+    chrome.storage.local.get([common.channelMemoryKey, common.channelModesKey, common.currentChannelIdKey, ...common.storage], data => {
+        const upd = {};
+        if (data[common.currentChannelIdKey] !== channelId) upd[common.currentChannelIdKey] = channelId;
+        if (data[common.channelMemoryKey]) {
+            const saved = common.getSuggestedModeForChannel(data, channelId);
+            if (saved && common.deriveMode(data) !== saved) Object.assign(upd, common.presets[saved]);
+        }
+        if (Object.keys(upd).length) chrome.storage.local.set(upd);
     });
 }
 

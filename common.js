@@ -110,6 +110,12 @@ export const label = {
     stallDesc: msg('stallDesc', 'Um modo mais leve mantém mais buffer e estabiliza.'),
     stallSwitch: msg('stallSwitch', 'Trocar para'),
 
+    // Per-channel mode memory (opt-in)
+    channelMemoryLabel: msg('channelMemoryLabel', 'Lembrar modo por canal'),
+    channelMemoryHint: msg('channelMemoryHint', 'Guarda o modo que você escolher em cada canal e reaplica quando você voltar.'),
+    channelRemembered: msg('channelRemembered', 'lembrado para este canal'),
+    channelForget: msg('channelForget', 'esquecer'),
+
     // Support — always-visible CTA
     supportBtn: msg('supportBtn', 'Apoiar'),
     supportCtaText: msg('supportCtaText', 'Curtindo? Me paga uma cervejinha 🍺'),
@@ -236,6 +242,56 @@ export function nextDonateSnooze(step, now) {
     const i = step | 0;
     if (i >= donateSnoozeScheduleDays.length) return { optOut: true };
     return { snoozeUntil: now + donateSnoozeScheduleDays[i] * 86400000, step: i + 1 };
+}
+
+// ---------------------------------------------------------------------------
+// Per-channel mode memory (reworked from PR #22 by @wthallys). OPT-IN via
+// `channelMemory` (default OFF). When on, it remembers the mode you explicitly
+// pick on a channel and reapplies it when you return — and it NEVER forces a mode
+// on a channel you haven't set (an unknown channel keeps whatever mode is active).
+// Kept OUTSIDE the engine `storage` array, so Restore Defaults leaves it and it
+// never resolves into the engine settings. `channelModes` is { channelId: mode };
+// `currentChannelId` is the channel of the tab last seen (the popup reads it to
+// know where a pick lands, and to show the "remembered" hint).
+// ---------------------------------------------------------------------------
+export const channelMemoryKey = 'channelMemory';   // opt-in toggle, default OFF
+export const channelModesKey = 'channelModes';
+export const currentChannelIdKey = 'currentChannelId';
+export const defaultChannelMemory = false;
+
+// The saved mode for a channel, or null. Validates the shape and that the mode
+// still exists (a renamed/removed preset is ignored, never applied).
+export function getSuggestedModeForChannel(data, channelId) {
+    if (!channelId || typeof channelId !== 'string' || !data || typeof data !== 'object') return null;
+    const modes = data[channelModesKey];
+    if (!modes || typeof modes !== 'object') return null;
+    const mode = modes[channelId];
+    return typeof mode === 'string' && presets[mode] ? mode : null;
+}
+
+// Updated channelModes with channelId->mode, as newest, pruned to the last `max`
+// channels (LRU — the map is insertion-ordered). Never stores 'off' or an unknown
+// mode. Pure: returns the map for the caller to persist.
+export function saveChannelMode(data, channelId, mode, max = 50) {
+    const cur = (data && data[channelModesKey]) || {};
+    if (!channelId || typeof channelId !== 'string' || !presets[mode] || mode === 'off') return cur;
+    const modes = {};
+    for (const k of Object.keys(cur)) if (k !== channelId) modes[k] = cur[k];   // drop old slot
+    modes[channelId] = mode;                                                     // re-add as newest
+    const keys = Object.keys(modes);
+    if (keys.length <= max) return modes;
+    const pruned = {};
+    for (const k of keys.slice(keys.length - max)) pruned[k] = modes[k];
+    return pruned;
+}
+
+// Drop a channel's saved mode (the "esquecer" action). Pure.
+export function forgetChannelMode(data, channelId) {
+    const cur = (data && data[channelModesKey]) || {};
+    if (!channelId || !(channelId in cur)) return cur;
+    const modes = { ...cur };
+    delete modes[channelId];
+    return modes;
 }
 
 // International donation links — shown to users whose browser is NOT in pt_BR

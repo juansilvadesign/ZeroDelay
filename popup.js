@@ -131,6 +131,10 @@ const BEER_TOGGLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 
 // --------------------------------------------------------------- State
 let state = {};
+// Per-channel mode memory (opt-in) — these live OUTSIDE the engine `state`.
+let currentChannelId = null;  // channel of the active tab (content.js writes it)
+let channelModes = {};        // { channelId: modeName }
+let channelMemoryOn = false;  // the opt-in toggle's current value
 const updaters = [];          // fn() -> sync a control's display
 const modeCards = {};         // mode name -> card element
 let rovingModes = null;       // wireRadiogroup roving-tabindex setter for modes
@@ -145,6 +149,11 @@ function applyPreset(name) {
     const preset = common.presets[name];
     chrome.storage.local.set(preset);
     Object.assign(state, preset);
+    // Per-channel memory (opt-in): record this EXPLICIT pick for the current channel.
+    if (channelMemoryOn && currentChannelId && name !== 'off') {
+        channelModes = common.saveChannelMode({ [common.channelModesKey]: channelModes }, currentChannelId, name);
+        chrome.storage.local.set({ [common.channelModesKey]: channelModes });
+    }
     refresh();
 }
 
@@ -520,6 +529,51 @@ function refresh() {
     // Keep the group's single tab-stop on the selected mode (first card if none).
     if (rovingModes) rovingModes(activeIndex >= 0 ? activeIndex : 0);
     for (const u of updaters) u();
+    updateChannelHint();
+}
+
+// --------------------------------------------------- Per-channel mode memory
+// Opt-in toggle + a "remembered for this channel" hint. Like the Hexa toggles, it
+// reads/writes chrome.storage.local directly since it lives outside the engine
+// `state`; content.js reacts and restores the saved mode on the page.
+function renderChannelMemory() {
+    const rows = $('#channel-memory-rows');
+    if (!rows) return;
+    const input = el('input', { type: 'checkbox', onchange: () => chrome.storage.local.set({ [common.channelMemoryKey]: input.checked }) });
+    const sw = el('label', { class: 'switch' }, input, el('span', { class: 'track' }), el('span', { class: 'thumb' }));
+    const row = buildRow({ label: L.channelMemoryLabel, control: sw });
+    row.querySelector('.row-label').title = L.channelMemoryHint;
+    rows.append(row);
+
+    $('#channel-remembered-text').textContent = L.channelRemembered;
+    const forget = $('#channel-forget');
+    forget.textContent = L.channelForget;
+    forget.addEventListener('click', () => {
+        if (!currentChannelId) return;
+        channelModes = common.forgetChannelMode({ [common.channelModesKey]: channelModes }, currentChannelId);
+        chrome.storage.local.set({ [common.channelModesKey]: channelModes });
+    });
+
+    const sync = d => {
+        channelMemoryOn = d[common.channelMemoryKey] == null ? common.defaultChannelMemory : !!d[common.channelMemoryKey];
+        input.checked = channelMemoryOn;
+        channelModes = d[common.channelModesKey] || {};
+        currentChannelId = d[common.currentChannelIdKey] || null;
+        updateChannelHint();
+    };
+    const keys = [common.channelMemoryKey, common.channelModesKey, common.currentChannelIdKey];
+    chrome.storage.local.get(keys, sync);
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'local' && keys.some(k => k in changes)) chrome.storage.local.get(keys, sync);
+    });
+}
+
+// Show the hint only when the active mode was the one saved for this channel.
+function updateChannelHint() {
+    const hint = $('#channel-remembered');
+    if (!hint) return;
+    const mode = common.deriveMode(state);
+    hint.hidden = !(channelMemoryOn && currentChannelId && mode !== 'off' && channelModes[currentChannelId] === mode);
 }
 
 // --------------------------------------------------------------- Init
@@ -532,6 +586,7 @@ function refresh() {
     state = common.resolveSettings(data);
     renderStatic();
     renderModes();
+    renderChannelMemory();
     renderIndicators();
     renderHexa();
     watchHexaActive();

@@ -257,6 +257,33 @@ function renderAdvancedToggle() {
     });
 }
 
+// FAQ / "how to use" — a collapsible help section for new users. Mirrors the
+// Advanced toggle/panel pattern (and reuses its classes) so it reads as native.
+function renderFaq() {
+    const toggle = $('#faq-toggle');
+    const panel = $('#faq-panel');
+    $('#faq-label').textContent = L.faqTitle;
+    toggle.addEventListener('click', () => {
+        const open = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!open));
+        panel.hidden = open;
+    });
+    const items = [
+        { q: L.faqWhatQ, a: L.faqWhatA },
+        { q: L.faqStartQ, a: L.faqStartA },
+        { q: L.faqSpeedQ, a: L.faqSpeedA },
+        { q: L.faqModeQ, a: L.faqModeA },
+        { q: L.faqIndicatorsQ, a: L.faqIndicatorsA },
+        { q: L.faqShortcutsQ, a: L.faqShortcutsA },
+    ];
+    for (const it of items) {
+        panel.append(el('div', { class: 'group' },
+            el('p', { class: 'faq-q', text: it.q }),
+            el('p', { class: 'faq-a', text: it.a }),
+        ));
+    }
+}
+
 function renderReset() {
     const btn = $('#reset');
     let timer, armed = false, doneTimer;
@@ -591,6 +618,7 @@ function updateChannelHint() {
     renderHexa();
     watchHexaActive();
     renderAdvancedToggle();
+    renderFaq();
     renderReset();
     renderSupport();
     refresh();

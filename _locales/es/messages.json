@@ -220,5 +220,44 @@
    },
    "a11yCurrent": {
       "message": "Tiempo actual (haz clic para copiar el enlace)"
+   },
+   "faqTitle": {
+      "message": "Ayuda · Cómo usar"
+   },
+   "faqWhatQ": {
+      "message": "¿Qué hace ZeroDelay?"
+   },
+   "faqWhatA": {
+      "message": "En directos de YouTube con DVR, el reproductor suele quedar por detrás del directo. ZeroDelay acelera un poco la reproducción para devolverte al tiempo real y vuelve a la normalidad al alcanzarlo."
+   },
+   "faqStartQ": {
+      "message": "¿Cómo empiezo?"
+   },
+   "faqStartA": {
+      "message": "Elige un modo en la ventana. El Automático es lo recomendado: mide tu conexión y se ajusta solo."
+   },
+   "faqSpeedQ": {
+      "message": "¿Por qué cambia la velocidad sola?"
+   },
+   "faqSpeedA": {
+      "message": "Es el catch-up: mientras estás por detrás del directo, la velocidad sube (hasta ~1,25x) para consumir el búfer; al alcanzarlo, vuelve a 1,0x."
+   },
+   "faqModeQ": {
+      "message": "¿Qué modo debo elegir?"
+   },
+   "faqModeA": {
+      "message": "Menos búfer te acerca al directo pero exige mejor conexión. Ante la duda, usa el Automático, que se adapta a tu conexión."
+   },
+   "faqIndicatorsQ": {
+      "message": "¿Qué son los números del reproductor?"
+   },
+   "faqIndicatorsA": {
+      "message": "Junto a la insignia EN DIRECTO aparecen la velocidad actual, la latencia (cuánto vas por detrás) y la salud del búfer. Puedes activar o desactivar cada uno en la sección de indicadores."
+   },
+   "faqShortcutsQ": {
+      "message": "¿Hay atajos de teclado?"
+   },
+   "faqShortcutsA": {
+      "message": "Tres atajos (en Mac, cambia Alt por ⌘ Command):\n• Alt+Shift+Y — activar/desactivar ZeroDelay\n• Alt+Shift+L — saltar al directo\n• Alt+Shift+H — activar/desactivar el Modo Hexa (tema de Brasil)\nPuedes verlos y cambiarlos en chrome://extensions/shortcuts."
    }
 }

@@ -220,5 +220,44 @@
    },
    "a11yCurrent": {
       "message": "Current time (click to copy the link)"
+   },
+   "faqTitle": {
+      "message": "Help · How to use"
+   },
+   "faqWhatQ": {
+      "message": "What does ZeroDelay do?"
+   },
+   "faqWhatA": {
+      "message": "On YouTube live streams with DVR, the player often falls behind live. ZeroDelay speeds up playback a little to bring you back to real time, then returns to normal once it catches up."
+   },
+   "faqStartQ": {
+      "message": "How do I start?"
+   },
+   "faqStartA": {
+      "message": "Pick a mode in the popup. Automatic is recommended: it measures your connection and adjusts itself."
+   },
+   "faqSpeedQ": {
+      "message": "Why does the speed change on its own?"
+   },
+   "faqSpeedA": {
+      "message": "That's catch-up: while you're behind live, the speed rises (up to ~1.25x) to use up the buffer; once you catch up, it returns to 1.0x."
+   },
+   "faqModeQ": {
+      "message": "Which mode should I choose?"
+   },
+   "faqModeA": {
+      "message": "Less buffer keeps you closer to live but needs a better connection. When in doubt, use Automatic, which adapts to your connection."
+   },
+   "faqIndicatorsQ": {
+      "message": "What are the numbers on the player?"
+   },
+   "faqIndicatorsA": {
+      "message": "Next to the LIVE badge you'll see the current speed, the latency (how far behind you are) and the buffer health. You can turn each one on or off in the indicators section."
+   },
+   "faqShortcutsQ": {
+      "message": "Are there keyboard shortcuts?"
+   },
+   "faqShortcutsA": {
+      "message": "Three shortcuts (on Mac, swap Alt for ⌘ Command):\n• Alt+Shift+Y — turn ZeroDelay on/off\n• Alt+Shift+L — jump to live\n• Alt+Shift+H — turn Hexa Mode on/off (Brazil theme)\nYou can view and change them at chrome://extensions/shortcuts."
    }
 }

@@ -139,6 +139,21 @@ export const label = {
     hexaSectionTitle: msg('hexaSectionTitle', 'Modo Hexa'),
     hexaSuggestLabel: msg('hexaSuggestLabel', 'Sugerir nos jogos do Brasil ao vivo'),
     hexaFullLabel: msg('hexaFullLabel', 'Tema completo no YouTube'),
+
+    // FAQ / help — a collapsible "how to use" section for new users.
+    faqTitle: msg('faqTitle', 'Ajuda · Como usar'),
+    faqWhatQ: msg('faqWhatQ', 'O que o ZeroDelay faz?'),
+    faqWhatA: msg('faqWhatA', 'Em lives do YouTube com DVR, o player costuma ficar atrás do ao vivo. O ZeroDelay acelera um pouco a reprodução para te trazer de volta ao tempo real e volta ao normal ao alcançar.'),
+    faqStartQ: msg('faqStartQ', 'Como começo a usar?'),
+    faqStartA: msg('faqStartA', 'Escolha um modo no popup. O Automático é recomendado: ele mede sua conexão e se ajusta sozinho.'),
+    faqSpeedQ: msg('faqSpeedQ', 'Por que a velocidade muda sozinha?'),
+    faqSpeedA: msg('faqSpeedA', 'É o catch-up: enquanto você está atrás do ao vivo, a velocidade sobe (até ~1,25x) para consumir o buffer; ao alcançar, ela volta para 1,0x.'),
+    faqModeQ: msg('faqModeQ', 'Qual modo devo escolher?'),
+    faqModeA: msg('faqModeA', 'Menos buffer deixa você mais perto do ao vivo, mas exige uma internet melhor. Na dúvida, use o Automático, que se adapta à sua conexão.'),
+    faqIndicatorsQ: msg('faqIndicatorsQ', 'O que são os números no player?'),
+    faqIndicatorsA: msg('faqIndicatorsA', 'Ao lado do selo AO VIVO aparecem a velocidade atual, a latência (o quanto você está atrás) e a saúde do buffer. Você liga ou desliga cada um na seção de indicadores.'),
+    faqShortcutsQ: msg('faqShortcutsQ', 'Existem atalhos de teclado?'),
+    faqShortcutsA: msg('faqShortcutsA', 'São três atalhos (no Mac, troque Alt por ⌘ Command):\n• Alt+Shift+Y — ativar/desativar o ZeroDelay\n• Alt+Shift+L — pular para o ao vivo\n• Alt+Shift+H — ativar/desativar o Modo Hexa (tema do Brasil)\nVocê pode vê-los e mudá-los em chrome://extensions/shortcuts.'),
 };
 
 // ---------------------------------------------------------------------------

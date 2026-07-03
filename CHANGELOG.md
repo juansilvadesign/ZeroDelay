@@ -9,6 +9,13 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Adicionado
 
+- **Seção "Ajuda · Como usar" no popup**: uma seção retrátil (fechada por padrão,
+  irmã de "Avançado") com um FAQ curto para quem acabou de instalar — o que a
+  extensão faz, como começar, por que a velocidade muda sozinha, qual modo
+  escolher, o que são os números no player e os atalhos de teclado. Reaproveita os
+  componentes e as cores existentes e está nos quatro idiomas (`en`, `pt_BR`,
+  `es`, `fr`).
+
 - **Memória de modo por canal (opt-in)**: um toggle **"Lembrar modo por canal"**
   (desligado por padrão) guarda o modo que você escolhe em cada canal do YouTube e
   reaplica ao voltar. Nunca sobrepõe o seu modo atual num canal sem preferência

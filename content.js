@@ -135,14 +135,14 @@ function initDonation(common) {
     common.ensureInstalledAt();
 
     // The engine pings while a live is actually playing; only that time counts as
-    // "watching the transmission" (idle browsing on YouTube doesn't accrue usage).
-    let lastActive = 0;
-    document.addEventListener('_live_catch_up_active', () => { lastActive = Date.now(); });
+    // "watching the transmission" (idle browsing on YouTube doesn't accrue usage),
+    // and it also gates WHERE the invite may appear (only over a live playing now).
+    document.addEventListener('_live_catch_up_active', () => { donateLastActive = Date.now(); });
 
     setTimeout(() => maybeShowBanner(common), 8000);
     const usageTimer = setInterval(() => {
         if (!extensionAlive()) { clearInterval(usageTimer); return; }
-        if (document.hidden || Date.now() - lastActive > 5000) return;
+        if (document.hidden || Date.now() - donateLastActive > 5000) return;
         chrome.storage.local.get(['enabled', 'donateUsageSeconds', 'donateLastCountedAt'], d => {
             if (!common.value(d.enabled, common.defaultEnabled)) return;
             // Every YouTube tab runs this loop; only one may count each minute
@@ -160,13 +160,22 @@ function initDonation(common) {
 }
 
 let donationBannerEl = null;
+let donateLastActive = 0;   // last _live_catch_up_active ping — proves a live is playing NOW
 
 function maybeShowBanner(common) {
     if (donationBannerEl || !extensionAlive()) return;
+    // Only over a live that is actually playing right now — never on a VOD or an idle tab.
+    if (Date.now() - donateLastActive > 6000) return;
     chrome.storage.local.get(common.donateKeys, d => {
         if (donationBannerEl || d.donateBannerShown) return;
         if (!common.donateEligible(d, Date.now())) return;
-        chrome.storage.local.set({ donateBannerShown: true });
+        // Showing the proactive invite also arms the escalating snooze, so the badge /
+        // popup don't immediately re-nudge (and it stops for good past the last step).
+        const next = common.nextDonateSnooze(d.donateSnoozeStep || 0, Date.now());
+        const upd = { donateBannerShown: true };
+        if (next.optOut) upd.donateOptOut = true;
+        else { upd.donateSnoozeUntil = next.snoozeUntil; upd.donateSnoozeStep = next.step; }
+        chrome.storage.local.set(upd);
         showDonationBanner(common);
     });
 }

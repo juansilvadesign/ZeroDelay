@@ -7,6 +7,22 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido
+
+- **Avisos só em lives**: tanto a oferta de "a transmissão está travando" quanto o
+  convite de doação agora só aparecem enquanto uma **live está tocando de verdade**
+  — nunca em VOD/replay nem numa aba ociosa.
+- **Falso positivo do aviso de travamento em anúncios**: o watchdog de travamento
+  ignora o evento `waiting` disparado enquanto um **anúncio** roda (buffa no mesmo
+  `<video>`), então não sugere mais trocar de modo por causa de propaganda.
+
+### Alterado
+
+- **Convite de doação com recuo escalonado**: em vez de reaparecer a cada poucos
+  dias pra sempre, cada vez que é visto/dispensado o próximo intervalo cresce
+  (3 → 7 → 21 → 60 dias) e depois **para de vez** — o botão de apoio no popup
+  continua sempre disponível.
+
 ## [1.2.1] - 2026-07-03
 
 ### Corrigido

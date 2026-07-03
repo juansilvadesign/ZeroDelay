@@ -306,8 +306,19 @@
     let stall_times = [];
     let last_stall = 0;
     let stall_cooldown_until = 0;
+    // Only real LIVE buffering counts. On a VOD/replay 'waiting' is just normal
+    // seeking, and while an AD plays it buffers in the SAME <video> element — both
+    // fire 'waiting' and are false positives, so we skip them.
+    function is_live_stream() {
+        try { return player?.getVideoData?.()?.isLive === true; } catch { return false; }
+    }
+    function is_ad_showing() {
+        const cl = player?.classList;
+        return !!cl && (cl.contains('ad-showing') || cl.contains('ad-interrupting'));
+    }
     function on_video_waiting() {
         if (!current_settings?.enabled) return;
+        if (!is_live_stream() || is_ad_showing()) return;   // live only; never during ads
         const now = Date.now();
         if (now < stall_cooldown_until || now - last_stall < 5000) return;
         last_stall = now;

@@ -465,7 +465,8 @@ function renderSupport() {
     const showNudge = on => { nudge.hidden = !on; nudgeActions.hidden = !on; };
 
     laterBtn.addEventListener('click', () => {
-        chrome.storage.local.set({ donateSnoozeUntil: Date.now() + common.donateSnoozeDays * 86400000 });
+        // The escalating snooze was already armed when the invite was shown; "Depois"
+        // just tucks it away.
         showNudge(false);
         setOpen(false);
     });
@@ -486,10 +487,17 @@ function renderSupport() {
         if (forceDonate) {
             setOpen(true);
         } else if (common.donateEligible(d, now)) {
-            showNudge(true);
-            setOpen(true);
-            // Simply seeing the invite softly snoozes it for a few days.
-            chrome.storage.local.set({ donateSnoozeUntil: now + common.donateSoftSnoozeDays * 86400000 });
+            const next = common.nextDonateSnooze(d.donateSnoozeStep || 0, now);
+            if (next.optOut) {
+                // Escalating schedule exhausted — stop nudging for good (☕ button stays).
+                chrome.storage.local.set({ donateOptOut: true });
+                render();
+            } else {
+                showNudge(true);
+                setOpen(true);
+                // Seeing the invite escalates the next wait: 3 → 7 → 21 → 60 → never.
+                chrome.storage.local.set({ donateSnoozeUntil: next.snoozeUntil, donateSnoozeStep: next.step });
+            }
         } else {
             render(); // pre-render (PIX QR) so a manual open is instant
         }

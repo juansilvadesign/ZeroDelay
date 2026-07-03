@@ -166,3 +166,18 @@ test('classifyHexaChatMessage is neutral (0) for off-topic and empty text', () =
     assert.equal(common.classifyHexaChatMessage(''), 0);
     assert.equal(common.classifyHexaChatMessage(undefined), 0);
 });
+
+test('nextDonateSnooze escalates the wait, then opts out for good', () => {
+    const now = 1_000_000;
+    const day = 86400000;
+    // 3 -> 7 -> 21 -> 60 days, each step advancing the counter
+    assert.deepEqual(common.nextDonateSnooze(0, now), { snoozeUntil: now + 3 * day, step: 1 });
+    assert.deepEqual(common.nextDonateSnooze(1, now), { snoozeUntil: now + 7 * day, step: 2 });
+    assert.deepEqual(common.nextDonateSnooze(2, now), { snoozeUntil: now + 21 * day, step: 3 });
+    assert.deepEqual(common.nextDonateSnooze(3, now), { snoozeUntil: now + 60 * day, step: 4 });
+    // schedule exhausted -> stop nudging permanently
+    assert.deepEqual(common.nextDonateSnooze(4, now), { optOut: true });
+    assert.deepEqual(common.nextDonateSnooze(99, now), { optOut: true });
+    // missing/garbage step is treated as the first (0)
+    assert.deepEqual(common.nextDonateSnooze(undefined, now), { snoozeUntil: now + 3 * day, step: 1 });
+});

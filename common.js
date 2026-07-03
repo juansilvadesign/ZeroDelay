@@ -151,7 +151,7 @@ export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLate
 // OUTSIDE `storage` so the engine ignores them and "Restore defaults" keeps the
 // user's opt-out / snooze choices.
 // ---------------------------------------------------------------------------
-export const donateKeys = ['donateInstalledAt', 'donateUsageSeconds', 'donateOptOut', 'donateSnoozeUntil', 'donateBannerShown', 'donateLastCountedAt'];
+export const donateKeys = ['donateInstalledAt', 'donateUsageSeconds', 'donateOptOut', 'donateSnoozeUntil', 'donateBannerShown', 'donateLastCountedAt', 'donateSnoozeStep'];
 
 /** Record the install time once (ages the donation invite). Callable from any extension context. */
 export function ensureInstalledAt() {
@@ -223,8 +223,20 @@ export function toggleEnabledAction(data, lastMode) {
     return { apply: presets.off, remember: mode === 'custom' ? undefined : mode };
 }
 export const donateUsageThreshold = 50 * 60;       // ~50 min watching a live (seconds)
-export const donateSnoozeDays = 21;                // "remind me later"
-export const donateSoftSnoozeDays = 3;             // after simply seeing the invite
+// Escalating snooze: each time the invite is seen/dismissed, the next wait is
+// longer. After the last step it goes quiet FOR GOOD (opt-out) — the ☕ button in
+// the popup stays available, so donating is always one click away, but we stop
+// nudging. Days: 3 -> 7 -> 21 -> 60 -> never.
+export const donateSnoozeScheduleDays = [3, 7, 21, 60];
+
+// Next snooze for a given step (how many times the invite was already dismissed).
+// Returns {snoozeUntil, step} while there are steps left, or {optOut:true} once the
+// schedule is exhausted (stop nudging permanently).
+export function nextDonateSnooze(step, now) {
+    const i = step | 0;
+    if (i >= donateSnoozeScheduleDays.length) return { optOut: true };
+    return { snoozeUntil: now + donateSnoozeScheduleDays[i] * 86400000, step: i + 1 };
+}
 
 // International donation links — shown to users whose browser is NOT in pt_BR
 // (see `isBrazil`). Replace the placeholders with your own usernames/links.

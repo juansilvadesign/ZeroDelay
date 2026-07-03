@@ -7,6 +7,8 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [1.2.1] - 2026-07-03
+
 ### Corrigido
 
 - **Modo Hexa — a splash "OLÊ OLÊ OLÁ" e a confete de gol agora tocam mesmo com

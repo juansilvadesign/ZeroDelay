@@ -109,16 +109,25 @@ const ICONS = {
 // Lucide beer mug in the header. The mug (R$10) is Lucide "beer" (ISC); the glass,
 // can and bottle are original line icons drawn for this project.
 const drink = paths => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+// One consistent line set (stroke 2, same optical height + baseline), fancier the
+// more you tip: copo americano -> lata -> long neck -> caneca. Each carries a small
+// "beer" tell (foam/fill line, pull-tab, label) so they read as a family.
 const BEER = {
-    1: drink('<path d="M7 6h10l-1.3 13.2a1 1 0 0 1-1 .8H9.3a1 1 0 0 1-1-.8z"/><path d="M7.6 10h8.8"/>'),
-    3: drink('<path d="M7 5v14"/><path d="M17 5v14"/><ellipse cx="12" cy="5" rx="5" ry="1.6"/><path d="M7 19a5 1.6 0 0 0 10 0"/><path d="M10.5 3.6h3"/>'),
-    5: drink('<path d="M10 2h4v3.8a3 3 0 0 0 .44 1.57l.62 1A3 3 0 0 1 16 9.95V20a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9.95a3 3 0 0 1 .94-2.18l.62-1A3 3 0 0 0 10 5.8z"/><path d="M8 15h8"/>'),
+    // Copo americano: short tumbler flaring to the rim, beer level near the top.
+    1: drink('<path d="M7.6 7h8.8l-1 12.2a1 1 0 0 1-1 .9H9.6a1 1 0 0 1-1-.9z"/><path d="M8.2 10.5h7.6"/>'),
+    // Lata: an oval lid on top, shoulders flaring OUT wider than the lid (the can
+    // tell), a straight body with a base rim, and the pull-tab ring on the lid.
+    3: drink('<path d="M8.6 6.6c-1.3.3-1.4 1.1-1.4 2v9.6a4.6 1.3 0 0 0 9.6 0V8.6c0-.9-.1-1.7-1.4-2"/><ellipse cx="12" cy="6.1" rx="3.5" ry="1.3"/><ellipse cx="12" cy="6" rx="1.6" ry="0.65"/>'),
+    // Long neck: slim neck + shoulders into the body, cap on top, rectangular label.
+    5: drink('<path d="M10 2.2h4v3.6a3 3 0 0 0 .44 1.57l.62 1A3 3 0 0 1 16 9.95V19a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9.95a3 3 0 0 1 .94-2.18l.62-1A3 3 0 0 0 10 5.8z"/><path d="M8.4 13.4h7.2v3.4H8.4z"/><path d="M10 2.4h4"/>'),
+    // Caneca: full mug with handle + foam head (Lucide "beer").
     10: drink('<path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6"/><path d="M13 12v6"/><path d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/>'),
 };
 
 // Beer-mug outline for the header support toggle, swapped in for BR (matches the
-// coffee-toggle's stroke style). Lucide "beer" (ISC).
-const BEER_TOGGLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6"/><path d="M13 12v6"/><path d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/></svg>';
+// coffee-toggle's stroke style). Lucide "beer" (ISC). The three .bubble dots rise
+// and fade (CSS) — carbonation recovering the coffee's old steam animation.
+const BEER_TOGGLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6"/><path d="M13 12v6"/><path d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><circle class="bubble" cx="8.4" cy="17" r="0.9" fill="currentColor" stroke="none"/><circle class="bubble" cx="11" cy="15.5" r="0.9" fill="currentColor" stroke="none"/><circle class="bubble" cx="13.4" cy="17.5" r="0.9" fill="currentColor" stroke="none"/></svg>';
 
 // --------------------------------------------------------------- State
 let state = {};
@@ -217,7 +226,16 @@ function renderHexa() {
     $('#hexa-title').textContent = L.hexaSectionTitle;
     const rows = $('#hexa-rows');
     rows.append(buildRow({ label: L.hexaSuggestLabel, control: buildHexaToggle(common.hexaSuggestKey, true) }));
-    rows.append(buildRow({ label: L.hexaFullLabel, control: buildHexaToggle(common.hexaFullKey, true) }));
+    rows.append(buildRow({ label: L.hexaFullLabel, control: buildHexaToggle(common.hexaFullKey, false) }));
+}
+
+// Dress the popup with a few hexa touches while the theme is live on a tab.
+function watchHexaActive() {
+    const set = on => document.body.classList.toggle('hexa', !!on);
+    chrome.storage.local.get([common.hexaActiveKey], d => set(d[common.hexaActiveKey]));
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'local' && changes[common.hexaActiveKey]) set(changes[common.hexaActiveKey].newValue);
+    });
 }
 
 function renderAdvancedToggle() {
@@ -347,7 +365,7 @@ function renderSupport() {
             const chip = el('button', {
                 class: 'support-chip', type: 'button', role: 'radio', 'aria-checked': 'false',
                 onclick: () => { amount = value; custom.hidden = true; selectChip(key); updatePix(); },
-            }, el('span', { class: 'chip-ico', html: BEER[value] || '' }), el('span', { text: 'R$ ' + value }));
+            }, el('span', { class: 'chip-ico', html: BEER[value] || '' }), el('span', { class: 'chip-val', text: 'R$ ' + value }));
             chips[key] = chip;
             chipEls.push(chip);
             amountsBox.append(chip);
@@ -508,6 +526,7 @@ function refresh() {
     renderModes();
     renderIndicators();
     renderHexa();
+    watchHexaActive();
     renderAdvancedToggle();
     renderReset();
     renderSupport();

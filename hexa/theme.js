@@ -318,7 +318,9 @@ html.${FS_CLASS} .zd-hexa-boot{display:none!important;}
   html.${ROOT_CLASS} .ytp-play-progress{animation:none!important;}
   .zd-hexa-toast{transition:none!important;}
   .zd-hexa-invite{transition:none!important;opacity:1!important;transform:translateX(-50%)!important;}
-  .zd-hexa-confetti,.zd-hexa-boot{display:none!important;} /* no confetti/boot flash */
+  /* The activation splash + goal confetti are one-shot and USER-triggered (Modo Hexa
+     is opt-in), so they DO play here — only the endless flag-morph loop above stays
+     calm. Deliberate: the user chose the party. */
 }
 @media (forced-colors: active){
   .zd-hexa-bunting,.zd-hexa-confetti,.zd-hexa-boot{display:none!important;}
@@ -378,10 +380,12 @@ export function setActive(on, activatedLabel) {
     document.documentElement.classList.toggle(ROOT_CLASS, on);
     if (on) {
         hideInvite();
-        playBoot();
+        // Stand up the real functionality FIRST — a throw in the cosmetic boot/toast
+        // must never stop the decorative nodes or the keepAlive from being set up.
         ensureNodes();
         keepAlive = setInterval(ensureNodes, 1000);
-        showToast(activatedLabel);
+        try { playBoot(); } catch (e) { console.warn('[ZeroDelay Hexa] boot falhou:', e); }
+        try { showToast(activatedLabel); } catch (e) { console.warn('[ZeroDelay Hexa] toast falhou:', e); }
     } else {
         clearInterval(keepAlive);
         keepAlive = null;
@@ -457,10 +461,12 @@ function buildBadge() {
 // on activate and once per second while active; each check is a cheap
 // isConnected test, re-adding only when needed.
 function ensureNodes() {
-    ensureMastheadBadge();
-    ensureBunting();
-    ensureGolButton();
-    ensureLogoFlag();
+    // Each decorative node is isolated: a throw in one (YouTube shifts its DOM under
+    // us) must not block the others or the 1s keepAlive. We log which one failed so a
+    // live-only issue shows up in the console instead of silently killing the theme.
+    for (const fn of [ensureMastheadBadge, ensureBunting, ensureGolButton, ensureLogoFlag]) {
+        try { fn(); } catch (e) { console.warn('[ZeroDelay Hexa]', fn.name, 'falhou:', e); }
+    }
 }
 
 function buildBunting() {
@@ -667,8 +673,10 @@ let golLogoTimer = null;   // clears the logo's hard-flutter boost after a goal
  */
 export function celebrateGoal(durationMs = 3000) {
     if (!active || isFullscreen()) return;
-    if (nodes.gol) scoreGol(nodes.gol);   // button flashes gold + ball bounces (bounce self-guards reduced motion)
-    if (reduceMotion()) return;           // no confetti / logo flutter under reduced motion
+    // button flashes gold + ball bounces (bounce self-guards reduced motion)
+    if (nodes.gol) { try { scoreGol(nodes.gol); } catch (e) { console.warn('[ZeroDelay Hexa] scoreGol falhou:', e); } }
+    // Confetti plays even under reduced motion (opt-in party). The logo flag stays
+    // still there anyway — its animation is `none!important` under reduced motion.
     goalStopAt = Date.now() + durationMs;
     // Kick the logo flag into a hard flutter for the celebration (refreshed on re-trigger).
     if (nodes.logo) {
@@ -697,9 +705,10 @@ export function celebrateGoal(durationMs = 3000) {
 }
 
 // One-shot "boot" on activation: a tricolor star bursts open and the "OLÊ OLÊ OLÁ"
-// chant lands over it, then it clears. Skipped under reduced motion / fullscreen.
+// chant lands over it, then it clears. Plays even under reduced motion (Modo Hexa is
+// opt-in — the user chose it); only skipped in fullscreen (nothing over the game).
 function playBoot() {
-    if (reduceMotion() || isFullscreen()) return;
+    if (isFullscreen()) return;
     const b = make('div', 'zd-hexa-boot');
     const chant = make('div', 'zd-hexa-boot-chant');
     chant.append(make('span', 'zd-hexa-chant-big', 'OLÊ'));

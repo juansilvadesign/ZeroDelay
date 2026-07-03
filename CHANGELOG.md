@@ -7,6 +7,18 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido
+
+- **Modo Hexa — a splash "OLÊ OLÊ OLÁ" e a confete de gol agora tocam mesmo com
+  `reduced-motion`**. Como o Modo Hexa é **opt-in** (você ativa de propósito), essas
+  festas de um-disparo, acionadas por você, deixaram de ser suprimidas pela
+  preferência de movimento reduzido — só o **loop infinito** de morph da logo
+  continua calmo (estático) para quem precisa.
+- **Modo Hexa — blindagem anti-cascata**: cada nó decorativo (badge, varal, botão
+  GOL, logo) é montado isolado, então uma falha em um não derruba mais os outros
+  nem o `keepAlive`; a funcionalidade sobe antes do boot/toast cosméticos; e cada
+  falha vira um aviso `[ZeroDelay Hexa] <função> falhou:` no console (auto-diagnóstico).
+
 ## [1.2.0] - 2026-07-03
 
 ### Adicionado

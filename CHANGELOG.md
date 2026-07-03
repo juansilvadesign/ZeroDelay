@@ -7,6 +7,8 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [1.2.0] - 2026-07-03
+
 ### Adicionado
 
 - **Modo Hexa — logo do YouTube vira bandeira do Brasil**: o símbolo do "play"

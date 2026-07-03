@@ -35,6 +35,13 @@ atualizado a cada nova contribuição mesclada.
 - **Cristian** ([@criszst](https://github.com/criszst)) — correção da alternância do
   botão CTA "Apoiar via PIX", que agora abre **e** fecha o painel de doação — **PR #20 (mesclada)**.
 
+## Modo Hexa
+- **botelllhx** ([@botelllhx](https://github.com/botelllhx)) — o tema verde-amarelo do
+  **Modo Hexa**: repaginação visual (barra viva, varal de bandeirinhas, botão GOL
+  nativo, boot de ativação "OLÊ OLÊ OLÁ", badge), o header do popup vestindo a camisa,
+  os ícones de cerveja redesenhados e o ajuste de comportamento em tela cheia —
+  commits na branch `feat/modo-hexa`.
+
 ## Ideias e relatos
 - **Habini86** ([@Habini86](https://github.com/Habini86)) — ideia do gerenciamento
   dinâmico de buffer pela variação de chegada (**issue #12**), implementada na PR #13.

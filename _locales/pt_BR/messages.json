@@ -170,6 +170,30 @@
    "commandGoLiveDesc": {
       "message": "Pular para o ao vivo"
    },
+   "commandHexaDesc": {
+      "message": "Ativar/desativar o MODO HEXA"
+   },
+   "hexaInvite": {
+      "message": "Jogo do Brasil ao vivo. Ativar o Modo Hexa?"
+   },
+   "hexaInviteCta": {
+      "message": "Ativar"
+   },
+   "hexaDismiss": {
+      "message": "Agora não"
+   },
+   "hexaActivated": {
+      "message": "Modo Hexa ativado"
+   },
+   "hexaSectionTitle": {
+      "message": "Modo Hexa"
+   },
+   "hexaSuggestLabel": {
+      "message": "Sugerir nos jogos do Brasil ao vivo"
+   },
+   "hexaFullLabel": {
+      "message": "Tema completo no YouTube"
+   },
    "a11yPlaybackRate": {
       "message": "Velocidade de reprodução"
    },

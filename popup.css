@@ -646,6 +646,17 @@ html {
     flex-direction: column;
 }
 
+/* Small label heading a group of rows (e.g. Modo Hexa). */
+.group-title {
+    margin: 0;
+    padding: 11px 14px 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-faint);
+}
+
 /* ---------------------------------------------------------------- Rows */
 .row {
     display: flex;
@@ -865,6 +876,38 @@ html {
     animation: steam 1.8s var(--ease) infinite;
 }
 
+/* Beer carbonation: bubbles drift up inside the mug and fade, staggered — the
+   BR swap's answer to the coffee steam. */
+@keyframes bubble {
+    0% {
+        opacity: 0;
+        transform: translateY(2px);
+    }
+
+    25% {
+        opacity: 0.9;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+}
+
+.coffee-toggle svg .bubble {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: bubble 2.1s var(--ease) infinite;
+}
+
+.coffee-toggle svg .bubble:nth-of-type(2) {
+    animation-delay: 0.7s;
+}
+
+.coffee-toggle svg .bubble:nth-of-type(3) {
+    animation-delay: 1.4s;
+}
+
 /* ---------------------------------------------------------------- Support CTA (always visible) */
 /* Speech balloon: reads as the lonely "Apoiar" button (top-right) talking, and
  * pops hard out of it on open, then nudges now and then for attention. The tail
@@ -1043,7 +1086,7 @@ html {
     background: var(--surface-2);
     color: var(--text);
     font-family: var(--font-mono);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     text-align: center;
     cursor: pointer;
@@ -1067,6 +1110,31 @@ html {
 
 .chip-ico:empty {
     display: none;
+}
+
+/* Keep "R$ 10" on one line (never break at the space) and sized like the rest. */
+.chip-val {
+    white-space: nowrap;
+}
+
+/* A little "tim-tim" tilt when you hover a tier — the drinks come alive. */
+@keyframes chip-cheers {
+    0%,
+    100% {
+        transform: translateY(0) rotate(0);
+    }
+
+    40% {
+        transform: translateY(-2px) rotate(-7deg);
+    }
+
+    70% {
+        transform: translateY(0) rotate(4deg);
+    }
+}
+
+.support-chip:hover .chip-ico {
+    animation: chip-cheers 0.5s var(--ease);
 }
 
 .support-chip:hover {
@@ -1308,4 +1376,48 @@ html {
         filter: none !important;
         transform: none !important;
     }
+}
+
+/* ---------------------------------------------------------------- Modo Hexa dress */
+/* While the theme is live on a tab, the popup HEADER wears the shirt: a full-bleed
+   green band (the selecao's field), a tricolor tear-line under it, the wordmark
+   "o" seal going gold, and text lifted for contrast. Driven by body.hexa. */
+body.hexa .app-header {
+    position: relative;
+    margin: -18px -16px 4px;
+    padding: 18px 16px 15px;
+    background: linear-gradient(180deg, #0c4527, #083a20);
+}
+
+body.hexa .app-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #009c3b 0 33%, #ffdf00 33% 66%, #002776 66% 100%);
+}
+
+body.hexa .brand-name {
+    color: #fff6d5;
+}
+
+body.hexa .brand-tagline {
+    color: #cfe3c9;
+}
+
+/* The live "o" seal wears gold on the green field (still pulses when synced). */
+body.hexa .brand-o {
+    border-color: #ffdf00;
+}
+
+body.hexa [data-signal="synced"] .brand-o {
+    border-color: #ffdf00;
+    background: #ffdf00;
+    box-shadow: 0 0 9px -1px rgba(255, 223, 0, 0.55);
+}
+
+body.hexa [data-signal="synced"] .brand-o::after {
+    border-color: #ffdf00;
 }

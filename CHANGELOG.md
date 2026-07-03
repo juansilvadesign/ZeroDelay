@@ -7,6 +7,64 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [1.2.0] - 2026-07-03
+
+### Adicionado
+
+- **Modo Hexa — logo do YouTube vira bandeira do Brasil**: o símbolo do "play"
+  na masthead se transforma, em **loop com descanso** (~24s: a maior parte do
+  tempo como bandeira, um breve retorno ao YouTube), numa **bandeira cartoon
+  tremulando** — o campo vermelho vira verde, o **losango**, o **círculo azul** e
+  as **6 estrelas do hexa** brotam em coroa por cima, e o **triângulo branco do
+  play** permanece como elo entre os dois estados. Some no **gol** (a bandeira
+  balança forte junto com a confete) e respeita `prefers-reduced-motion` (fica uma
+  bandeira parada) e a tela cheia. Não é um adesivo por cima: é uma **troca no
+  próprio SVG da logo** — escondemos só os paths do ícone e injetamos a bandeira no
+  lugar exato dele, **reaproveitando o wordmark "YouTube" original** da página (nada
+  é reproduzido/embutido; tudo fica no mesmo sistema de coordenadas e alinhado).
+- **Modo Hexa — comemoração de GOL**: confete liberado **continuamente por ~3s**
+  (não mais um único estouro). Dispara pelo botão **GOL!** e também
+  **automaticamente** quando um **pico de volume no chat ao vivo** é detectado —
+  um gol de verdade faz a torcida inteira postar de uma vez. Salvaguardas contra
+  falso-positivo: exige um número alto de mensagens num intervalo curto **e** um
+  múltiplo grande do ritmo normal do chat (um troll isolado mandando "GOL" não
+  dispara), **e** que a rajada seja majoritariamente comemorativa
+  (`classifyHexaChatMessage`) — para **não comemorar gol do adversário** (lamento
+  no chat não conta). Cooldown de 45s entre disparos.
+- **Modo Hexa — boot de ativação com o canto "OLÊ OLÊ OLÁ"**: a estrela tricolor
+  estoura e **segura o tempo de você vê-la** (o gatilho), depois se abre e entrega
+  um **campo amarelo** onde o grito **"OLÊ OLÊ OLÁ"** entra empilhado em verde (um
+  "OLÊ" grande + grade 2×3 + as estrelas do hexa), na fonte da marca (Departure
+  Mono, self-hosted também na página) — a festa da referência.
+- **Modo Hexa — botão GOL! com experiência de botão nativo**: neutro/cinza como o
+  like/dislike (mesmo tamanho, ícone de bola e espaçamento) e fica **dourado só ao
+  marcar** (clique ou detecção de gol), com a bola **quicando e girando** como a
+  reação do "gostei", voltando ao neutro em seguida.
+- **Modo Hexa — o popup veste a camisa**: enquanto o tema está ativo numa aba, o
+  **header do popup** ganha uma faixa verde full-bleed (o campo da seleção), uma
+  linha tricolor de recorte e o selo "o" do wordmark em ouro.
+- **Popup — ícones de cerveja redesenhados**: conjunto de traço padronizado
+  (copo americano → lata → long neck → caneca), com a **lata** agora de verdade
+  (ombro afunilando pra tampa + lacre, não mais um cilindro); o mug do header ganha
+  **borbulhas subindo** (carbonatação, recuperando a antiga fumacinha do café) e os
+  chips dão um "tim-tim" no hover. "R$ 10" não quebra mais linha.
+
+### Alterado
+
+- **Modo Hexa — repintura por padrão é ESTREITA (opt-in para a completa)**: por
+  padrão o tema veste só o acento (barra do player, varal e os nós ZeroDelay), sem
+  repintar o YouTube inteiro — menos ambiguidade de "isto é o YouTube real?". O
+  **tema verde completo** continua existindo, agora **desligado por padrão** e
+  ativável em "Tema completo no YouTube"; quando ligado, ele traz também a **borda
+  verde** sob o masthead.
+- **Modo Hexa — selo LIVE permanece VERMELHO nativo**: o selo "AO VIVO" do player
+  não é tingido. Vermelho = "você está na borda ao vivo", que é justamente o que a
+  extensão entrega — tingi-lo enterraria o único sinal que diz ao torcedor que ele
+  está realmente ao vivo.
+- **Modo Hexa fica totalmente inerte em tela cheia**: nenhum overlay (badge,
+  varal, GOL!, confete, boot, toast, convite) e nenhum acento no player (barra)
+  enquanto o vídeo está em fullscreen — tudo volta ao sair.
+
 ### Corrigido
 
 - **Aceleração linear e contínua** no motor de catch-up. O controlador voltou a

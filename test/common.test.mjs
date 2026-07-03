@@ -119,3 +119,50 @@ test('resolveSettings applies defaults, clamps and snaps', () => {
     assert.equal(t.bufferTarget, common.defaultBufferTarget); // NaN -> default
     assert.equal(t.enabled, false); // real value kept
 });
+
+test('detectBrazilMatch fires on a real Brazil matchup title', () => {
+    assert.equal(common.detectBrazilMatch('AO VIVO: BRASIL X CROÁCIA | COPA DO MUNDO FIFA™ 2026 | QUARTAS'), true);
+    assert.equal(common.detectBrazilMatch('AO VIVO: CROÁCIA X BRASIL | COPA DO MUNDO'), true); // reversed order
+    assert.equal(common.detectBrazilMatch('BRASIL VS ARGENTINA | Eliminatórias'), true);       // "vs"
+    assert.equal(common.detectBrazilMatch('Brasil x Chile | amistoso'), true);                 // lowercase
+    assert.equal(common.detectBrazilMatch('BRASÍL X BOLÍVIA | jogo'), true);                    // stray accent
+    assert.equal(common.detectBrazilMatch('AO VIVO: BRASIL × COLÔMBIA | COPA'), true);          // "×" separator
+    assert.equal(common.detectBrazilMatch('Brasil e Argentina | Eliminatórias'), true);         // "e" separator
+    assert.equal(common.detectBrazilMatch('BRASIL VS. URUGUAI | amistoso'), true);              // "vs." with period
+    assert.equal(common.detectBrazilMatch('AO VIVO: ARGENTINA VS. BRASIL'), true);              // reversed + period
+});
+
+test('detectBrazilMatch ignores non-Brazil and non-matchup titles', () => {
+    assert.equal(common.detectBrazilMatch('AO VIVO: ESPANHA X ÁUSTRIA | COPA DO MUNDO FIFA™ 2026'), false);
+    assert.equal(common.detectBrazilMatch('AO VIVO: ESPANHA X ITÁLIA | e a torcida do Brasil vibra'), false); // "brasil" not a team
+    assert.equal(common.detectBrazilMatch('ESPANHA X FRANÇA | Brasil assiste de fora'), false);  // brasil only in a later segment
+    assert.equal(common.detectBrazilMatch('Melhores momentos da seleção do Brasil'), false);     // no matchup separator
+    assert.equal(common.detectBrazilMatch(''), false);
+    assert.equal(common.detectBrazilMatch(undefined), false);
+    assert.equal(common.detectBrazilMatch(null), false);
+});
+
+test('classifyHexaChatMessage scores celebration as +1', () => {
+    assert.equal(common.classifyHexaChatMessage('GOL'), 1);
+    assert.equal(common.classifyHexaChatMessage('GOOOOOLLLL'), 1);       // stretched
+    assert.equal(common.classifyHexaChatMessage('golaço do brasil!'), 1); // accented
+    assert.equal(common.classifyHexaChatMessage('É CAMPEÃO'), 1);
+    assert.equal(common.classifyHexaChatMessage('vamo brasil 🇧🇷'), 1);
+    assert.equal(common.classifyHexaChatMessage('⚽⚽⚽'), 1);            // emoji only
+    // A strong GOL wins even when a dismay word is present (disbelief, not a loss).
+    assert.equal(common.classifyHexaChatMessage('GOOOL não acredito!!'), 1);
+});
+
+test('classifyHexaChatMessage scores pure dismay as -1 (opponent-goal guard)', () => {
+    assert.equal(common.classifyHexaChatMessage('não acredito nisso'), -1);
+    assert.equal(common.classifyHexaChatMessage('tomamos de novo'), -1);
+    assert.equal(common.classifyHexaChatMessage('que vergonha'), -1);
+    assert.equal(common.classifyHexaChatMessage('😭😭😭'), -1);
+});
+
+test('classifyHexaChatMessage is neutral (0) for off-topic and empty text', () => {
+    assert.equal(common.classifyHexaChatMessage('alguém sabe o placar?'), 0);
+    assert.equal(common.classifyHexaChatMessage('primeira vez aqui'), 0);
+    assert.equal(common.classifyHexaChatMessage(''), 0);
+    assert.equal(common.classifyHexaChatMessage(undefined), 0);
+});

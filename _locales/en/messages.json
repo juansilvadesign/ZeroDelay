@@ -170,6 +170,30 @@
    "commandGoLiveDesc": {
       "message": "Jump to live"
    },
+   "commandHexaDesc": {
+      "message": "Turn MODO HEXA on/off"
+   },
+   "hexaInvite": {
+      "message": "Brazil playing live. Turn on Hexa Mode?"
+   },
+   "hexaInviteCta": {
+      "message": "Turn on"
+   },
+   "hexaDismiss": {
+      "message": "Not now"
+   },
+   "hexaActivated": {
+      "message": "Hexa Mode on"
+   },
+   "hexaSectionTitle": {
+      "message": "Hexa Mode"
+   },
+   "hexaSuggestLabel": {
+      "message": "Suggest during live Brazil games"
+   },
+   "hexaFullLabel": {
+      "message": "Full theme on YouTube"
+   },
    "a11yPlaybackRate": {
       "message": "Playback speed"
    },

@@ -34,6 +34,9 @@ atualizado a cada nova contribuição mesclada.
 - **Guilherme** ([@ventgui28](https://github.com/ventgui28)) — **Botão "Ir ao Vivo"** de ação rápida diretamente no popup da extensão — **PR #15 (mesclada)**.
 - **Cristian** ([@criszst](https://github.com/criszst)) — correção da alternância do
   botão CTA "Apoiar via PIX", que agora abre **e** fecha o painel de doação — **PR #20 (mesclada)**.
+- **wthallys** ([@wthallys](https://github.com/wthallys)) — ideia e base da **memória
+  de modo por canal** (**PR #22**), reformulada (opt-in, sem sobrepor o modo global,
+  chave por `channel_id`) e mesclada.
 
 ## Modo Hexa
 - **botelllhx** ([@botelllhx](https://github.com/botelllhx)) — o tema verde-amarelo do

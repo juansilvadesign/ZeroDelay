@@ -7,6 +7,14 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado
+
+- **Memória de modo por canal (opt-in)**: um toggle **"Lembrar modo por canal"**
+  (desligado por padrão) guarda o modo que você escolhe em cada canal do YouTube e
+  reaplica ao voltar. Nunca sobrepõe o seu modo atual num canal sem preferência
+  salva; o popup mostra **"lembrado para este canal"** com um **"esquecer"**.
+  Baseado na ideia da PR #22 de [@wthallys](https://github.com/wthallys).
+
 ### Corrigido
 
 - **Avisos só em lives**: tanto a oferta de "a transmissão está travando" quanto o

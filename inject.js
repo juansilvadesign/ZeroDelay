@@ -585,6 +585,15 @@
         if (controllerFactory) controller = controllerFactory();
         seekableEnds = [];
 
+        // The stall watchdog counts buffering events for THIS stream (a mode too
+        // aggressive for this connection). Reset the count on a fresh stream, or a
+        // stall on the previous live would combine with one here into a spurious
+        // "switch to a calmer mode" offer. The nag cooldown (stall_cooldown_until)
+        // is intentionally kept — don't re-offer while channel-surfing right after
+        // a dismissal.
+        stall_times = [];
+        last_stall = 0;
+
         if (bound_video !== v) {
             // Detach the previous <video>'s listeners before binding the new one,
             // so the old element can be garbage-collected after a live→live

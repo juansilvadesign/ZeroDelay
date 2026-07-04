@@ -44,6 +44,13 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - **Falso positivo do aviso de travamento em anúncios**: o watchdog de travamento
   ignora o evento `waiting` disparado enquanto um **anúncio** roda (buffa no mesmo
   `<video>`), então não sugere mais trocar de modo por causa de propaganda.
+- **Watchdog de travamento zera a contagem ao trocar de live**: a contagem de
+  travadas é reiniciada a cada transmissão, junto com o resto do estado do motor
+  (EMAs/histerese, `seekableEnds`). Antes ela era global e sobrevivia à navegação
+  SPA — uma travada numa live somava com outra na live seguinte (ao trocar de
+  canal em até 90s) e disparava a oferta de "trocar para um modo mais calmo" sem
+  que nenhuma das duas tivesse travado de verdade duas vezes. O recuo anti-repetição
+  (não reoferecer por ~5min) é mantido de propósito.
 
 ### Alterado
 

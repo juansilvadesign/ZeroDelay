@@ -28,8 +28,33 @@ function el(tag, props = {}, ...children) {
 // as text/html (not image/svg+xml): the HTML parser puts <svg> in the SVG
 // namespace even without an xmlns attribute, so our inline ICONS actually render;
 // image/svg+xml would drop them into the null namespace and they'd stay invisible.
+//
+// Defense-in-depth: every input here is our OWN static markup today, but we still
+// sanitize the parsed tree so a future change that lets untrusted text reach this
+// path can't inject script — the classic <svg onload=...>/javascript: vectors are
+// stripped, and a scriptable root is rejected outright.
 function parseSvg(markup) {
-    return new DOMParser().parseFromString(markup, 'text/html').body.firstElementChild;
+    const root = new DOMParser().parseFromString(markup, 'text/html').body.firstElementChild;
+    if (!root) return null;
+    const tag = root.tagName.toLowerCase();
+    if (tag === 'script' || tag === 'foreignobject') return null;
+    sanitizeSvg(root);
+    return root;
+}
+
+// Strip the scriptable surface from a parsed markup subtree: <script>/<foreignObject>
+// nodes, inline event handlers (on*), and javascript:/data: URLs on href/src.
+function sanitizeSvg(node) {
+    const tag = node.tagName ? node.tagName.toLowerCase() : '';
+    if (tag === 'script' || tag === 'foreignobject') { node.remove(); return; }
+    for (const attr of [...node.attributes]) {
+        const name = attr.name.toLowerCase();
+        const isUrlAttr = name === 'href' || name.endsWith(':href') || name === 'src';
+        if (name.startsWith('on') || (isUrlAttr && /^\s*(?:javascript|data):/i.test(attr.value))) {
+            node.removeAttribute(attr.name);
+        }
+    }
+    for (const child of [...node.children]) sanitizeSvg(child);
 }
 
 const getStorage = keys => new Promise(res => chrome.storage.local.get(keys, res));

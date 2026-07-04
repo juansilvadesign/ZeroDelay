@@ -259,5 +259,11 @@
    },
    "faqShortcutsA": {
       "message": "São três atalhos (no Mac, troque Alt por ⌘ Command):\n• Alt+Shift+Y — ativar/desativar o ZeroDelay\n• Alt+Shift+L — pular para o ao vivo\n• Alt+Shift+H — ativar/desativar o Modo Hexa (tema do Brasil)\nVocê pode vê-los e mudá-los em chrome://extensions/shortcuts."
+   },
+   "aboutLink": {
+      "message": "Sobre o ZeroDelay"
+   },
+   "reportIssue": {
+      "message": "Relatar um problema"
    }
 }

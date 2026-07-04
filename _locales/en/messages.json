@@ -259,5 +259,11 @@
    },
    "faqShortcutsA": {
       "message": "Three shortcuts (on Mac, swap Alt for ⌘ Command):\n• Alt+Shift+Y — turn ZeroDelay on/off\n• Alt+Shift+L — jump to live\n• Alt+Shift+H — turn Hexa Mode on/off (Brazil theme)\nYou can view and change them at chrome://extensions/shortcuts."
+   },
+   "aboutLink": {
+      "message": "About ZeroDelay"
+   },
+   "reportIssue": {
+      "message": "Report an issue"
    }
 }

@@ -154,6 +154,10 @@ export const label = {
     faqIndicatorsA: msg('faqIndicatorsA', 'Ao lado do selo AO VIVO aparecem a velocidade atual, a latência (o quanto você está atrás) e a saúde do buffer. Você liga ou desliga cada um na seção de indicadores.'),
     faqShortcutsQ: msg('faqShortcutsQ', 'Existem atalhos de teclado?'),
     faqShortcutsA: msg('faqShortcutsA', 'São três atalhos (no Mac, troque Alt por ⌘ Command):\n• Alt+Shift+Y — ativar/desativar o ZeroDelay\n• Alt+Shift+L — pular para o ao vivo\n• Alt+Shift+H — ativar/desativar o Modo Hexa (tema do Brasil)\nVocê pode vê-los e mudá-los em chrome://extensions/shortcuts.'),
+
+    // Footer links — project page + issue tracker on GitHub.
+    aboutLink: msg('aboutLink', 'Sobre o ZeroDelay'),
+    reportIssue: msg('reportIssue', 'Relatar um problema'),
 };
 
 // ---------------------------------------------------------------------------

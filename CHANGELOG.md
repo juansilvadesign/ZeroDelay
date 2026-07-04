@@ -69,6 +69,15 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   dois botões de escolha existem no banner sobre a live e no popup, e o botão
   de apoio no header do popup segue sempre disponível.
 
+### Segurança
+
+- **Blindagem preventiva do SVG do popup**: a função que converte o markup dos
+  ícones e do QR PIX em nós DOM agora rejeita raízes scriptáveis e remove
+  `<script>`/`<foreignObject>` aninhados, handlers inline (`on*`) e URLs
+  `javascript:`/`data:` de `href`/`src`. Hoje só markup próprio passa por ali
+  (nenhuma falha explorável existia); a mudança garante que uma alteração
+  futura não transforme esse caminho em XSS.
+
 ## [1.2.1] - 2026-07-03
 
 ### Corrigido

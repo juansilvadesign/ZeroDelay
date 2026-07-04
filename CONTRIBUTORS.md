@@ -42,6 +42,9 @@ atualizado a cada nova contribuição mesclada.
   "modo mais calmo" sem motivo (**PR #25, mesclada**), e a seção retrátil
   **"Ajuda · Como usar"** no popup, um FAQ nos quatro idiomas para quem acabou
   de instalar (**PR #28, mesclada**).
+- **aantonioprado** ([@aantonioprado](https://github.com/aantonioprado)) —
+  blindagem preventiva contra XSS no parsing de SVG do popup (sanitização de
+  `on*`, `javascript:`/`data:` e nós scriptáveis) — **PR #30 (mesclada)**.
 
 ## Modo Hexa
 - **botelllhx** ([@botelllhx](https://github.com/botelllhx)) — o tema verde-amarelo do

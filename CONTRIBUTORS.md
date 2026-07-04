@@ -37,6 +37,11 @@ atualizado a cada nova contribuição mesclada.
 - **wthallys** ([@wthallys](https://github.com/wthallys)) — ideia e base da **memória
   de modo por canal** (**PR #22**), reformulada (opt-in, sem sobrepor o modo global,
   chave por `channel_id`) e mesclada.
+- **leandroohsr** ([@leandroohsr](https://github.com/leandroohsr)) — correção do
+  **watchdog de travamento**, que não zerava a contagem entre lives e sugeria
+  "modo mais calmo" sem motivo (**PR #25, mesclada**), e a seção retrátil
+  **"Ajuda · Como usar"** no popup, um FAQ nos quatro idiomas para quem acabou
+  de instalar (**PR #28, mesclada**).
 
 ## Modo Hexa
 - **botelllhx** ([@botelllhx](https://github.com/botelllhx)) — o tema verde-amarelo do

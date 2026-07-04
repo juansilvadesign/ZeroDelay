@@ -17,6 +17,27 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Corrigido
 
+- **Travamentos com o rate preso em 1.05x (regressão da v1.2.0)**: o controlador
+  contínuo tinha perdido o `bufferTarget` como piso de descanso e moía o buffer
+  até o limite de travamento (1.5s), segurando ~1.05x sem margem nenhuma até a
+  live travar, em todos os modos, sempre que a latência mínima real da stream
+  fica acima de ~2s (toda live de verdade). O alvo de buffer do modo voltou a
+  ser o ponto de equilíbrio, com as três salvaguardas do controlador original
+  restauradas (histerese de engate, backoff instantâneo em 2.5s e freio
+  preditivo de drenagem da issue #12), mantendo a aceleração contínua.
+  Diagnóstico confirmado ao vivo na CazeTV e por simulação (52-58 travamentos
+  em 30 min antes; 0 depois, nos modos suave/equilibrado/automático).
+- **Motor se auto-bloqueava achando que era o usuário**: o player do YouTube
+  quantiza `setPlaybackRate` em passos de 0.05 (pedir 1.0375 aplica 1.0; 1.06
+  aplica 1.05). Os rates contínuos do controlador novo divergiam do eco
+  quantizado e o detector de "usuário mudou a velocidade" congelava o controle
+  com a live presa em 1.05x, inclusive com o buffer morrendo. Agora o motor
+  pede rates já no grid de 0.05 e adota o eco do player como valor aplicado.
+- **Motor dormia em aba minimizada**: o loop era um `setInterval` puro, que o
+  Chrome estrangula em aba escondida (1 tick/s, e 1 tick/min após 5 minutos sem
+  áudio) — sem catch-up, sem skip e com os indicadores defasados até voltar. O
+  tick agora é dirigido pelo `timeupdate` do vídeo (imune ao throttle enquanto
+  a mídia toca) com resync imediato ao voltar pra aba.
 - **Avisos só em lives**: tanto a oferta de "a transmissão está travando" quanto o
   convite de doação agora só aparecem enquanto uma **live está tocando de verdade**
   — nunca em VOD/replay nem numa aba ociosa.

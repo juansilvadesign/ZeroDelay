@@ -130,8 +130,19 @@
     // speed up is the player API `setPlaybackRate()`. We remember the rate we
     // applied; if the player's rate diverges we assume the viewer changed it and
     // yield to them, re-engaging once they go back to 1.0x.
+    //
+    // The live player only accepts rates on a 0.05 grid (measured on production
+    // players: asking 1.0375 applies 1.0, asking 1.06 applies 1.05). So we (a)
+    // quantize what we ask to the grid, and (b) adopt the player's own echo as
+    // `applied_rate` right after setting — otherwise the quantized echo differs
+    // from what we asked, the divergence check reads it as a viewer override,
+    // and the engine locks itself out with the live stuck at e.g. 1.05x while
+    // the buffer dies (the v1.2.0 "1.05x" bug).
     let applied_rate = 1.0;
     let yielded_to_user = false;
+
+    const RATE_STEP = 0.05;   // the player's accepted playback-rate granularity
+    function quantize_rate(r) { return Math.round(r / RATE_STEP) * RATE_STEP; }
 
     function apply_playback_rate(desired) {
         if (!player?.setPlaybackRate || !player?.getPlaybackRate) return;
@@ -146,9 +157,13 @@
             }
         }
         if (yielded_to_user) return;
-        if (Math.abs(desired - applied_rate) > 0.01) {
-            player.setPlaybackRate(desired);
-            applied_rate = desired;
+        const grid = quantize_rate(desired);
+        if (Math.abs(grid - applied_rate) > 0.01) {
+            player.setPlaybackRate(grid);
+            // The echo is authoritative: whatever the player actually adopted
+            // is what the next tick must compare against, so quantization can
+            // never masquerade as a viewer override.
+            applied_rate = player.getPlaybackRate();
         }
     }
 
@@ -448,6 +463,32 @@
         }
     }
 
+    // --- Background-proof tick driver ----------------------------------------
+    // Chrome throttles hidden-tab timers to 1/s, and to 1/min after 5 minutes
+    // (unless audible) — on a pure setInterval the engine slept while the tab
+    // was minimized: no catch-up, no skip, stale chips, and the viewer came
+    // back to a DVR'd stream 20s+ behind. 'timeupdate' comes from the media
+    // pipeline, not the timer queue, so it keeps firing ~4x/s while the video
+    // plays even in hidden tabs. Both drivers land on one shared throttle so
+    // the foreground rate stays ~4-5 ticks/s (the controller's EMAs and the
+    // auto-mode cooldown are tuned for 250ms ticks).
+    let last_tick_ms = 0;
+    function on_engine_tick() {
+        const now = Date.now();
+        if (now - last_tick_ms < 200) return;
+        last_tick_ms = now;
+        guarded_tick();
+    }
+
+    // Coming back to the foreground: tick immediately (fresh chips, and the
+    // catch-up/skip logic sees the accumulated latency right away).
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            last_tick_ms = 0;
+            on_engine_tick();
+        }
+    });
+
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
         if (!settings) return; // Firefox X-ray edge: detail failed to cross worlds
@@ -459,7 +500,10 @@
         clearInterval(interval);
         if (engine_degraded) return; // paused until the next navigation retries
         if (settings.enabled || settings.skip || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent) {
-            interval = setInterval(guarded_tick, 250);
+            // Fallback driver for paused/idle states — while the video PLAYS,
+            // 'timeupdate' (bound in detect_and_attach) is what actually keeps
+            // the loop alive in throttled background tabs.
+            interval = setInterval(on_engine_tick, 250);
         } else {
             reset_playbackRate();
             hideAllIndicators();
@@ -542,12 +586,16 @@
         seekableEnds = [];
 
         if (bound_video !== v) {
-            // Detach the previous <video>'s listener before binding the new one,
+            // Detach the previous <video>'s listeners before binding the new one,
             // so the old element can be garbage-collected after a live→live
             // navigation instead of being pinned by the closure (PR #17). The
             // `ratechange` listener was dropped entirely — nothing consumes it.
-            if (bound_video) bound_video.removeEventListener('waiting', on_video_waiting);
+            if (bound_video) {
+                bound_video.removeEventListener('waiting', on_video_waiting);
+                bound_video.removeEventListener('timeupdate', on_engine_tick);
+            }
             v.addEventListener('waiting', on_video_waiting);
+            v.addEventListener('timeupdate', on_engine_tick);   // background-proof tick driver
             bound_video = v;
         }
 

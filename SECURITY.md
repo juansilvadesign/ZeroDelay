@@ -1,48 +1,48 @@
-# Política de Segurança
+# Security Policy
 
-## Versões suportadas
+## Supported versions
 
-O ZeroDelay é uma extensão de navegador distribuída pela Chrome Web Store e
-buildada para Firefox. Apenas a **versão publicada mais recente** recebe
-correções de segurança. Atualize sempre para a última versão antes de reportar.
+ZeroDelay is a browser extension distributed through the Chrome Web Store and
+built for Firefox. Only the **latest published version** receives security fixes.
+Always update to the latest version before reporting.
 
-## Como reportar uma vulnerabilidade
+## How to report a vulnerability
 
-**Não abra uma issue pública** para relatar falhas de segurança. Isso exporia o
-problema antes de uma correção estar disponível.
+**Do not open a public issue** to report security flaws. That would expose the
+problem before a fix is available.
 
-Prefira um dos canais privados abaixo:
+Please use one of the private channels below:
 
-1. **GitHub Security Advisories** (recomendado): use o botão
+1. **GitHub Security Advisories** (recommended): use the
    [*Report a vulnerability*](https://github.com/joaogfc/ZeroDelay/security/advisories/new)
-   na aba **Security** do repositório.
-2. **E-mail:** envie os detalhes para
-   [joao@solitus.com.br](mailto:joao@solitus.com.br) com o assunto começando por
-   `[SECURITY] ZeroDelay`.
+   button on the repository's **Security** tab.
+2. **Email:** send the details to
+   [joao@solitus.com.br](mailto:joao@solitus.com.br) with the subject starting
+   with `[SECURITY] ZeroDelay`.
 
-Inclua, se possível:
+Include, if possible:
 
-- Uma descrição da falha e do impacto potencial;
-- Passos para reproduzir (URL da live, modo em uso, navegador e versão);
-- Qualquer prova de conceito, log ou captura de tela relevante.
+- A description of the flaw and its potential impact;
+- Steps to reproduce (live stream URL, mode in use, browser and version);
+- Any relevant proof of concept, log or screenshot.
 
-## O que esperar
+## What to expect
 
-- **Confirmação de recebimento:** em até 5 dias úteis.
-- **Avaliação inicial e próximos passos:** em até 15 dias úteis.
-- Manteremos você informado sobre o andamento da correção e combinaremos a
-  divulgação pública somente depois que uma versão corrigida for publicada.
+- **Acknowledgement of receipt:** within 5 business days.
+- **Initial assessment and next steps:** within 15 business days.
+- We'll keep you informed on the progress of the fix and will agree on public
+  disclosure only after a fixed version has been published.
 
-Pedimos que você dê um prazo razoável para a correção antes de divulgar a falha
-publicamente. Contribuições responsáveis serão creditadas no
-[CHANGELOG.md](CHANGELOG.md), se você desejar.
+We ask that you allow a reasonable amount of time for the fix before disclosing
+the flaw publicly. Responsible reports will be credited in
+[CHANGELOG.md](CHANGELOG.md), if you wish.
 
-## Escopo
+## Scope
 
-A extensão roda inteiramente no navegador e **não envia dados a servidores
-externos**. Recursos como o QR Code PIX de doação são gerados **localmente**.
-Relatórios especialmente úteis envolvem:
+The extension runs entirely in the browser and **does not send data to external
+servers**. Features like the PIX donation QR code are generated **locally**.
+Especially useful reports involve:
 
-- Vazamento de dados do usuário para fora do navegador;
-- Execução de código não confiável a partir de conteúdo da página;
-- Escalonamento indevido de permissões da extensão.
+- Leaking user data outside the browser;
+- Running untrusted code from page content;
+- Improper escalation of the extension's permissions.

@@ -1,65 +1,67 @@
-# Contribuidores
+# Contributors
 
-O ZeroDelay é um trabalho colaborativo. Obrigado a quem contribuiu com código
-(a autoria de cada commit é preservada no histórico do Git). Este arquivo é
-atualizado a cada nova contribuição mesclada.
+ZeroDelay is a collaborative effort. Thanks to everyone who has contributed code
+(each commit's authorship is preserved in the Git history). This file is updated
+with every newly merged contribution.
 
-## Suporte a Firefox
-- **Emanoel** ([@emanoeI](https://github.com/emanoeI)) — build do Firefox Desktop:
-  `manifest.firefox.json` + build em Node + tooling `web-ext` — **PR #4 (mesclada)**;
-  alinhamento da documentação Firefox ao manifesto — **PR #14 (mesclada)**.
-- **Kweripx** ([@kweripx](https://github.com/kweripx)) — suporte inicial a Firefox
-  no manifesto — **PR #1** (base para a #4).
+## Firefox support
+- **Emanoel** ([@emanoeI](https://github.com/emanoeI)) — Firefox Desktop build:
+  `manifest.firefox.json` + Node build + `web-ext` tooling — **PR #4 (merged)**;
+  aligning the Firefox docs with the manifest — **PR #14 (merged)**.
+- **Kweripx** ([@kweripx](https://github.com/kweripx)) — initial Firefox support
+  in the manifest — **PR #1** (basis for #4).
 
-## Motor, testes e automação
+## Engine, tests and automation
 - **juansilvadesign** ([@juansilvadesign](https://github.com/juansilvadesign)) —
-  resiliência do motor de catch-up, testes (`node:test`) e tooling de release —
-  **PR #5 (mesclada)**.
-- **jrlucas1** ([@jrlucas1](https://github.com/jrlucas1)) — catch-up **preditivo**
-  pela tendência do buffer — **PR #13 (mesclada)** — além da base de pipeline de
-  CI e automação de releases (**PR #2**).
-- **bruno-gianini** ([@brunogianini](https://github.com/brunogianini)) — correção de
-  vazamentos de memória em listeners do player e do `chrome.storage` — **PR #17 (mesclada)**.
+  catch-up engine resilience, tests (`node:test`) and release tooling —
+  **PR #5 (merged)**.
+- **jrlucas1** ([@jrlucas1](https://github.com/jrlucas1)) — **predictive** catch-up
+  from the buffer trend — **PR #13 (merged)** — plus the base for the CI pipeline
+  and release automation (**PR #2**).
+- **bruno-gianini** ([@brunogianini](https://github.com/brunogianini)) — fixing
+  memory leaks in player and `chrome.storage` listeners — **PR #17 (merged)**.
 
-## UX e acessibilidade
-- **huandrey** ([@huandrey](https://github.com/huandrey)) — **atalhos de teclado**
-  (liga/desliga e ir ao vivo, **PR #8**), **acessibilidade** por teclado + `aria-label`
-  nos indicadores (**PR #9**) e o check de paridade de locales no CI (**PR #7**) —
-  todas mescladas.
-- **MoreiraGustav** ([@MoreiraGustav](https://github.com/MoreiraGustav)) — atalhos
-  de teclado (**PR #10**); registrou a ideia de o "ir ao vivo" agir só na aba ativa,
-  incorporada na **PR #16**.
-- **Emanoel** ([@emanoeI](https://github.com/emanoeI)) — atalho "ir ao vivo" restrito
-  à aba ativa (via `chrome.tabs.sendMessage`) — **PR #16 (mesclada)**.
-- **Guilherme** ([@ventgui28](https://github.com/ventgui28)) — **Botão "Ir ao Vivo"** de ação rápida diretamente no popup da extensão — **PR #15 (mesclada)**.
-- **Cristian** ([@criszst](https://github.com/criszst)) — correção da alternância do
-  botão CTA "Apoiar via PIX", que agora abre **e** fecha o painel de doação — **PR #20 (mesclada)**.
-- **wthallys** ([@wthallys](https://github.com/wthallys)) — ideia e base da **memória
-  de modo por canal** (**PR #22**), reformulada (opt-in, sem sobrepor o modo global,
-  chave por `channel_id`) e mesclada.
-- **leandroohsr** ([@leandroohsr](https://github.com/leandroohsr)) — correção do
-  **watchdog de travamento**, que não zerava a contagem entre lives e sugeria
-  "modo mais calmo" sem motivo (**PR #25, mesclada**), e a seção retrátil
-  **"Ajuda · Como usar"** no popup, um FAQ nos quatro idiomas para quem acabou
-  de instalar (**PR #28, mesclada**).
+## UX and accessibility
+- **huandrey** ([@huandrey](https://github.com/huandrey)) — **keyboard shortcuts**
+  (on/off and go-to-live, **PR #8**), keyboard **accessibility** + `aria-label`
+  on the indicators (**PR #9**) and the locale parity check in CI (**PR #7**) —
+  all merged.
+- **MoreiraGustav** ([@MoreiraGustav](https://github.com/MoreiraGustav)) — keyboard
+  shortcuts (**PR #10**); raised the idea of "go to live" acting only on the active
+  tab, folded into **PR #16**.
+- **Emanoel** ([@emanoeI](https://github.com/emanoeI)) — "go to live" shortcut
+  restricted to the active tab (via `chrome.tabs.sendMessage`) — **PR #16 (merged)**.
+- **Guilherme** ([@ventgui28](https://github.com/ventgui28)) — **"Go Live" button**
+  for quick action right in the extension popup — **PR #15 (merged)**.
+- **Cristian** ([@criszst](https://github.com/criszst)) — fixing the toggle of the
+  "Support via PIX" CTA button, which now opens **and** closes the donation panel —
+  **PR #20 (merged)**.
+- **wthallys** ([@wthallys](https://github.com/wthallys)) — idea and base for the
+  **per-channel mode memory** (**PR #22**), reworked (opt-in, without overriding
+  the global mode, keyed by `channel_id`) and merged.
+- **leandroohsr** ([@leandroohsr](https://github.com/leandroohsr)) — fixing the
+  **stall watchdog**, which didn't reset its count between live streams and
+  suggested a "calmer mode" for no reason (**PR #25, merged**), and the collapsible
+  **"Help · How to use"** section in the popup, a FAQ in all four languages for
+  anyone who just installed it (**PR #28, merged**).
 - **aantonioprado** ([@aantonioprado](https://github.com/aantonioprado)) —
-  blindagem preventiva contra XSS no parsing de SVG do popup (sanitização de
-  `on*`, `javascript:`/`data:` e nós scriptáveis) — **PR #30 (mesclada)**.
+  preventive XSS hardening in the popup's SVG parsing (sanitizing `on*`,
+  `javascript:`/`data:` and scriptable nodes) — **PR #30 (merged)**.
 
-## Modo Hexa
-- **botelllhx** ([@botelllhx](https://github.com/botelllhx)) — o tema verde-amarelo do
-  **Modo Hexa**: repaginação visual (barra viva, varal de bandeirinhas, botão GOL
-  nativo, boot de ativação "OLÊ OLÊ OLÁ", badge), o header do popup vestindo a camisa,
-  os ícones de cerveja redesenhados e o ajuste de comportamento em tela cheia —
-  commits na branch `feat/modo-hexa`.
+## Hexa Mode
+- **botelllhx** ([@botelllhx](https://github.com/botelllhx)) — the green-and-yellow
+  **Hexa Mode** theme: visual redesign (live bar, bunting of little flags, native
+  GOL button, "OLÊ OLÊ OLÁ" activation boot, badge), the popup header wearing the
+  jersey, the redesigned beer icons and the fullscreen behavior tweak — commits on
+  the `feat/modo-hexa` branch.
 
-## Ideias e relatos
-- **Habini86** ([@Habini86](https://github.com/Habini86)) — ideia do gerenciamento
-  dinâmico de buffer pela variação de chegada (**issue #12**), implementada na PR #13.
-- **fsousac** ([@fsousac](https://github.com/fsousac)) — proposta de padronização da
-  governança do projeto (**issue #3**).
+## Ideas and reports
+- **Habini86** ([@Habini86](https://github.com/Habini86)) — idea of dynamic buffer
+  management from arrival variation (**issue #12**), implemented in PR #13.
+- **fsousac** ([@fsousac](https://github.com/fsousac)) — proposal to standardize
+  the project's governance (**issue #3**).
 
 ---
 
-O projeto deriva da extensão [live-catch-up](https://github.com/yudai-tiny-developer/live-catch-up),
-de yudai-tiny-developer (ver [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)).
+ZeroDelay derives from the [live-catch-up](https://github.com/yudai-tiny-developer/live-catch-up)
+extension by yudai-tiny-developer (see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)).

@@ -1,222 +1,232 @@
-# ZeroDelay — Plano de Melhorias e Implementação
+# ZeroDelay — Improvement and Implementation Plan
 
-> Documento de planejamento. Não altera comportamento por si só — descreve o quê,
-> por quê e em que ordem. Cada item aponta `arquivo:linha` para ser acionável.
+> Planning document. It doesn't change behavior on its own — it describes what,
+> why, and in what order. Each item points to `file:line` so it's actionable.
 
-## Contexto (arquitetura em 4 linhas)
+## Context (architecture in 4 lines)
 
-- `content.js` — content script (mundo isolado). Faz a ponte `chrome.storage` →
-  página via `CustomEvent`, injeta `inject.js`, e cuida da UI de doação/stall.
-- `inject.js` — o **motor**, roda no mundo da página (MAIN). A cada 250 ms lê
-  APIs **privadas** do player (`getStatsForNerds`, `getProgressState`, …) e aplica
-  `player.setPlaybackRate()`. Renderiza os indicadores no player.
-- `common.js` — config compartilhada: chaves de storage, defaults, presets/modos,
-  i18n, lógica de doação.
-- `popup.js` / `background.js` / `pix.js` — UI de ajustes, service worker (badge de
-  doação) e gerador de PIX (BR Code) local.
+- `content.js` — content script (isolated world). Bridges `chrome.storage` →
+  page via `CustomEvent`, injects `inject.js`, and handles the donation/stall UI.
+- `inject.js` — the **engine**, runs in the page world (MAIN). Every 250 ms it
+  reads **private** player APIs (`getStatsForNerds`, `getProgressState`, …) and
+  applies `player.setPlaybackRate()`. Renders the player indicators.
+- `common.js` — shared config: storage keys, defaults, presets/modes, i18n,
+  donation logic.
+- `popup.js` / `background.js` / `pix.js` — settings UI, service worker (donation
+  badge) and the local PIX (BR Code) generator.
 
-O ponto único de falha era o acoplamento do motor a APIs internas do YouTube, antes
-**sem nenhuma proteção** — blindado na Fase 0. As Fases 0 e 1 estão concluídas.
-
----
-
-## Estado atual (2026-07-01)
-
-- **Fase 0 — Resiliência do motor:** ✅ concluída (2026-06-30) — R1–R3.
-- **Fase 1 — Higiene de release + testes:** ✅ concluída (2026-07-01) — H1–H5.
-- **Próximo:** Fase 2 (U1–U5) — atalhos de teclado, a11y, Firefox, docs de dev.
-- **Saúde do projeto:** `manifest` v1.1 · **21 testes** `node:test` verdes · ESLint
-  (flat, v9) **limpo** · `npm run build` → `build/zerodelay-1.1.zip` (19 arquivos,
-  manifesto na raiz, verificado por um leitor de ZIP independente).
+The single point of failure was the engine's coupling to YouTube's internal APIs,
+previously **with no protection at all** — hardened in Phase 0. Phases 0 and 1
+are complete.
 
 ---
 
-## Resumo priorizado
+## Current state (2026-07-01)
 
-| ID | Melhoria | Prioridade | Esforço | Impacto |
+- **Phase 0 — Engine resilience:** ✅ complete (2026-06-30) — R1–R3.
+- **Phase 1 — Release hygiene + tests:** ✅ complete (2026-07-01) — H1–H5.
+- **Next:** Phase 2 (U1–U5) — keyboard shortcuts, a11y, Firefox, dev docs.
+- **Project health:** `manifest` v1.1 · **21 tests** `node:test` green · ESLint
+  (flat, v9) **clean** · `npm run build` → `build/zerodelay-1.1.zip` (19 files,
+  manifest at the root, verified by an independent ZIP reader).
+
+---
+
+## Prioritized summary
+
+| ID | Improvement | Priority | Effort | Impact |
 | --- | --- | --- | --- | --- |
-| ✅ R1 | `try/catch` + feature-detect no laço do motor | **P0** | 2–3 h | Alto |
-| ✅ R2 | Re-detecção em navegação SPA (`yt-navigate-finish`) | **P0** | 2 h | Alto |
-| ✅ R3 | Degradação visível quando as APIs somem | **P0** | 1 h | Médio |
-| ✅ H1 | `package.json` + script de build/zip + version-stamp | **P1** | 2–3 h | Alto |
-| ✅ H2 | Reconciliar versão (1.1 vs 1.0) e marca (“Live Sync” → ZeroDelay) | **P1** | 30 min | Médio |
-| ✅ H3 | Extrair lógica pura + testes (PIX, modos, controlador) | **P1** | 4–6 h | Alto |
-| ✅ H4 | ESLint + CI (lint/test/build) — *Prettier adiado* | **P1** | 2 h | Médio |
-| ✅ H5 | Remover código morto (`calc_threathold`/`calc_segduration`) | **P1** | 15 min | Baixo |
-| ✅ U1 | Atalhos de teclado (`commands`: liga/desliga, ir ao vivo) | P2 | 2 h | Médio |
-| ✅ U2 | A11y: navegação por setas no radiogroup + `aria-label` nos indicadores | P2 | 2 h | Médio |
-| ✅ U3 | Suporte a Firefox (`browser_specific_settings`) | P2 | 1–2 h | Médio |
-| U4 | Docs de dev (README dev, CHANGELOG, CONTRIBUTING) | P2 | 2 h | Baixo |
-| U5 | Memória de modo por canal + chip “ir ao vivo” no popup | P2 | 3–4 h | Baixo |
+| ✅ R1 | `try/catch` + feature-detect in the engine loop | **P0** | 2–3 h | High |
+| ✅ R2 | Re-detection on SPA navigation (`yt-navigate-finish`) | **P0** | 2 h | High |
+| ✅ R3 | Visible degradation when the APIs disappear | **P0** | 1 h | Medium |
+| ✅ H1 | `package.json` + build/zip script + version-stamp | **P1** | 2–3 h | High |
+| ✅ H2 | Reconcile version (1.1 vs 1.0) and brand (“Live Sync” → ZeroDelay) | **P1** | 30 min | Medium |
+| ✅ H3 | Extract pure logic + tests (PIX, modes, controller) | **P1** | 4–6 h | High |
+| ✅ H4 | ESLint + CI (lint/test/build) — *Prettier deferred* | **P1** | 2 h | Medium |
+| ✅ H5 | Remove dead code (`calc_threathold`/`calc_segduration`) | **P1** | 15 min | Low |
+| ✅ U1 | Keyboard shortcuts (`commands`: on/off, go to live) | P2 | 2 h | Medium |
+| ✅ U2 | A11y: arrow-key navigation in the radiogroup + `aria-label` on the indicators | P2 | 2 h | Medium |
+| ✅ U3 | Firefox support (`browser_specific_settings`) | P2 | 1–2 h | Medium |
+| U4 | Dev docs (dev README, CHANGELOG, CONTRIBUTING) | P2 | 2 h | Low |
+| U5 | Per-channel mode memory + “go to live” chip in the popup | P2 | 3–4 h | Low |
 
 ---
 
-## Fase 0 — Resiliência do motor (P0) — ✅ Concluída
+## Phase 0 — Engine resilience (P0) — ✅ Complete
 
-> **✅ Concluída em 2026-06-30 — Resiliência do motor (R1–R3).**
-> Loop de 250 ms blindado com `try/catch` + feature-detection das APIs privadas
-> do player (desiste após 8 erros seguidos, com 1 aviso no console), re-detecção
-> idempotente em navegação SPA (`yt-navigate-finish`) e indicadores que somem na
-> degradação (nunca deixam valores congelados). Escopo: só `inject.js`
-> (+166 −64).
-O valor inteiro da extensão vive dentro de um `setInterval` de 250 ms
-(`inject.js:359-399`) que chama APIs não documentadas do YouTube. Qualquer
-refatoração do player derruba tudo — 4×/segundo, para sempre, sem sinal.
+> **✅ Completed on 2026-06-30 — Engine resilience (R1–R3).**
+> The 250 ms loop hardened with `try/catch` + feature-detection of the player's
+> private APIs (gives up after 8 errors in a row, with 1 console warning),
+> idempotent re-detection on SPA navigation (`yt-navigate-finish`) and indicators
+> that disappear on degradation (never leave frozen values). Scope: only
+> `inject.js` (+166 −64).
 
-### R1 — Proteger o laço e detectar as APIs uma vez
-- **Onde:** `inject.js:350-408` (handler `_live_catch_up_load_settings`) e o corpo
-  do `setInterval`.
-- **O quê:**
-  1. Ao detectar o player, checar uma vez a presença de cada API usada
+The extension's entire value lives inside a 250 ms `setInterval`
+(`inject.js:359-399`) that calls undocumented YouTube APIs. Any player refactor
+takes everything down — 4×/second, forever, with no signal.
+
+### R1 — Protect the loop and detect the APIs once
+- **Where:** `inject.js:350-408` (the `_live_catch_up_load_settings` handler) and
+  the `setInterval` body.
+- **What:**
+  1. When the player is detected, check once for the presence of each API used
      (`getStatsForNerds`, `getProgressState`, `getVideoData`, `setPlaybackRate`,
-     `getPlaybackRate`, `seekToLiveHead`, `getPlayerStateObject`). Guardar num
-     objeto `caps`.
-  2. Envolver o corpo do tick em `try/catch`. Em erro: incrementar
-     `consecutiveErrors`; após ~8 falhas seguidas, `clearInterval`, esconder
-     indicadores e `console.warn` **uma vez** (`[ZeroDelay] player API changed…`).
-  3. Só chamar cada função se `caps` disser que existe; senão, pular aquele efeito
-     (ex.: sem `seekToLiveHead` → desliga o skip, mantém o resto).
-- **Aceite:** simular ausência de `getStatsForNerds` não gera loop de exceções; o
-  restante (indicadores possíveis) continua; um único warn aparece.
+     `getPlaybackRate`, `seekToLiveHead`, `getPlayerStateObject`). Store them in a
+     `caps` object.
+  2. Wrap the tick body in `try/catch`. On error: increment `consecutiveErrors`;
+     after ~8 failures in a row, `clearInterval`, hide indicators and
+     `console.warn` **once** (`[ZeroDelay] player API changed…`).
+  3. Only call each function if `caps` says it exists; otherwise, skip that effect
+     (e.g. no `seekToLiveHead` → disable the skip, keep the rest).
+- **Acceptance:** simulating the absence of `getStatsForNerds` doesn't cause an
+  exception loop; the rest (the possible indicators) keeps working; a single
+  warning appears.
 
-### R2 — Re-detecção em navegação SPA
-- **Onde:** `inject.js:414-450` (`detect_interval` roda **uma vez** e dá
-  `clearInterval`); não há listener de navegação em `content.js`/`inject.js`.
-- **Por quê:** YouTube é SPA. Trocar de live na mesma aba não recarrega o script;
-  os indicadores podem ficar órfãos e o motor apontar para estado velho.
-- **O quê:** ouvir `yt-navigate-finish` (e/ou `yt-player-updated`) para re-rodar a
-  detecção do player e re-inserir os botões se o `time-display` foi reconstruído.
-  Tornar a inserção idempotente (não duplicar botões se já presentes).
-- **Aceite:** navegar entre duas lives sem reload mantém indicadores e catch-up
-  funcionando; sem botões duplicados.
+### R2 — Re-detection on SPA navigation
+- **Where:** `inject.js:414-450` (`detect_interval` runs **once** and calls
+  `clearInterval`); there's no navigation listener in `content.js`/`inject.js`.
+- **Why:** YouTube is an SPA. Switching live streams in the same tab doesn't
+  reload the script; the indicators can be orphaned and the engine can point at
+  stale state.
+- **What:** listen for `yt-navigate-finish` (and/or `yt-player-updated`) to re-run
+  the player detection and re-insert the buttons if the `time-display` was
+  rebuilt. Make the insertion idempotent (don't duplicate buttons if already
+  present).
+- **Acceptance:** navigating between two live streams without a reload keeps
+  indicators and catch-up working; no duplicated buttons.
 
-### R3 — Degradação visível
-- **Onde:** consumidor do estado de erro de R1.
-- **O quê:** quando o motor cai em modo degradado, esconder os indicadores em vez
-  de mostrar valores congelados; opcionalmente refletir “indisponível” no popup
-  via um flag em `chrome.storage` lido em `popup.js`.
-- **Aceite:** nenhum indicador “travado” na tela após perda de API.
+### R3 — Visible degradation
+- **Where:** the consumer of R1's error state.
+- **What:** when the engine drops into degraded mode, hide the indicators instead
+  of showing frozen values; optionally reflect “unavailable” in the popup via a
+  flag in `chrome.storage` read by `popup.js`.
+- **Acceptance:** no “stuck” indicators on screen after an API loss.
 
 ---
 
-## Fase 1 — Higiene de release e manutenção (P1) — ✅ Concluída
+## Phase 1 — Release hygiene and maintenance (P1) — ✅ Complete
 
-> **✅ Concluída em 2026-07-01 — Higiene de release + testes.**
-> Código morto removido (H5); versão/marca reconciliadas — o popup agora é
-> “ZeroDelay” (H2); `package.json` + build **zero-dependência** em Node puro
-> (`node:zlib`, sem binário `zip`) que gera `build/zerodelay-1.1.zip` com o
-> manifesto na raiz, mais um `validate` do manifest (H1); o controlador de
-> catch-up foi extraído para `engine/controller.js` (dual Node/browser via
-> `engine/package.json`) e coberto por **21 testes** `node:test` — PIX/CRC,
-> modos e controlador, todos verdes (H3); ESLint flat config + CI no GitHub
-> Actions (H4; Prettier adiado). O build foi verificado por um leitor de ZIP
-> independente (CRCs OK, manifesto na raiz, sem vazar `.git`/dev).
+> **✅ Completed on 2026-07-01 — Release hygiene + tests.**
+> Dead code removed (H5); version/brand reconciled — the popup is now
+> “ZeroDelay” (H2); `package.json` + **zero-dependency** build in pure Node
+> (`node:zlib`, no `zip` binary) that generates `build/zerodelay-1.1.zip` with the
+> manifest at the root, plus a manifest `validate` (H1); the catch-up controller
+> was extracted into `engine/controller.js` (dual Node/browser via
+> `engine/package.json`) and covered by **21 tests** `node:test` — PIX/CRC, modes
+> and controller, all green (H3); ESLint flat config + CI on GitHub Actions (H4;
+> Prettier deferred). The build was verified by an independent ZIP reader (CRCs
+> OK, manifest at the root, no leaking `.git`/dev).
 
-### H1 — Build reprodutível
-- **Problema:** o `CHECKLIST.md:11` cita `build/zerodelay-1.0.zip`, mas **não há
-  script** que o gere — é manual, e já divergiu (ver H2).
-- **O quê:** `package.json` com scripts:
-  - `build` → gera `build/zerodelay-<version>.zip` lendo a versão do `manifest.json`,
-    **excluindo** `.git`, `publishing/`, `ROADMAP.md`, `test/`, `node_modules`,
-    dev-config.
-  - `version:patch|minor` → sobe a versão no `manifest.json` de forma atômica.
-  - `validate` → checagem básica do manifest (campos obrigatórios, sem `key`/`update_url`).
-  Zero dependências pesadas (bastam `zip`/`archiver` + Node).
-- **Aceite:** `npm run build` produz um zip com `manifest.json` na raiz, nomeado
-  pela versão real, sem arquivos de dev.
+### H1 — Reproducible build
+- **Problem:** `CHECKLIST.md:11` mentions `build/zerodelay-1.0.zip`, but there's
+  **no script** that generates it — it's manual, and it has already drifted (see
+  H2).
+- **What:** `package.json` with scripts:
+  - `build` → generates `build/zerodelay-<version>.zip` reading the version from
+    `manifest.json`, **excluding** `.git`, `publishing/`, `ROADMAP.md`, `test/`,
+    `node_modules`, dev-config.
+  - `version:patch|minor` → bumps the version in `manifest.json` atomically.
+  - `validate` → basic manifest check (required fields, no `key`/`update_url`).
+  Zero heavy dependencies (just `zip`/`archiver` + Node).
+- **Acceptance:** `npm run build` produces a zip with `manifest.json` at the root,
+  named by the real version, with no dev files.
 
-### H2 — Reconciliar versão e marca
-- **Versão:** `manifest.json:32` está em `1.1`, mas `CHECKLIST.md` e o zip citam
-  `1.0`. Definir a fonte da verdade (o manifest) e corrigir os textos.
-- **Marca:** o popup mostra `label.appName` = **“Live Sync”** (en) /
+### H2 — Reconcile version and brand
+- **Version:** `manifest.json:32` is at `1.1`, but `CHECKLIST.md` and the zip
+  mention `1.0`. Set the source of truth (the manifest) and fix the text.
+- **Brand:** the popup shows `label.appName` = **“Live Sync”** (en) /
   **“Sincronizador de Live”** (pt) — `common.js:19`, `_locales/en/messages.json:5`,
-  enquanto o produto/manifest/README é **“ZeroDelay”**. Unificar `appName` para
-  “ZeroDelay” nos dois locales (ou localizar o `name` do manifest via `__MSG__`).
-- **Aceite:** cabeçalho do popup e nome da loja batem; checklist reflete a versão
-  real.
+  while the product/manifest/README is **“ZeroDelay”**. Unify `appName` to
+  “ZeroDelay” in both locales (or localize the manifest `name` via `__MSG__`).
+- **Acceptance:** the popup header and the store name match; the checklist
+  reflects the real version.
 
-### H3 — Extrair lógica pura + testes
-Maior alavanca de qualidade. Tudo abaixo é determinístico e testável sem DOM:
-- **PIX (`pix.js`):** `crc16` e `buildPixCode` contra códigos “copia e cola”
-  conhecidos-bons (o CRC é a parte que mais quebra em silêncio).
-- **Modos (`common.js`):** round-trip `presets[x]` → `deriveMode` === `x`;
+### H3 — Extract pure logic + tests
+The biggest quality lever. Everything below is deterministic and testable without
+a DOM:
+- **PIX (`pix.js`):** `crc16` and `buildPixCode` against known-good “copy and
+  paste” codes (the CRC is the part that most often breaks silently).
+- **Modes (`common.js`):** round-trip `presets[x]` → `deriveMode` === `x`;
   `limitValue`/`range`/`step`; `donateEligible`; `calmerMode`.
-- **Controlador de catch-up:** extrair `calc_playbackRate`, `auto_buffer_target`,
-  `accel_allowed_by_buffer` de `inject.js:151-186` para um módulo puro
-  (ex.: `engine/controller.js`) sem estado global, e testar: buffer alto →
-  acelera; buffer no piso → 1.0x; latência < `MIN_LATENCY` → 1.0x; histerese
-  (`CATCH_UP_BAND`) não fica oscilando.
-- **Runner:** `node:test` (nativo, sem dependência) ou `vitest`.
-- **Aceite:** `npm test` verde cobrindo PIX, modos e controlador.
+- **Catch-up controller:** extract `calc_playbackRate`, `auto_buffer_target`,
+  `accel_allowed_by_buffer` from `inject.js:151-186` into a pure module
+  (e.g. `engine/controller.js`) with no global state, and test: high buffer →
+  speeds up; buffer at the floor → 1.0x; latency < `MIN_LATENCY` → 1.0x;
+  hysteresis (`CATCH_UP_BAND`) doesn't keep oscillating.
+- **Runner:** `node:test` (native, no dependency) or `vitest`.
+- **Acceptance:** `npm test` green covering PIX, modes and controller.
 
-### H4 — Lint + formato + CI
-- ESLint (regras leves, `no-unused-vars` pega o código morto de H5) + Prettier.
-- GitHub Actions: `lint` + `test` + `build` em push/PR; anexar o zip em tags `v*`.
-- **Aceite:** PR verde obrigatório; artefato de build publicado na release.
+### H4 — Lint + format + CI
+- ESLint (light rules, `no-unused-vars` catches the dead code from H5) + Prettier.
+- GitHub Actions: `lint` + `test` + `build` on push/PR; attach the zip on `v*`
+  tags.
+- **Acceptance:** a green PR required; build artifact published on the release.
 
-### H5 — Remover código morto
-- **Onde:** `inject.js:188-210` — `calc_threathold` e `calc_segduration` são
-  definidas e **nunca chamadas** (o skip usa a `skipThreathold` de config, não
-  estas). Remover.
-- **Aceite:** lint sem `no-unused`; comportamento idêntico.
-
----
-
-## Fase 2 — UX, acessibilidade e recursos (P2)
-
-### U1 — Atalhos de teclado — ✅ Concluída
-- `commands` no manifest + handler no `background.js`: liga/desliga o modo atual e
-  “pular para o ao vivo” sem abrir o popup.
-- **Feito:** `toggle-enabled` (`Alt+Shift+Y` / `⌘+Shift+Y`) alterna entre `off` e o
-  último modo (via `common.toggleEnabledAction` + chave meta `lastMode`); `go-live`
-  (`Alt+Shift+L` / `⌘+Shift+L`) grava um sinal (`common.emitGoLive`) que o
-  `content.js` encaminha ao motor (`seek_to_live`).
-
-### U2 — Acessibilidade — ✅ Concluída
-- Cards de modo são `role="radio"` (`popup.js:90`) mas sem navegação por setas nem
-  tab-stop único; implementar o padrão radiogroup (setas movem, um só tab-stop).
-- Botões de indicador no player (`inject.js:294-306`) sem `aria-label`; adicionar
-  rótulos (“velocidade”, “latência”, “buffer”).
-- **Feito:** helper `wireRadiogroup` (roving tabindex + setas/Home/End) nos cartões
-  de modo; `aria-label` localizados nos indicadores (viajam no detalhe das
-  settings, pois o motor não acessa `chrome.i18n`).
-
-### U3 — Firefox — ✅ Manifesto/build implementados; validação externa pendente
-- Implementado: `manifest.firefox.json` com `browser_specific_settings.gecko`
-  (id `zerodelay@joaogfc`, `strict_min_version` 140) e bloco `gecko_android`
-  (`strict_min_version` 142). O `background` do manifesto Firefox usa
-  `scripts` + `type: module` (não service worker). Build via
-  `scripts/build-firefox.cjs` (`npm run build:firefox`), com `data_collection_permissions`
-  já declarado (`required: ["none"]`). `content.js:46` usa `cloneInto`.
-- Pendente (não comprovado no repo): teste em Firefox para Android e a
-  publicação/validação na AMO (assinatura e envio do pacote).
-
-### U4 — Documentação de dev
-- README de desenvolvimento (carregar sem empacotar, `npm run build`), `CHANGELOG.md`
-  (começando em 1.1) e `CONTRIBUTING.md` (projeto GPL-3.0).
-
-### U5 — Recursos opcionais
-- Memória de modo por canal (lembrar o modo escolhido por `channelId`).
-- Chip “ir ao vivo agora” no popup, além do skip automático.
-- **Nota de migração:** a chave persistida `skipThreathold` (grafia incorreta de
-  *threshold*, em `common.js`/`content.js`/`inject.js`) só deve ser renomeada com
-  migração de storage — caso contrário zera o ajuste de usuários existentes. Baixa
-  prioridade; puramente cosmético.
+### H5 — Remove dead code
+- **Where:** `inject.js:188-210` — `calc_threathold` and `calc_segduration` are
+  defined and **never called** (the skip uses the `skipThreathold` from config,
+  not these). Remove them.
+- **Acceptance:** lint with no `no-unused`; identical behavior.
 
 ---
 
-## Ordem de execução sugerida
+## Phase 2 — UX, accessibility and features (P2)
 
-1. ~~**R1 → R2 → R3** (blindar o motor)~~ — ✅ concluída em 2026-06-30.
-2. ~~**H5 + H2** (limpeza rápida de baixo risco)~~ — ✅ concluída em 2026-07-01.
-3. ~~**H1 + H4** (build + CI para travar regressões)~~ — ✅ concluída em 2026-07-01.
-4. ~~**H3** (extrair e testar)~~ — ✅ concluída em 2026-07-01.
-5. **U1–U5** conforme apetite.
+### U1 — Keyboard shortcuts — ✅ Complete
+- `commands` in the manifest + a handler in `background.js`: toggles the current
+  mode on/off and “jump to live” without opening the popup.
+- **Done:** `toggle-enabled` (`Alt+Shift+Y` / `⌘+Shift+Y`) toggles between `off`
+  and the last mode (via `common.toggleEnabledAction` + the `lastMode` meta key);
+  `go-live` (`Alt+Shift+L` / `⌘+Shift+L`) writes a signal (`common.emitGoLive`)
+  that `content.js` forwards to the engine (`seek_to_live`).
 
-## O que já está bom (não mexer)
-- Doação opcional bem-feita: respeita opt-out/snooze, gated em uso real, nunca
-  bloqueia a extensão (`common.js:127-131`, `content.js:81-161`).
-- PIX 100% local, sem rede (compatível com a regra MV3 de “sem código remoto”).
-- Watchdog de stall que só oferece modo **mais calmo** — bom antídoto a mau uso.
-- Controle de `setPlaybackRate` que cede ao usuário quando ele muda a velocidade
-  manualmente (`inject.js:104-121`).
+### U2 — Accessibility — ✅ Complete
+- Mode cards are `role="radio"` (`popup.js:90`) but without arrow-key navigation
+  or a single tab-stop; implement the radiogroup pattern (arrows move, a single
+  tab-stop).
+- Player indicator buttons (`inject.js:294-306`) without `aria-label`; add labels
+  (“speed”, “latency”, “buffer”).
+- **Done:** a `wireRadiogroup` helper (roving tabindex + arrows/Home/End) on the
+  mode cards; localized `aria-label` on the indicators (they travel in the
+  settings detail, since the engine can't access `chrome.i18n`).
+
+### U3 — Firefox — ✅ Manifest/build implemented; external validation pending
+- Implemented: `manifest.firefox.json` with `browser_specific_settings.gecko`
+  (id `zerodelay@joaogfc`, `strict_min_version` 140) and a `gecko_android` block
+  (`strict_min_version` 142). The Firefox manifest's `background` uses `scripts`
+  + `type: module` (not a service worker). Build via `scripts/build-firefox.cjs`
+  (`npm run build:firefox`), with `data_collection_permissions` already declared
+  (`required: ["none"]`). `content.js:46` uses `cloneInto`.
+- Pending (not proven in the repo): testing on Firefox for Android and
+  publishing/validation on AMO (signing and package submission).
+
+### U4 — Dev documentation
+- A development README (load unpacked, `npm run build`), `CHANGELOG.md` (starting
+  at 1.1) and `CONTRIBUTING.md` (GPL-3.0 project).
+
+### U5 — Optional features
+- Per-channel mode memory (remember the mode chosen per `channelId`).
+- A “go to live now” chip in the popup, in addition to the automatic skip.
+- **Migration note:** the persisted key `skipThreathold` (a misspelling of
+  *threshold*, in `common.js`/`content.js`/`inject.js`) should only be renamed
+  with a storage migration — otherwise it resets existing users' setting. Low
+  priority; purely cosmetic.
+
+---
+
+## Suggested execution order
+
+1. ~~**R1 → R2 → R3** (harden the engine)~~ — ✅ completed on 2026-06-30.
+2. ~~**H5 + H2** (quick, low-risk cleanup)~~ — ✅ completed on 2026-07-01.
+3. ~~**H1 + H4** (build + CI to lock down regressions)~~ — ✅ completed on 2026-07-01.
+4. ~~**H3** (extract and test)~~ — ✅ completed on 2026-07-01.
+5. **U1–U5** as appetite allows.
+
+## What's already good (don't touch)
+
+- Well-done optional donation: respects opt-out/snooze, gated on real usage,
+  never blocks the extension (`common.js:127-131`, `content.js:81-161`).
+- 100% local PIX, no network (compatible with the MV3 “no remote code” rule).
+- A stall watchdog that only offers a **calmer** mode — a good antidote to misuse.
+- `setPlaybackRate` control that yields to the user when they change the speed
+  manually (`inject.js:104-121`).

@@ -5,9 +5,16 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [Não lançado]
+## [1.2.2] - 2026-07-03
 
 ### Adicionado
+
+- **Seção "Ajuda · Como usar" no popup**: uma seção retrátil (fechada por padrão,
+  irmã de "Avançado") com um FAQ curto para quem acabou de instalar — o que a
+  extensão faz, como começar, por que a velocidade muda sozinha, qual modo
+  escolher, o que são os números no player e os atalhos de teclado. Reaproveita os
+  componentes e as cores existentes e está nos quatro idiomas (`en`, `pt_BR`,
+  `es`, `fr`).
 
 - **Memória de modo por canal (opt-in)**: um toggle **"Lembrar modo por canal"**
   (desligado por padrão) guarda o modo que você escolhe em cada canal do YouTube e
@@ -17,12 +24,40 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Corrigido
 
+- **Travamentos com o rate preso em 1.05x (regressão da v1.2.0)**: o controlador
+  contínuo tinha perdido o `bufferTarget` como piso de descanso e moía o buffer
+  até o limite de travamento (1.5s), segurando ~1.05x sem margem nenhuma até a
+  live travar, em todos os modos, sempre que a latência mínima real da stream
+  fica acima de ~2s (toda live de verdade). O alvo de buffer do modo voltou a
+  ser o ponto de equilíbrio, com as três salvaguardas do controlador original
+  restauradas (histerese de engate, backoff instantâneo em 2.5s e freio
+  preditivo de drenagem da issue #12), mantendo a aceleração contínua.
+  Diagnóstico confirmado ao vivo na CazeTV e por simulação (52-58 travamentos
+  em 30 min antes; 0 depois, nos modos suave/equilibrado/automático).
+- **Motor se auto-bloqueava achando que era o usuário**: o player do YouTube
+  quantiza `setPlaybackRate` em passos de 0.05 (pedir 1.0375 aplica 1.0; 1.06
+  aplica 1.05). Os rates contínuos do controlador novo divergiam do eco
+  quantizado e o detector de "usuário mudou a velocidade" congelava o controle
+  com a live presa em 1.05x, inclusive com o buffer morrendo. Agora o motor
+  pede rates já no grid de 0.05 e adota o eco do player como valor aplicado.
+- **Motor dormia em aba minimizada**: o loop era um `setInterval` puro, que o
+  Chrome estrangula em aba escondida (1 tick/s, e 1 tick/min após 5 minutos sem
+  áudio) — sem catch-up, sem skip e com os indicadores defasados até voltar. O
+  tick agora é dirigido pelo `timeupdate` do vídeo (imune ao throttle enquanto
+  a mídia toca) com resync imediato ao voltar pra aba.
 - **Avisos só em lives**: tanto a oferta de "a transmissão está travando" quanto o
   convite de doação agora só aparecem enquanto uma **live está tocando de verdade**
   — nunca em VOD/replay nem numa aba ociosa.
 - **Falso positivo do aviso de travamento em anúncios**: o watchdog de travamento
   ignora o evento `waiting` disparado enquanto um **anúncio** roda (buffa no mesmo
   `<video>`), então não sugere mais trocar de modo por causa de propaganda.
+- **Watchdog de travamento zera a contagem ao trocar de live**: a contagem de
+  travadas é reiniciada a cada transmissão, junto com o resto do estado do motor
+  (EMAs/histerese, `seekableEnds`). Antes ela era global e sobrevivia à navegação
+  SPA — uma travada numa live somava com outra na live seguinte (ao trocar de
+  canal em até 90s) e disparava a oferta de "trocar para um modo mais calmo" sem
+  que nenhuma das duas tivesse travado de verdade duas vezes. O recuo anti-repetição
+  (não reoferecer por ~5min) é mantido de propósito.
 
 ### Alterado
 

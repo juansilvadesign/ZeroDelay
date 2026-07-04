@@ -220,5 +220,44 @@
    },
    "a11yCurrent": {
       "message": "Heure actuelle (cliquez pour copier le lien)"
+   },
+   "faqTitle": {
+      "message": "Aide · Comment utiliser"
+   },
+   "faqWhatQ": {
+      "message": "Que fait ZeroDelay ?"
+   },
+   "faqWhatA": {
+      "message": "Sur les directs YouTube avec DVR, le lecteur prend souvent du retard sur le direct. ZeroDelay accélère un peu la lecture pour vous ramener au temps réel, puis revient à la normale une fois rattrapé."
+   },
+   "faqStartQ": {
+      "message": "Comment démarrer ?"
+   },
+   "faqStartA": {
+      "message": "Choisissez un mode dans la fenêtre. Le mode Automatique est recommandé : il mesure votre connexion et s'ajuste tout seul."
+   },
+   "faqSpeedQ": {
+      "message": "Pourquoi la vitesse change-t-elle toute seule ?"
+   },
+   "faqSpeedA": {
+      "message": "C'est le rattrapage : tant que vous êtes en retard sur le direct, la vitesse augmente (jusqu'à ~1,25x) pour consommer le tampon ; une fois rattrapé, elle revient à 1,0x."
+   },
+   "faqModeQ": {
+      "message": "Quel mode choisir ?"
+   },
+   "faqModeA": {
+      "message": "Moins de tampon vous rapproche du direct mais demande une meilleure connexion. En cas de doute, utilisez le mode Automatique, qui s'adapte à votre connexion."
+   },
+   "faqIndicatorsQ": {
+      "message": "À quoi correspondent les chiffres sur le lecteur ?"
+   },
+   "faqIndicatorsA": {
+      "message": "À côté du badge EN DIRECT s'affichent la vitesse actuelle, la latence (votre retard) et l'état du tampon. Vous pouvez activer ou désactiver chacun dans la section des indicateurs."
+   },
+   "faqShortcutsQ": {
+      "message": "Existe-t-il des raccourcis clavier ?"
+   },
+   "faqShortcutsA": {
+      "message": "Trois raccourcis (sur Mac, remplacez Alt par ⌘ Command) :\n• Alt+Shift+Y — activer/désactiver ZeroDelay\n• Alt+Shift+L — aller au direct\n• Alt+Shift+H — activer/désactiver le Mode Hexa (thème du Brésil)\nVous pouvez les voir et les modifier dans chrome://extensions/shortcuts."
    }
 }

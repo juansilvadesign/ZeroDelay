@@ -14,21 +14,31 @@
 'use strict';
 (function () {
     // Speeding up consumes the buffered-ahead content, pulling the playhead
-    // toward real time, which REDUCES live latency. So the rate should track how
-    // far behind live we are: play faster when the lag is large, ease off as we
-    // approach the floor. This is a CONTINUOUS, latency-proportional (linear)
-    // controller — not the old on/off model that produced short "bursts" of full
-    // speed with long rests in between (which trimmed latency painfully slowly).
-    //
-    // The buffer is only a SAFETY term here: as the cushion shrinks toward the
-    // stall floor we taper the rate back down smoothly, so we never fully stop
-    // while there is still buffer to spend, and never stall by draining it dry.
+    // toward real time, which REDUCES live latency. The rate is CONTINUOUS
+    // (latency-proportional), but it only ever spends buffer that sits ABOVE
+    // the mode's cushion: the bufferTarget is the equilibrium the buffer rests
+    // at, not just a taper width. A stream whose latency floor is unreachable
+    // (every real live: encoder+CDN pipeline keeps latency well above
+    // MIN_LATENCY) must NOT grind the buffer down to the stall floor trying —
+    // that exact regression shipped in v1.2.0 and stalled lives worldwide:
+    // demand saturated forever, the only rest was STALL_FLOOR=1.5s, and the
+    // engine held ~1.05x with no margin until any late segment stalled the
+    // stream (then the buffer refilled behind live and the cycle repeated).
     function createController() {
         const STALL_FLOOR = 1.5;       // hard rest below this instantaneous buffer (stall protection)
+        const BUFFER_BACKOFF = 2.5;    // instantaneous backoff: cut acceleration here...
+        const BUFFER_RESUME = 4.0;     // ...and only allow it again once recovered to this
         const MIN_LATENCY = 2.0;       // already this close to live -> nothing to gain
         const LATENCY_FULL = 6.0;      // excess latency (s) past the floor at which we reach full speed
+        const RAMP = 2.0;              // full speed once the buffer sits this far above the cushion
+        const ENGAGE_BAND = 1.5;       // hysteresis: only engage this far above the cushion
+        const DRAIN_BRAKE = -0.02;     // Δbuffer/tick below which we rest pre-emptively (issue #12)
 
         let buffer_ema = null;         // smoothed buffer health
+        let last_health = null;        // previous tick's raw buffer health
+        let drain_ema = 0;             // smoothed Δbuffer/tick (draining < 0, filling > 0)
+        let engaged = false;           // catch-up hysteresis state
+        let backoff_ok = true;         // instantaneous-buffer backoff state
         let auto_target = 6.0;         // automatic-mode buffer cushion
         let auto_cooldown = 0;         // ticks to wait after a near-stall
         let last_rate = 1.0;           // last rate we returned (diagnostics)
@@ -53,6 +63,11 @@
         function calcPlaybackRate(speed, latency, health, bufferTarget, auto) {
             if (!isFinite(health) || !isFinite(latency)) return (last_rate = 1.0);
             buffer_ema = buffer_ema === null ? health : buffer_ema * 0.9 + health * 0.1;
+            // Buffer trend (first derivative, short EMA). A steadily draining
+            // buffer means the connection is losing ground even while the level
+            // still looks fine — the predictive brake behind issue #12.
+            if (last_health !== null) drain_ema = drain_ema * 0.8 + (health - last_health) * 0.2;
+            last_health = health;
             if (latency < MIN_LATENCY) return (last_rate = 1.0);   // already at the stream's floor
 
             // Resolve the cushion first so automatic mode keeps adapting (a
@@ -60,15 +75,50 @@
             const target = auto ? auto_buffer_target(health) : bufferTarget;
             if (health < STALL_FLOOR) return (last_rate = 1.0);    // instantaneous stall guard
 
-            // 1) Linear demand from latency: 0 at the floor, ramping up to 1 once
-            //    we're LATENCY_FULL seconds behind it. This is the "linear speed
-            //    increase" — the further behind, the faster, continuously.
+            // Instantaneous backoff hysteresis (the third field-proven guard):
+            // a raw dip to 2.5s cuts acceleration NOW — no EMA, no taper — and
+            // it stays cut until the raw level recovers to 4.0s. This protects
+            // the descent phase, where a jitter trough near the band bottom is
+            // exactly how late segments used to become stalls.
+            if (health <= BUFFER_BACKOFF) backoff_ok = false;
+            else if (health >= BUFFER_RESUME) backoff_ok = true;
+            if (!backoff_ok) return (last_rate = 1.0);
+
+            // The EMA smooths upward noise, but a REAL drop must bite at once —
+            // taking the min means a fast segment-sized dip can never hide
+            // behind a stale, fatter average.
+            const buffer_now = Math.min(health, buffer_ema);
+
+            // Pre-emptive brake (issue #12): don't push against a connection
+            // that's already losing ground — rest BEFORE the level dips toward
+            // a stall. Unconditional like the field-proven original: while
+            // genuinely behind, downloads outpace playback (the trend is
+            // positive) and the brake never fires; at the live edge it turns
+            // surplus-spending into short, safe pushes. The brake keeps the
+            // hysteresis state: once the trend recovers we resume mid-band.
+            if (drain_ema < DRAIN_BRAKE) return (last_rate = 1.0);
+
+            // Hysteresis (the old controller's field-proven CATCH_UP_BAND):
+            // engage only once the buffer sits comfortably ABOVE the cushion,
+            // disengage the moment it touches the cushion. Without the band the
+            // engine rides pinned to the target, spending every crumb of
+            // surplus, and segment jitter has no margin to land in.
+            // Arming reads the SLOW ema on purpose: a momentary spike must not
+            // re-arm a parked engine into sawtooth cycling at the band bottom —
+            // only sustained comfort does. Resting reads the fast signal.
+            if (engaged) { if (buffer_now <= target) engaged = false; }
+            else if (buffer_ema > target + ENGAGE_BAND) engaged = true;
+            if (!engaged) return (last_rate = 1.0);
+
+            // 1) Linear demand from latency: 0 at the floor, ramping up to 1
+            //    once we're LATENCY_FULL seconds behind it.
             const demand = clamp01((latency - MIN_LATENCY) / LATENCY_FULL);
 
-            // 2) Buffer headroom (safety): 1 at/above the mode's cushion, easing
-            //    smoothly to 0 at the absolute stall floor. Aggressive modes (small
-            //    cushion) push harder for longer; gentle modes ease off sooner.
-            const headroom = clamp01((buffer_ema - STALL_FLOOR) / Math.max(0.5, target - STALL_FLOOR));
+            // 2) Buffer SURPLUS above the mode's cushion: 0 at/below the target
+            //    (rest — the cushion is the equilibrium), ramping to 1 once the
+            //    buffer sits RAMP seconds above it. Catch-up spends only the
+            //    surplus; it never digs into the cushion itself.
+            const headroom = clamp01((buffer_now - target) / RAMP);
 
             const rate = 1.0 + (speed - 1.0) * demand * headroom;
             return (last_rate = rate);
@@ -76,7 +126,7 @@
 
         // Read-only snapshot of internal state — for tests and diagnostics.
         function getState() {
-            return { buffer_ema, auto_target, auto_cooldown, rate: last_rate, catching_up: last_rate > 1.001 };
+            return { buffer_ema, drain_ema, engaged, auto_target, auto_cooldown, rate: last_rate, catching_up: last_rate > 1.001 };
         }
 
         // The buffer level below which the UI should warn (red) — exported so the

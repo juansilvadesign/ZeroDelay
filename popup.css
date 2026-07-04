@@ -661,6 +661,26 @@ html {
     animation: rise 200ms var(--ease) both;
 }
 
+/* FAQ / help — reuses .advanced-toggle, .advanced-label, .chevron, .advanced-panel
+ * and .group so it reads as a sibling of "Advanced". Only the Q&A text is new. */
+.faq-q {
+    margin: 0;
+    padding: 12px 14px 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.faq-a {
+    margin: 4px 0 0;
+    padding: 0 14px 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    white-space: pre-line;   /* honor line breaks in answers (e.g. the shortcut list) */
+}
+
 .group {
     border: 1px solid var(--border-soft);
     border-radius: var(--radius);

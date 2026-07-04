@@ -220,5 +220,44 @@
    },
    "a11yCurrent": {
       "message": "Tempo atual (clique para copiar o link)"
+   },
+   "faqTitle": {
+      "message": "Ajuda · Como usar"
+   },
+   "faqWhatQ": {
+      "message": "O que o ZeroDelay faz?"
+   },
+   "faqWhatA": {
+      "message": "Em lives do YouTube com DVR, o player costuma ficar atrás do ao vivo. O ZeroDelay acelera um pouco a reprodução para te trazer de volta ao tempo real e volta ao normal ao alcançar."
+   },
+   "faqStartQ": {
+      "message": "Como começo a usar?"
+   },
+   "faqStartA": {
+      "message": "Escolha um modo no popup. O Automático é recomendado: ele mede sua conexão e se ajusta sozinho."
+   },
+   "faqSpeedQ": {
+      "message": "Por que a velocidade muda sozinha?"
+   },
+   "faqSpeedA": {
+      "message": "É o catch-up: enquanto você está atrás do ao vivo, a velocidade sobe (até ~1,25x) para consumir o buffer; ao alcançar, ela volta para 1,0x."
+   },
+   "faqModeQ": {
+      "message": "Qual modo devo escolher?"
+   },
+   "faqModeA": {
+      "message": "Menos buffer deixa você mais perto do ao vivo, mas exige uma internet melhor. Na dúvida, use o Automático, que se adapta à sua conexão."
+   },
+   "faqIndicatorsQ": {
+      "message": "O que são os números no player?"
+   },
+   "faqIndicatorsA": {
+      "message": "Ao lado do selo AO VIVO aparecem a velocidade atual, a latência (o quanto você está atrás) e a saúde do buffer. Você liga ou desliga cada um na seção de indicadores."
+   },
+   "faqShortcutsQ": {
+      "message": "Existem atalhos de teclado?"
+   },
+   "faqShortcutsA": {
+      "message": "São três atalhos (no Mac, troque Alt por ⌘ Command):\n• Alt+Shift+Y — ativar/desativar o ZeroDelay\n• Alt+Shift+L — pular para o ao vivo\n• Alt+Shift+H — ativar/desativar o Modo Hexa (tema do Brasil)\nVocê pode vê-los e mudá-los em chrome://extensions/shortcuts."
    }
 }

@@ -99,8 +99,8 @@ export const label = {
 
     // Donation nudge (gentle, optional)
     donateNudge: msg('donateNudge', 'Curtindo o ZeroDelay? Se ele te ajuda, considere apoiar com uma cerveja — é totalmente opcional. 🙂'),
-    donateLater: msg('donateLater', 'Lembrar depois'),
-    donateOptOut: msg('donateOptOut', 'Não mostrar novamente'),
+    donateLater: msg('donateLater', 'Hoje não'),
+    donateOptOut: msg('donateOptOut', 'Não quero apoiar'),
     donateBannerText: msg('donateBannerText', 'Curtindo o ZeroDelay? Apoie com uma cerveja. 🍺'),
     donateBannerCta: msg('donateBannerCta', 'Apoiar'),
     donateBannerClose: msg('donateBannerClose', 'Fechar'),
@@ -172,7 +172,9 @@ export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLate
 // OUTSIDE `storage` so the engine ignores them and "Restore defaults" keeps the
 // user's opt-out / snooze choices.
 // ---------------------------------------------------------------------------
-export const donateKeys = ['donateInstalledAt', 'donateUsageSeconds', 'donateOptOut', 'donateSnoozeUntil', 'donateBannerShown', 'donateLastCountedAt', 'donateSnoozeStep'];
+// (donateBannerShown/donateSnoozeStep were retired with the escalating-snooze
+// model — old stored values are simply ignored, never reused for anything else.)
+export const donateKeys = ['donateInstalledAt', 'donateUsageSeconds', 'donateOptOut', 'donateSnoozeUntil', 'donateLastCountedAt'];
 
 /** Record the install time once (ages the donation invite). Callable from any extension context. */
 export function ensureInstalledAt() {
@@ -244,19 +246,17 @@ export function toggleEnabledAction(data, lastMode) {
     return { apply: presets.off, remember: mode === 'custom' ? undefined : mode };
 }
 export const donateUsageThreshold = 50 * 60;       // ~50 min watching a live (seconds)
-// Escalating snooze: each time the invite is seen/dismissed, the next wait is
-// longer. After the last step it goes quiet FOR GOOD (opt-out) — the ☕ button in
-// the popup stays available, so donating is always one click away, but we stop
-// nudging. Days: 3 -> 7 -> 21 -> 60 -> never.
-export const donateSnoozeScheduleDays = [3, 7, 21, 60];
+// Invite rule: while eligible it shows once per browser session, and only an
+// EXPLICIT choice silences it — "Hoje não" rests until tomorrow, "Não quero
+// apoiar" opts out for good. Merely seeing (or ✕-closing) the invite arms
+// nothing: it simply comes back next session.
 
-// Next snooze for a given step (how many times the invite was already dismissed).
-// Returns {snoozeUntil, step} while there are steps left, or {optOut:true} once the
-// schedule is exhausted (stop nudging permanently).
-export function nextDonateSnooze(step, now) {
-    const i = step | 0;
-    if (i >= donateSnoozeScheduleDays.length) return { optOut: true };
-    return { snoozeUntil: now + donateSnoozeScheduleDays[i] * 86400000, step: i + 1 };
+// End of the current LOCAL day — the "Hoje não" snooze target. Uses the Date
+// rollover (hour 24 of today = 00:00 tomorrow) so DST days resolve correctly.
+export function endOfToday(now) {
+    const d = new Date(now);
+    d.setHours(24, 0, 0, 0);
+    return d.getTime();
 }
 
 // ---------------------------------------------------------------------------

@@ -132,10 +132,10 @@
       "message": "¿Te gusta ZeroDelay? Si te sirve, puedes apoyarlo con un café — totalmente opcional. 🙂"
    },
    "donateLater": {
-      "message": "Recordar más tarde"
+      "message": "Hoy no"
    },
    "donateOptOut": {
-      "message": "No mostrar de nuevo"
+      "message": "No quiero apoyar"
    },
    "donateBannerText": {
       "message": "¿Te gusta ZeroDelay? Apóyalo con un café."

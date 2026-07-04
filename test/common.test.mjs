@@ -167,19 +167,20 @@ test('classifyHexaChatMessage is neutral (0) for off-topic and empty text', () =
     assert.equal(common.classifyHexaChatMessage(undefined), 0);
 });
 
-test('nextDonateSnooze escalates the wait, then opts out for good', () => {
-    const now = 1_000_000;
-    const day = 86400000;
-    // 3 -> 7 -> 21 -> 60 days, each step advancing the counter
-    assert.deepEqual(common.nextDonateSnooze(0, now), { snoozeUntil: now + 3 * day, step: 1 });
-    assert.deepEqual(common.nextDonateSnooze(1, now), { snoozeUntil: now + 7 * day, step: 2 });
-    assert.deepEqual(common.nextDonateSnooze(2, now), { snoozeUntil: now + 21 * day, step: 3 });
-    assert.deepEqual(common.nextDonateSnooze(3, now), { snoozeUntil: now + 60 * day, step: 4 });
-    // schedule exhausted -> stop nudging permanently
-    assert.deepEqual(common.nextDonateSnooze(4, now), { optOut: true });
-    assert.deepEqual(common.nextDonateSnooze(99, now), { optOut: true });
-    // missing/garbage step is treated as the first (0)
-    assert.deepEqual(common.nextDonateSnooze(undefined, now), { snoozeUntil: now + 3 * day, step: 1 });
+test('endOfToday: the "Hoje não" snooze lands on the next local midnight', () => {
+    // Middle of a day: the target is strictly ahead, at most 24h away, and is
+    // exactly a local-midnight instant.
+    const noonish = new Date(2026, 6, 3, 13, 37, 42, 123).getTime();
+    const end = common.endOfToday(noonish);
+    assert.ok(end > noonish, 'must be in the future');
+    assert.ok(end - noonish <= 86400000, 'at most 24h ahead');
+    const d = new Date(end);
+    assert.deepEqual([d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds()], [0, 0, 0, 0]);
+    assert.equal(d.getDate(), new Date(2026, 6, 4).getDate());
+
+    // One millisecond before midnight still snoozes only to the imminent turn.
+    const lastMs = new Date(2026, 6, 3, 23, 59, 59, 999).getTime();
+    assert.equal(common.endOfToday(lastMs), lastMs + 1);
 });
 
 test('per-channel memory: save (LRU + prune), suggest, forget', () => {

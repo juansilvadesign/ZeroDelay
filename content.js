@@ -171,22 +171,36 @@ function initDonation(common) {
 
 let donationBannerEl = null;
 let donateLastActive = 0;   // last _live_catch_up_active ping — proves a live is playing NOW
+let donateShownThisTab = false;   // fallback dedup when storage.session is unreachable
 
 function maybeShowBanner(common) {
     if (donationBannerEl || !extensionAlive()) return;
     // Only over a live that is actually playing right now — never on a VOD or an idle tab.
     if (Date.now() - donateLastActive > 6000) return;
     chrome.storage.local.get(common.donateKeys, d => {
-        if (donationBannerEl || d.donateBannerShown) return;
+        if (donationBannerEl) return;
         if (!common.donateEligible(d, Date.now())) return;
-        // Showing the proactive invite also arms the escalating snooze, so the badge /
-        // popup don't immediately re-nudge (and it stops for good past the last step).
-        const next = common.nextDonateSnooze(d.donateSnoozeStep || 0, Date.now());
-        const upd = { donateBannerShown: true };
-        if (next.optOut) upd.donateOptOut = true;
-        else { upd.donateSnoozeUntil = next.snoozeUntil; upd.donateSnoozeStep = next.step; }
-        chrome.storage.local.set(upd);
-        showDonationBanner(common);
+        // Once per BROWSER SESSION, never once-per-lifetime: seeing the invite
+        // (or ✕-closing it) silences nothing — only the explicit buttons do
+        // ("Hoje não" rests until tomorrow, "Não quero apoiar" opts out).
+        // storage.session clears when the browser closes; the background grants
+        // content scripts access on boot. If the grant/API is missing, degrade
+        // to once per tab instead of nagging on every usage tick.
+        const showOncePerTab = () => {
+            if (donateShownThisTab || donationBannerEl) return;
+            donateShownThisTab = true;
+            showDonationBanner(common);
+        };
+        const sess = chrome.storage.session;
+        if (!sess) { showOncePerTab(); return; }
+        try {
+            sess.get(['donateSessionShown'], s => {
+                if (chrome.runtime.lastError) { showOncePerTab(); return; }
+                if (s.donateSessionShown || donationBannerEl) return;
+                sess.set({ donateSessionShown: true });
+                showDonationBanner(common);
+            });
+        } catch { showOncePerTab(); }   // engines that throw instead of setting lastError
     });
 }
 
@@ -233,17 +247,38 @@ function buildOverlayCard({ side, maxWidth, content, ctaLabel, onCta, closeLabel
     document.body.append(card);
     requestAnimationFrame(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; });
     autoHide = setTimeout(remove, autoHideMs);
+    card.zdRemove = remove;   // for secondary actions placed inside `content`
     return card;
 }
 
 function showDonationBanner(common) {
     const L = common.label;
-    const text = document.createElement('span');
+    const body = document.createElement('div');
+    body.style.cssText = 'flex:1;min-width:0';
+    const text = document.createElement('div');
     text.textContent = L.donateBannerText;
-    text.style.cssText = 'flex:1;min-width:0';
+
+    // The two explicit silencing choices live on the card itself: "Hoje não"
+    // (quiet until tomorrow) and "Não quero apoiar" (never again). The ✕ close
+    // stays neutral — the invite simply returns next session.
+    const actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:14px;margin-top:6px';
+    const quietBtn = (label, onPick) => {
+        const b = document.createElement('button');
+        b.textContent = label;
+        b.style.cssText = 'cursor:pointer;border:0;background:transparent;padding:0;'
+            + 'font:500 12px Roboto,"Segoe UI",system-ui,sans-serif;color:#aaa;text-decoration:underline';
+        b.addEventListener('click', () => { onPick(); donationBannerEl?.zdRemove(); });
+        return b;
+    };
+    actions.append(
+        quietBtn(L.donateLater, () => chrome.storage.local.set({ donateSnoozeUntil: common.endOfToday(Date.now()) })),
+        quietBtn(L.donateOptOut, () => chrome.storage.local.set({ donateOptOut: true })),
+    );
+    body.append(text, actions);
 
     donationBannerEl = buildOverlayCard({
-        side: 'right', maxWidth: '300px', content: text,
+        side: 'right', maxWidth: '320px', content: body,
         ctaLabel: L.donateBannerCta,
         onCta: () => chrome.runtime.sendMessage({ type: 'donate-open' }),
         closeLabel: L.donateBannerClose,

@@ -501,12 +501,15 @@ function renderSupport() {
     const showNudge = on => { nudge.hidden = !on; nudgeActions.hidden = !on; };
 
     laterBtn.addEventListener('click', () => {
-        // The escalating snooze was already armed when the invite was shown; "Depois"
-        // just tucks it away.
+        // "Hoje não": rest until tomorrow (local midnight). Nothing escalates —
+        // the invite returns on the next session after the day turns.
+        chrome.storage.local.set({ donateSnoozeUntil: common.endOfToday(Date.now()) });
         showNudge(false);
         setOpen(false);
     });
     optoutBtn.addEventListener('click', () => {
+        // "Não quero apoiar": the one choice that silences the invite for good
+        // (the support button in the header stays available).
         chrome.storage.local.set({ donateOptOut: true });
         showNudge(false);
         setOpen(false);
@@ -523,17 +526,18 @@ function renderSupport() {
         if (forceDonate) {
             setOpen(true);
         } else if (common.donateEligible(d, now)) {
-            const next = common.nextDonateSnooze(d.donateSnoozeStep || 0, now);
-            if (next.optOut) {
-                // Escalating schedule exhausted — stop nudging for good (☕ button stays).
-                chrome.storage.local.set({ donateOptOut: true });
-                render();
-            } else {
+            // Seeing the invite arms NOTHING — it may show once per browser
+            // session until the user explicitly picks "Hoje não" (rest until
+            // tomorrow) or "Não quero apoiar" (never again). The session flag
+            // keeps repeated popup opens from re-slamming the panel.
+            const sess = chrome.storage.session;
+            if (!sess) { showNudge(true); setOpen(true); return; }
+            sess.get(['donateNudgeSession'], s => {
+                if (!chrome.runtime.lastError && s.donateNudgeSession) { render(); return; }
+                sess.set({ donateNudgeSession: true });
                 showNudge(true);
                 setOpen(true);
-                // Seeing the invite escalates the next wait: 3 → 7 → 21 → 60 → never.
-                chrome.storage.local.set({ donateSnoozeUntil: next.snoozeUntil, donateSnoozeStep: next.step });
-            }
+            });
         } else {
             render(); // pre-render (PIX QR) so a manual open is instant
         }

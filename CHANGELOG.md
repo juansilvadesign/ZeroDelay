@@ -5,7 +5,7 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [1.2.2] - 2026-07-03
+## [1.2.2] - 2026-07-04
 
 ### Adicionado
 
@@ -61,10 +61,13 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Alterado
 
-- **Convite de doação com recuo escalonado**: em vez de reaparecer a cada poucos
-  dias pra sempre, cada vez que é visto/dispensado o próximo intervalo cresce
-  (3 → 7 → 21 → 60 dias) e depois **para de vez** — o botão de apoio no popup
-  continua sempre disponível.
+- **Convite de apoio: presença por sessão e silêncio só por escolha explícita**:
+  enquanto o usuário não decidir, o convite aparece uma vez por sessão do
+  navegador (e só sobre uma live tocando de verdade). **"Hoje não"** silencia
+  até o dia virar; **"Não quero apoiar"** silencia para sempre; **"Apoiar"**
+  abre a doação. Ver o convite ou fechá-lo no ✕ não arma silêncio nenhum. Os
+  dois botões de escolha existem no banner sobre a live e no popup, e o botão
+  de apoio no header do popup segue sempre disponível.
 
 ## [1.2.1] - 2026-07-03
 

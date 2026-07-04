@@ -30,6 +30,15 @@ function boot() {
 chrome.runtime.onInstalled.addListener(boot);
 chrome.runtime.onStartup.addListener(boot);
 
+// The donation invite dedupes itself per BROWSER SESSION via storage.session,
+// which content scripts can't touch by default (trusted contexts only). Grant
+// it at every worker start; the content script degrades to per-tab dedup when
+// the grant/API is unavailable. Top-level on purpose: the worker restarts often
+// and the access level must be re-granted each time.
+try {
+    chrome.storage.session?.setAccessLevel?.({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
+} catch { /* older engines: content script falls back to per-tab dedup */ }
+
 
 chrome.alarms.onAlarm.addListener(a => {
     if (a.name === 'donate-eval') evalBadge();

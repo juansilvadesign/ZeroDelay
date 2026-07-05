@@ -5,6 +5,30 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.2.3] - 2026-07-05
+
+### Adicionado
+
+- **Tema claro/escuro no popup**: um botão no header, ao lado do "Apoiar",
+  alterna entre os temas claro e escuro. Sem escolha salva, o popup segue o tema
+  do sistema, como antes; a escolha fica na chave nova `themePref`, fora do
+  estado do motor, então "Restaurar padrões" preserva o tema. Nos quatro
+  idiomas. Contribuição de [@leandroohsr](https://github.com/leandroohsr)
+  (PR #34).
+- **Botões "Sobre o ZeroDelay" e "Relatar um problema"**: dois links no rodapé
+  do popup levam ao repositório e às issues no GitHub, criando um caminho direto
+  da extensão para a comunidade. Nos quatro idiomas. Contribuição de
+  [@leandroohsr](https://github.com/leandroohsr) (PR #32).
+
+### Alterado
+
+- **Documentação de desenvolvimento em inglês**: README, CONTRIBUTING,
+  CODE_OF_CONDUCT, SECURITY, ROADMAP, CONTRIBUTORS e docs/firefox.md foram
+  traduzidos para o inglês para abrir o projeto à comunidade internacional,
+  contribuição de [@leandroohsr](https://github.com/leandroohsr) (PR #33).
+  O README continua disponível em português em `README.pt-BR.md`, com seletor
+  de idioma no topo.
+
 ## [1.2.2] - 2026-07-04
 
 ### Adicionado

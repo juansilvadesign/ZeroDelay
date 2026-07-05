@@ -41,9 +41,13 @@ with every newly merged contribution.
   the global mode, keyed by `channel_id`) and merged.
 - **leandroohsr** ([@leandroohsr](https://github.com/leandroohsr)) — fixing the
   **stall watchdog**, which didn't reset its count between live streams and
-  suggested a "calmer mode" for no reason (**PR #25, merged**), and the collapsible
+  suggested a "calmer mode" for no reason (**PR #25, merged**); the collapsible
   **"Help · How to use"** section in the popup, a FAQ in all four languages for
-  anyone who just installed it (**PR #28, merged**).
+  anyone who just installed it (**PR #28, merged**); the **"About ZeroDelay"** and
+  **"Report an issue"** footer buttons linking the popup to the repository
+  (**PR #32, merged**); the English translation of the developer documentation
+  (**PR #33, merged**); and the **light/dark theme toggle** in the popup header
+  with the preference saved outside the engine state (**PR #34, merged**).
 - **aantonioprado** ([@aantonioprado](https://github.com/aantonioprado)) —
   preventive XSS hardening in the popup's SVG parsing (sanitizing `on*`,
   `javascript:`/`data:` and scriptable nodes) — **PR #30 (merged)**.

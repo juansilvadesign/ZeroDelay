@@ -221,6 +221,12 @@
    "a11yCurrent": {
       "message": "Tiempo actual (haz clic para copiar el enlace)"
    },
+   "themeToLight": {
+      "message": "Cambiar al tema claro"
+   },
+   "themeToDark": {
+      "message": "Cambiar al tema oscuro"
+   },
    "faqTitle": {
       "message": "Ayuda · Cómo usar"
    },

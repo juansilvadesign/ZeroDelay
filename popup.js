@@ -571,6 +571,36 @@ function renderSupport() {
     });
 }
 
+// ----------------------------------------------------------- Theme toggle
+// Light/dark switch in the header. A saved choice ('light' | 'dark' under
+// common.themeKey) wins over the system scheme via html[data-theme]; with
+// nothing saved the popup keeps following prefers-color-scheme (CSS-only, so
+// the first paint is already right). Kept out of the engine `state`, like the
+// Hexa toggles, so "Restore defaults" never touches it.
+function renderThemeToggle() {
+    const btn = $('#theme-toggle');
+    const root = document.documentElement;
+    const systemTheme = () => matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    const current = () => root.dataset.theme || systemTheme();
+    const relabel = () => {
+        const title = current() === 'dark' ? L.themeToLight : L.themeToDark;
+        btn.title = title;
+        btn.setAttribute('aria-label', title);
+    };
+    relabel();
+    chrome.storage.local.get([common.themeKey], d => {
+        const saved = d[common.themeKey];
+        if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
+        relabel();
+    });
+    btn.addEventListener('click', () => {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        chrome.storage.local.set({ [common.themeKey]: next });
+        relabel();
+    });
+}
+
 // --------------------------------------------------------------- Refresh
 function refresh() {
     const mode = common.deriveMode(state);
@@ -643,6 +673,7 @@ function updateChannelHint() {
     const data = await getStorage(common.storage);
     state = common.resolveSettings(data);
     renderStatic();
+    renderThemeToggle();
     renderModes();
     renderChannelMemory();
     renderIndicators();

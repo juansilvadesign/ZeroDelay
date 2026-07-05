@@ -221,6 +221,7 @@ function renderModes() {
         const meta = common.modeMeta[name];
         const card = el('button', {
             class: 'mode-card', type: 'button', role: 'radio', 'aria-checked': 'false',
+            'data-mode': name,
             onclick: () => applyPreset(name),
         },
             el('span', { class: 'mode-icon', html: ICONS[name] }),

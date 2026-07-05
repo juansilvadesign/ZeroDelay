@@ -97,6 +97,12 @@
         --scanline: rgba(0, 0, 0, 0.045);
         --cta-bg: #fff6db;
     }
+
+    /* Mode temperature accents: darken the strongs so the small conn/gain text
+     * keeps contrast on light surfaces (the dark-theme strongs are lightened). */
+    .mode-card[data-mode="suave"] { --card-strong: #2b7fe3; }
+    .mode-card[data-mode="balanced"] { --card-strong: #8348e6; }
+    .mode-card[data-mode="aggressive"] { --card-strong: #d42e8c; }
 }
 
 :root[data-theme="light"] {
@@ -408,12 +414,54 @@ html {
     transform: scale(0.99);
 }
 
-/* Selected = synced: the card locks to live-red and pops hard off a solid red
- * offset shadow — part sticker lift, part broadcast chroma-ghost. */
+/* Mode temperature — the selected card's accent slides along a cool → live-red
+ * ramp that tracks aggressiveness: blue (gentle) → violet → magenta → the
+ * brand's live-red at Extreme, where the card converges with the AO VIVO seal.
+ * Auto keeps the default red too (it adapts toward live, so it owns the brand
+ * color), and Off is degraded gray — no signal, no temperature. Only the card's
+ * own visuals read these tokens; the header seal, focus rings and CTA stay on
+ * the global live-red. */
+.mode-card {
+    --card-sync: var(--sync);
+    --card-strong: var(--sync-strong);
+    --card-soft: var(--sync-soft);
+    --card-ghost: var(--sync-ghost);
+}
+
+.mode-card[data-mode="off"] {
+    --card-sync: var(--degraded);
+    --card-strong: var(--degraded-strong);
+    --card-soft: var(--degraded-soft);
+    --card-ghost: rgba(144, 144, 144, 0.45);
+}
+
+.mode-card[data-mode="suave"] {
+    --card-sync: #4696ff;
+    --card-strong: #6cadff;
+    --card-soft: rgba(70, 150, 255, 0.14);
+    --card-ghost: rgba(70, 150, 255, 0.5);
+}
+
+.mode-card[data-mode="balanced"] {
+    --card-sync: #9a5cff;
+    --card-strong: #b385ff;
+    --card-soft: rgba(154, 92, 255, 0.14);
+    --card-ghost: rgba(154, 92, 255, 0.5);
+}
+
+.mode-card[data-mode="aggressive"] {
+    --card-sync: #ec3fa0;
+    --card-strong: #f26bb8;
+    --card-soft: rgba(236, 63, 160, 0.14);
+    --card-ghost: rgba(236, 63, 160, 0.5);
+}
+
+/* Selected = synced: the card locks to its temperature accent and pops hard off
+ * a solid offset shadow — part sticker lift, part broadcast chroma-ghost. */
 .mode-card[aria-checked="true"] {
-    border-color: var(--sync);
-    background: linear-gradient(180deg, var(--sync-soft), transparent 140%);
-    box-shadow: 0 0 0 2px var(--sync), 7px 7px 0 0 var(--sync-ghost);
+    border-color: var(--card-sync);
+    background: linear-gradient(180deg, var(--card-soft), transparent 140%);
+    box-shadow: 0 0 0 2px var(--card-sync), 7px 7px 0 0 var(--card-ghost);
     transform: translate(-2px, -2px);
 }
 
@@ -431,7 +479,7 @@ html {
 }
 
 .mode-card[aria-checked="true"] .mode-icon {
-    background: var(--sync);
+    background: var(--card-sync);
     color: #fff;
 }
 
@@ -517,7 +565,7 @@ html {
 }
 
 .mode-card[aria-checked="true"] .mode-conn {
-    color: var(--sync-strong);
+    color: var(--card-strong);
 }
 
 .conn-icon {
@@ -551,8 +599,8 @@ html {
 }
 
 .mode-card[aria-checked="true"] .mode-gain:not(.is-none) {
-    background: var(--sync-soft);
-    color: var(--sync-strong);
+    background: var(--card-soft);
+    color: var(--card-strong);
 }
 
 .mode-gain.is-none {
@@ -654,9 +702,10 @@ html {
     transition: opacity 160ms var(--ease), transform 220ms var(--spring);
 }
 
+/* The check glyph itself stays white (hardcoded in the SVG) on every accent. */
 .mode-card[aria-checked="true"] .mode-check {
-    border-color: var(--sync);
-    background: var(--sync);
+    border-color: var(--card-sync);
+    background: var(--card-sync);
 }
 
 .mode-card[aria-checked="true"] .mode-check svg {

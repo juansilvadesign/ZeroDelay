@@ -49,6 +49,8 @@
     --degraded: #909090;
     --degraded-strong: #b0b0b0;
     --degraded-soft: rgba(144, 144, 144, 0.14);
+    /* Gray twin of --sync-ghost, for the sticker shadow of the selected Off card. */
+    --degraded-ghost: rgba(144, 144, 144, 0.45);
 
     /* Faint CRT scanline texture — shown while degraded, cleared when synced. */
     --scanline: rgba(255, 255, 255, 0.035);
@@ -94,15 +96,10 @@
         --degraded: #6f6f6f;
         --degraded-strong: #505050;
         --degraded-soft: rgba(96, 96, 96, 0.10);
+        --degraded-ghost: rgba(111, 111, 111, 0.45);
         --scanline: rgba(0, 0, 0, 0.045);
         --cta-bg: #fff6db;
     }
-
-    /* Mode temperature accents: darken the strongs so the small conn/gain text
-     * keeps contrast on light surfaces (the dark-theme strongs are lightened). */
-    .mode-card[data-mode="suave"] { --card-strong: #2b7fe3; }
-    .mode-card[data-mode="balanced"] { --card-strong: #8348e6; }
-    .mode-card[data-mode="aggressive"] { --card-strong: #d42e8c; }
 }
 
 :root[data-theme="light"] {
@@ -121,6 +118,7 @@
     --degraded: #6f6f6f;
     --degraded-strong: #505050;
     --degraded-soft: rgba(96, 96, 96, 0.10);
+    --degraded-ghost: rgba(111, 111, 111, 0.45);
     --scanline: rgba(0, 0, 0, 0.045);
     --cta-bg: #fff6db;
 }
@@ -432,7 +430,7 @@ html {
     --card-sync: var(--degraded);
     --card-strong: var(--degraded-strong);
     --card-soft: var(--degraded-soft);
-    --card-ghost: rgba(144, 144, 144, 0.45);
+    --card-ghost: var(--degraded-ghost);
 }
 
 .mode-card[data-mode="suave"] {
@@ -454,6 +452,54 @@ html {
     --card-strong: #f26bb8;
     --card-soft: rgba(236, 63, 160, 0.14);
     --card-ghost: rgba(236, 63, 160, 0.5);
+}
+
+/* Light-theme ramp: darken the strongs so the small conn/gain text keeps
+ * contrast on light surfaces (the dark-theme strongs are lightened tints), and
+ * thin the softs to 0.10 alpha — the same reduction --sync-soft/--degraded-soft
+ * get in the light :root. Two routes with the SAME values (keep both in sync),
+ * mirroring the palette blocks at the top: system-light unless the user
+ * explicitly chose dark, and the explicit light choice persisted by the theme
+ * toggle. The :root prefix also lifts these above the base [data-mode] blocks
+ * in specificity, so they win on either route. */
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .mode-card[data-mode="suave"] {
+        --card-strong: #2b7fe3;
+        --card-soft: rgba(70, 150, 255, 0.10);
+    }
+
+    :root:not([data-theme="dark"]) .mode-card[data-mode="balanced"] {
+        --card-strong: #8348e6;
+        --card-soft: rgba(154, 92, 255, 0.10);
+    }
+
+    :root:not([data-theme="dark"]) .mode-card[data-mode="aggressive"] {
+        --card-strong: #d42e8c;
+        --card-soft: rgba(236, 63, 160, 0.10);
+    }
+}
+
+:root[data-theme="light"] .mode-card[data-mode="suave"] {
+    --card-strong: #2b7fe3;
+    --card-soft: rgba(70, 150, 255, 0.10);
+}
+
+:root[data-theme="light"] .mode-card[data-mode="balanced"] {
+    --card-strong: #8348e6;
+    --card-soft: rgba(154, 92, 255, 0.10);
+}
+
+:root[data-theme="light"] .mode-card[data-mode="aggressive"] {
+    --card-strong: #d42e8c;
+    --card-soft: rgba(236, 63, 160, 0.10);
+}
+
+/* Keyboard focus follows the card's own accent (arrow keys both move focus and
+ * select, so the focus ring and the selection ring almost always co-occur — a
+ * red outline hugging a blue/violet ring read as two competing signals). Wins
+ * over the global red :focus-visible rule by specificity (0,2,0 vs 0,1,1). */
+.mode-card:focus-visible {
+    outline-color: var(--card-sync);
 }
 
 /* Selected = synced: the card locks to its temperature accent and pops hard off

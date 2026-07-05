@@ -19,6 +19,7 @@
       "lint": "eslint .",
       "lint:firefox": "npm run build:firefox && web-ext lint --source-dir dist/firefox",
       "run:firefox": "npm run build:firefox && web-ext run --source-dir dist/firefox",
+      "run:zen": "npm run build:firefox && node scripts/run-zen.cjs",
       "package:firefox": "npm run build:firefox && web-ext build --source-dir dist/firefox --artifacts-dir web-ext-artifacts --overwrite-dest",
       "version:patch": "node scripts/bump.mjs patch",
       "version:minor": "node scripts/bump.mjs minor"

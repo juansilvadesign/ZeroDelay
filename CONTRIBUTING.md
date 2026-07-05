@@ -42,6 +42,23 @@ npm run run:firefox
 This builds the Firefox version in `dist/firefox` and opens a temporary browser
 instance with the extension already loaded.
 
+### Zen Browser
+
+Zen Browser uses the same Firefox/Gecko build:
+
+```bash
+npm run run:zen
+```
+
+If the binary isn't on your `PATH`, point to it manually:
+
+```bash
+ZEN_BINARY=/opt/zen-browser-bin/zen-bin npm run run:zen
+```
+
+To keep a test profile between runs, set
+`ZEN_PROFILE=/path/to/profile`.
+
 ## Checks before opening a PR
 
 Run the same three checks that CI runs:

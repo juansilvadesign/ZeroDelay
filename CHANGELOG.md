@@ -28,6 +28,11 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   contribuição de [@leandroohsr](https://github.com/leandroohsr) (PR #33).
   O README continua disponível em português em `README.pt-BR.md`, com seletor
   de idioma no topo.
+- **Suporte de desenvolvimento ao Zen Browser**: novo script `npm run run:zen`
+  que carrega o build Firefox/Gecko no Zen via `web-ext`, resolvendo o binário
+  por `ZEN_BINARY`/`PATH` e com perfil opcional por `ZEN_PROFILE`. Apenas
+  tooling local, sem alteração no código publicado nem nos manifestos.
+  Contribuição de [@GbrFrn](https://github.com/GbrFrn) (PR #26).
 
 ## [1.2.2] - 2026-07-04
 

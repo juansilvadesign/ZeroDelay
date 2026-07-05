@@ -10,6 +10,9 @@ with every newly merged contribution.
   aligning the Firefox docs with the manifest — **PR #14 (merged)**.
 - **Kweripx** ([@kweripx](https://github.com/kweripx)) — initial Firefox support
   in the manifest — **PR #1** (basis for #4).
+- **Gabriel Fernandes** ([@GbrFrn](https://github.com/GbrFrn)) — Zen Browser
+  development tooling: the `npm run run:zen` script and its docs, reusing the
+  shared Firefox/Gecko build — **PR #26 (merged)**.
 
 ## Engine, tests and automation
 - **juansilvadesign** ([@juansilvadesign](https://github.com/juansilvadesign)) —

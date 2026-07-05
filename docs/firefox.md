@@ -25,6 +25,7 @@ copy, with no bundler.
 | `npm run build:firefox` | Generates `dist/firefox` |
 | `npm run lint:firefox` | Validates the build with `web-ext lint` |
 | `npm run run:firefox` | Opens Firefox with the extension already loaded |
+| `npm run run:zen` | Opens Zen Browser with the extension already loaded |
 | `npm run package:firefox` | Packages the `.zip` into `web-ext-artifacts` |
 
 ## Why two manifests
@@ -44,6 +45,31 @@ Two Gecko specifics that the manifest and the code already handle:
 
 All the APIs used (`storage`, `runtime`, `alarms`, `action`, `tabs`, `i18n`)
 exist in both engines under the `chrome.*` namespace, which Firefox also exposes.
+
+## Zen Browser
+
+Zen Browser is based on Firefox/Gecko, so it uses the same build in
+`dist/firefox`. To load the extension temporarily in Zen:
+
+```bash
+npm run run:zen
+```
+
+The script calls `web-ext` with the Zen binary. It looks for `zen-browser`,
+`zen` or `zen-bin` on the `PATH`; if needed, set `ZEN_BINARY`:
+
+```bash
+ZEN_BINARY=/opt/zen-browser-bin/zen-bin npm run run:zen
+```
+
+To reuse a test profile between runs:
+
+```bash
+ZEN_PROFILE=/tmp/zerodelay-zen npm run run:zen
+```
+
+Permanent installs still follow the Firefox/Zen signing and policy rules; this
+script covers the local development flow.
 
 ## Reach
 

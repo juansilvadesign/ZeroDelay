@@ -1,5 +1,7 @@
 # ZeroDelay
 
+**English** · [Português (Brasil)](README.pt-BR.md)
+
 A browser extension that helps YouTube live streams get back to real time when
 the player falls behind.
 

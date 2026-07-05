@@ -1,116 +1,110 @@
 # ZeroDelay
 
-Uma extensão de navegador que ajuda as lives do YouTube a voltarem ao tempo real
-quando o player fica para trás.
+A browser extension that helps YouTube live streams get back to real time when
+the player falls behind.
 
-Quando uma transmissão ao vivo com DVR ativado começa a atrasar, a extensão pode
-aumentar temporariamente a velocidade de reprodução, monitorar a saúde do buffer,
-opcionalmente pular de volta para o ao vivo se o atraso ficar grande demais e
-exibir estatísticas extras da transmissão direto na interface do player do
-YouTube.
+When a live stream with DVR enabled starts to lag, the extension can temporarily
+raise the playback speed, watch the buffer health, optionally jump back to live
+if the delay grows too large, and show extra stream stats right inside the
+YouTube player UI.
 
-## Recursos
+## Features
 
-- Modos de um toque, da recuperação suave (para conexões fracas) à latência
-  mínima, que te mantém o mais perto possível do ao vivo
-- Aumenta a velocidade automaticamente enquanto a live está atrás do ao vivo e
-  volta para `1.0x` assim que alcança
-- Modos mais próximos do ao vivo, que continuam puxando para a borda consumindo
-  o buffer
-- Pulo para o ao vivo quando o atraso passa do limite (ligado por padrão em 30s)
-- Cada modo mostra a velocidade de internet com que funciona melhor
-- Indicadores opcionais no player: velocidade de reprodução, latência ao vivo e
-  saúde do buffer
-- Os controles adicionados se integram à interface padrão do player do YouTube,
-  continuando disponíveis até em tela cheia
-- Funciona também no player incorporado do YouTube
-- Atalhos de teclado para ligar/desligar (`Alt+Shift+Y`) e pular para o ao vivo
-  (`Alt+Shift+L`) — `⌘+Shift+…` no Mac —, reconfiguráveis em
+- One-tap modes, from gentle catch-up (for weak connections) to minimum latency,
+  which keeps you as close to live as possible
+- Automatically speeds up while the live stream is behind and returns to `1.0x`
+  as soon as it catches up
+- Modes closer to live that keep pulling toward the edge by using up the buffer
+- Jump to live when the delay crosses a threshold (on by default at 30s)
+- Each mode shows the internet speed it works best with
+- Optional player indicators: playback speed, live latency and buffer health
+- The added controls blend into YouTube's standard player UI and stay available
+  even in fullscreen
+- Also works in the YouTube embedded player
+- Keyboard shortcuts to toggle on/off (`Alt+Shift+Y`) and jump to live
+  (`Alt+Shift+L`) — `⌘+Shift+…` on Mac — remappable at
   `chrome://extensions/shortcuts`
 
-## Configurações
+## Settings
 
-Tudo é entregue por **modos** de um toque. O acelerador aumenta só o necessário
-(suaves `1.25x`) para consumir o conteúdo já baixado e te puxar para o tempo
-real, o que **reduz a latência ao vivo**. Depois descansa em `1.0x`, que *segura*
-a latência — então age em rajadas curtas, não o tempo todo, e só volta a agir
-quando você atrasa de novo (após uma travada). Cada modo mantém uma quantidade
-diferente de **buffer**: menos buffer = mais perto do ao vivo, mas pede uma
-conexão melhor. O pulo para o ao vivo vem ligado por padrão em 30s.
+Everything is delivered through one-tap **modes**. The accelerator raises the
+speed only as much as needed (a gentle `1.25x`) to consume content that's already
+downloaded and pull you back to real time, which **reduces live latency**. Then
+it rests at `1.0x`, which *holds* the latency — so it acts in short bursts, not
+all the time, and only acts again when you fall behind (after a stall). Each mode
+keeps a different amount of **buffer**: less buffer = closer to live, but needs a
+better connection. Jump to live is on by default at 30s.
 
-> **Nota:** as lives modernas do YouTube ("SABR / manifestless") ignoram
-> mudanças diretas de `video.playbackRate`; o motor usa a API `setPlaybackRate()`
-> do próprio player, que é o que realmente faz a recuperação funcionar nelas.
+> **Note:** modern YouTube live streams ("SABR / manifestless") ignore direct
+> changes to `video.playbackRate`; the engine uses the player's own
+> `setPlaybackRate()` API, which is what actually makes catch-up work on them.
 
-### Modos
+### Modes
 
-| Modo | Mantém buffer | Internet recomendada |
+| Mode | Keeps buffer | Recommended internet |
 | --- | --- | --- |
-| **Desligado** | — | Qualquer |
-| **Automático** ⭐ | adapta | Qualquer (se ajusta) |
-| **Suave** | ~8s | Lenta/instável (~3+ Mbps) |
-| **Equilibrado** | ~6s | ~5–10 Mbps |
-| **Próximo** | ~4,5s | Estável ~15+ Mbps |
-| **Latência Mínima** | ~3,5s | Rápida/estável ~25+ Mbps |
+| **Off** | — | Any |
+| **Automatic** ⭐ | adapts | Any (adjusts) |
+| **Gentle** | ~8s | Slow/unstable (~3+ Mbps) |
+| **Balanced** | ~6s | ~5–10 Mbps |
+| **Close** | ~4.5s | Stable ~15+ Mbps |
+| **Minimum Latency** | ~3.5s | Fast/stable ~25+ Mbps |
 
-**Automático** (o padrão) mede sua conexão (banda, estabilidade do buffer,
-travadas) e ajusta o alvo de buffer na hora — mais perto do ao vivo quando a
-internet aguenta, mais buffer quando ela oscila. Um guarda de buffer nunca
-acelera quando o buffer está baixo, em nenhum modo. A menor latência possível é o
-próprio ponto ao vivo da transmissão (o piso de codificação → ingestão →
-transcodificação → CDN do servidor), que nenhuma ferramenta do lado do
-espectador consegue furar.
+**Automatic** (the default) measures your connection (bandwidth, buffer
+stability, stalls) and adjusts the buffer target on the fly — closer to live when
+your internet can take it, more buffer when it wavers. A buffer guard never
+speeds up when the buffer is low, in any mode. The lowest possible latency is the
+stream's own live edge (the encoding → ingest → transcoding → server CDN floor),
+which no viewer-side tool can beat.
 
-### Indicadores no player
+### Player indicators
 
-Leituras opcionais exibidas na barra do player do YouTube (ao lado do selo de ao
-vivo):
+Optional readouts shown on the YouTube player bar (next to the live badge):
 
-- `Exibir velocidade de reprodução atual`
-- `Exibir latência atual da transmissão ao vivo`
-- `Exibir saúde atual do buffer`
+- `Display current playback rate`
+- `Display current live latency`
+- `Display current buffer health`
 
-## Contribuindo
+## Contributing
 
-Contribuições são bem-vindas! Veja o [CONTRIBUTING.md](CONTRIBUTING.md) para
-saber como rodar a extensão localmente, o estilo de código e como abrir uma boa
-Pull Request. Ao participar, você concorda com o
-[Código de Conduta](CODE_OF_CONDUCT.md).
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) to learn how to
+run the extension locally, the code style, and how to open a good Pull Request.
+By taking part, you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-- Encontrou um bug ou tem uma ideia? [Abra uma issue](https://github.com/joaogfc/ZeroDelay/issues/new/choose).
-- Encontrou uma falha de segurança? Não abra issue pública — veja o
-  [SECURITY.md](SECURITY.md).
-- O histórico de mudanças fica no [CHANGELOG.md](CHANGELOG.md).
+- Found a bug or have an idea? [Open an issue](https://github.com/joaogfc/ZeroDelay/issues/new/choose).
+- Found a security flaw? Don't open a public issue — see [SECURITY.md](SECURITY.md).
+- The change history lives in [CHANGELOG.md](CHANGELOG.md).
 
-## Autor
+## Author
 
-Criado por **João Gustavo França**
+Created by **João Gustavo França**
 
 - GitHub: [@joaogfc](https://github.com/joaogfc)
-- E-mail: [joao@solitus.com.br](mailto:joao@solitus.com.br)
+- Email: [joao@solitus.com.br](mailto:joao@solitus.com.br)
 
-Curtiu? Toque no botão "Apoiar" no popup para me pagar um café via PIX. O QR Code e o
-"copia e cola" são gerados localmente — nenhum dado sai do seu navegador.
+Enjoying it? Tap the "Support" button in the popup to buy me a coffee via PIX
+(Brazil's instant-payment system). The QR code and copy-and-paste code are
+generated locally — no data leaves your browser.
 
-## Licença
+## License
 
 Copyright © 2026 João Gustavo França
 
-Este programa é software livre: você pode redistribuí-lo e/ou modificá-lo sob os
-termos da **Licença Pública Geral GNU v3.0 (GPL-3.0)**, conforme publicada pela
-Free Software Foundation. É distribuído SEM NENHUMA GARANTIA. Veja
-[LICENSE](LICENSE) para o texto completo.
+This program is free software: you can redistribute it and/or modify it under the
+terms of the **GNU General Public License v3.0 (GPL-3.0)**, as published by the
+Free Software Foundation. It is distributed WITH NO WARRANTY. See
+[LICENSE](LICENSE) for the full text.
 
-### Trabalho derivado e componentes de terceiros
+### Derivative work and third-party components
 
-O ZeroDelay é um **trabalho derivado** da extensão
-[live-catch-up](https://github.com/yudai-tiny-developer/live-catch-up), de
-**yudai-tiny-developer**, originalmente licenciada sob **MIT** e **Apache-2.0**.
-Essas licenças permitem o uso em um trabalho derivado relicenciado sob a GPL-3.0,
-desde que seus avisos sejam preservados.
+ZeroDelay is a **derivative work** of the
+[live-catch-up](https://github.com/yudai-tiny-developer/live-catch-up) extension
+by **yudai-tiny-developer**, originally licensed under **MIT** and
+**Apache-2.0**. Those licenses allow use in a derivative work relicensed under
+GPL-3.0, as long as their notices are preserved.
 
-O gerador de QR Code incluído (`vendor/qrcode.js`) é © 2009 Kazuhiko Arase sob a
-licença MIT, compatível com a GPL.
+The bundled QR code generator (`vendor/qrcode.js`) is © 2009 Kazuhiko Arase under
+the MIT license, which is GPL-compatible.
 
-Os avisos de licença completos desses componentes estão em
+The full license notices for these components are in
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

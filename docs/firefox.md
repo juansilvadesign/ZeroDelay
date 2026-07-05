@@ -1,57 +1,58 @@
-# ZeroDelay no Firefox
+# ZeroDelay on Firefox
 
-O ZeroDelay roda no Firefox Desktop com o mesmo código que atende Chrome e Edge.
-O motor de recuperação de latência, os modos e os indicadores no player são os
-mesmos — muda apenas o manifesto, gerado à parte para o Firefox.
+ZeroDelay runs on Firefox Desktop with the same code that serves Chrome and Edge.
+The latency catch-up engine, the modes and the player indicators are the same —
+only the manifest changes, generated separately for Firefox.
 
-## Gerando o build
+## Building
 
 ```
 npm install
 npm run build:firefox
 ```
 
-Pronto: a pasta `dist/firefox` sai pronta para carregar no Firefox ou empacotar.
+That's it: the `dist/firefox` folder comes out ready to load in Firefox or to
+package.
 
-O script `scripts/build-firefox.cjs` copia os arquivos da extensão para
-`dist/firefox` e usa o `manifest.firefox.json` como manifesto. É uma cópia
-direta, sem bundler.
+The `scripts/build-firefox.cjs` script copies the extension files into
+`dist/firefox` and uses `manifest.firefox.json` as the manifest. It's a straight
+copy, with no bundler.
 
 ## Scripts
 
-| Script | O que faz |
+| Script | What it does |
 | --- | --- |
-| `npm run build:firefox` | Gera `dist/firefox` |
-| `npm run lint:firefox` | Valida o build com `web-ext lint` |
-| `npm run run:firefox` | Abre o Firefox já com a extensão carregada |
-| `npm run package:firefox` | Empacota o `.zip` em `web-ext-artifacts` |
+| `npm run build:firefox` | Generates `dist/firefox` |
+| `npm run lint:firefox` | Validates the build with `web-ext lint` |
+| `npm run run:firefox` | Opens Firefox with the extension already loaded |
+| `npm run package:firefox` | Packages the `.zip` into `web-ext-artifacts` |
 
-## Por que dois manifestos
+## Why two manifests
 
-Chrome e Edge carregam o `manifest.json` da raiz, com o `background` rodando como
-*service worker*. O Firefox prefere `background.scripts`, então o
-`manifest.firefox.json` troca esse trecho por `scripts` + `type: module` e
-declara o `browser_specific_settings.gecko` (ID e versão mínima). Permissões,
-content scripts e recursos web seguem iguais nos dois.
+Chrome and Edge load the root `manifest.json`, with `background` running as a
+*service worker*. Firefox prefers `background.scripts`, so `manifest.firefox.json`
+swaps that part for `scripts` + `type: module` and declares
+`browser_specific_settings.gecko` (ID and minimum version). Permissions, content
+scripts and web resources stay the same in both.
 
-Duas particularidades do Gecko que o manifesto e o código já cobrem:
+Two Gecko specifics that the manifest and the code already handle:
 
-- o Firefox quer `author` como texto, e não como objeto, então cada manifesto o
-  declara à sua maneira;
-- ao entregar as configurações do content script para a página, a versão Firefox
-  passa o objeto por `cloneInto`, respeitando o isolamento de mundo do Gecko.
+- Firefox wants `author` as text, not as an object, so each manifest declares it
+  its own way;
+- when delivering the content script settings to the page, the Firefox version
+  passes the object through `cloneInto`, respecting Gecko's world isolation.
 
-Todas as APIs usadas (`storage`, `runtime`, `alarms`, `action`, `tabs`, `i18n`)
-existem nos dois motores sob o namespace `chrome.*`, que o Firefox também expõe.
+All the APIs used (`storage`, `runtime`, `alarms`, `action`, `tabs`, `i18n`)
+exist in both engines under the `chrome.*` namespace, which Firefox also exposes.
 
-## Alcance
+## Reach
 
-O `manifest.firefox.json` declara Firefox Desktop a partir da versão **140** em
-`browser_specific_settings.gecko`, e um bloco `gecko_android` a partir da versão
-**142**. O suporte a Android está apenas declarado no manifesto; não há registro
-de teste em dispositivo neste repositório.
+`manifest.firefox.json` declares Firefox Desktop from version **140** in
+`browser_specific_settings.gecko`, and a `gecko_android` block from version
+**142**. Android support is only declared in the manifest; there is no record of
+device testing in this repository.
 
-O manifesto também inclui `data_collection_permissions` com `required: ["none"]`,
-uma declaração explícita de ausência de coleta de dados no pacote Firefox. A
-publicação em si na loja (assinatura e envio do pacote) é uma etapa separada e
-não faz parte deste build.
+The manifest also includes `data_collection_permissions` with
+`required: ["none"]`, an explicit declaration of no data collection in the
+Firefox package. The store publishing itself (signing and package submission) is
+a separate step and is not part of this build.

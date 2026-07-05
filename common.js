@@ -140,6 +140,10 @@ export const label = {
     hexaSuggestLabel: msg('hexaSuggestLabel', 'Sugerir nos jogos do Brasil ao vivo'),
     hexaFullLabel: msg('hexaFullLabel', 'Tema completo no YouTube'),
 
+    // Theme toggle — accessible name says what a click switches TO.
+    themeToLight: msg('themeToLight', 'Mudar para o tema claro'),
+    themeToDark: msg('themeToDark', 'Mudar para o tema escuro'),
+
     // FAQ / help — a collapsible "how to use" section for new users.
     faqTitle: msg('faqTitle', 'Ajuda · Como usar'),
     faqWhatQ: msg('faqWhatQ', 'O que o ZeroDelay faz?'),
@@ -217,6 +221,11 @@ export const hexaFullKey = 'hexaFull';
  * few hexa touches. Written by content.js on activate/deactivate (best-effort;
  * reflects the last tab that flipped it). */
 export const hexaActiveKey = 'hexaActive';
+
+/** Popup light/dark preference ('light' | 'dark'; unset = follow the system).
+ * Kept out of `storage` (engine ignores it) and out of `donateKeys`, so
+ * "Restore defaults" leaves the chosen theme alone. */
+export const themeKey = 'themePref';
 
 /**
  * Write a one-shot "jump to live" signal to storage.

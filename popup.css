@@ -72,8 +72,13 @@
     --font-mono: "Departure Mono", ui-monospace, monospace;
 }
 
+/* Light palette. Applies on two routes with the SAME values (keep both blocks in
+ * sync): system-light while the user hasn't chosen (media query, so the first
+ * paint is right before popup.js runs), and the explicit choice persisted by the
+ * theme toggle (html[data-theme="light"]). An explicit "dark" opts out of the
+ * media route — :root's dark defaults then win. */
 @media (prefers-color-scheme: light) {
-    :root {
+    :root:not([data-theme="dark"]) {
         color-scheme: light;
         --bg: #ffffff;
         --surface: #f9f9f9;
@@ -92,6 +97,26 @@
         --scanline: rgba(0, 0, 0, 0.045);
         --cta-bg: #fff6db;
     }
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #f9f9f9;
+    --surface-2: #f0f0f0;
+    --surface-3: #e7e7e7;
+    --border: #dcdcdc;
+    --border-soft: #e8e8e8;
+    --text: #0f0f0f;
+    --text-dim: #606060;
+    --text-faint: #909090;
+    --accent-soft: rgba(255, 0, 51, 0.10);
+    --sync-soft: rgba(255, 0, 51, 0.10);
+    --degraded: #6f6f6f;
+    --degraded-strong: #505050;
+    --degraded-soft: rgba(96, 96, 96, 0.10);
+    --scanline: rgba(0, 0, 0, 0.045);
+    --cta-bg: #fff6db;
 }
 
 * {
@@ -859,6 +884,73 @@ html {
     transition: none;
 }
 
+/* ---------------------------------------------------------------- Theme toggle */
+/* Light/dark switch — a square sticker button beside "Apoiar": same surface,
+ * border and hard offset "pop" shadow as the reset button, warming to live-red
+ * on hover. Shows the theme you'd switch TO: sun while dark, moon while light
+ * (visibility mirrors the palette routes above — media query + data-theme). */
+.header-actions {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-toggle {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 0 var(--pop);
+    transition: color 160ms var(--ease), border-color 160ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
+}
+
+.theme-toggle:hover {
+    color: var(--sync-strong);
+    border-color: var(--sync);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 var(--pop);
+}
+
+.theme-toggle:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--pop);
+}
+
+.theme-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+.theme-toggle .ico-moon {
+    display: none;
+}
+
+:root[data-theme="light"] .theme-toggle .ico-sun {
+    display: none;
+}
+
+:root[data-theme="light"] .theme-toggle .ico-moon {
+    display: block;
+}
+
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .theme-toggle .ico-sun {
+        display: none;
+    }
+
+    :root:not([data-theme="dark"]) .theme-toggle .ico-moon {
+        display: block;
+    }
+}
+
 /* ---------------------------------------------------------------- Coffee / support */
 .coffee-toggle {
     flex: none;
@@ -1396,6 +1488,7 @@ html {
  * only (:focus-visible), so pointer use stays clean. */
 .mode-card:focus-visible,
 .advanced-toggle:focus-visible,
+.theme-toggle:focus-visible,
 .coffee-toggle:focus-visible,
 .reset:focus-visible,
 .support-cta-btn:focus-visible,

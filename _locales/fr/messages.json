@@ -259,5 +259,11 @@
    },
    "faqShortcutsA": {
       "message": "Trois raccourcis (sur Mac, remplacez Alt par ⌘ Command) :\n• Alt+Shift+Y — activer/désactiver ZeroDelay\n• Alt+Shift+L — aller au direct\n• Alt+Shift+H — activer/désactiver le Mode Hexa (thème du Brésil)\nVous pouvez les voir et les modifier dans chrome://extensions/shortcuts."
+   },
+   "aboutLink": {
+      "message": "À propos"
+   },
+   "reportIssue": {
+      "message": "Signaler un problème"
    }
 }

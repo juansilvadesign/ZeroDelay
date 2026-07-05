@@ -193,6 +193,8 @@ function renderStatic() {
     $('#advanced-label').textContent = L.sectionIndicators;
     $('#reset-label').textContent = L.reset;
     $('#reset').title = L.resetHint;
+    $('#about-label').textContent = L.aboutLink;
+    $('#issue-label').textContent = L.reportIssue;
 }
 
 function renderModes() {

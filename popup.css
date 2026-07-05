@@ -793,8 +793,56 @@ html {
 /* ---------------------------------------------------------------- Footer */
 .app-footer {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
     padding-top: 2px;
+}
+
+/* About / report-a-problem — compact sticker buttons: the same surface, border
+ * and hard offset "pop" shadow the reset button rests on, lifting on hover and
+ * pressing flat into the shadow on click. Labels never break mid-text; if a
+ * locale runs long, the whole button wraps to its own centered row instead. */
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.footer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 3px 3px 0 0 var(--pop);
+    transition: color 160ms var(--ease), border-color 160ms var(--ease), transform 120ms var(--spring), box-shadow 120ms var(--ease);
+}
+
+.footer-btn:hover {
+    color: var(--sync-strong);
+    border-color: var(--sync);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 var(--pop);
+}
+
+.footer-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--pop);
+}
+
+.footer-btn svg {
+    flex: none;
+    width: 14px;
+    height: 14px;
 }
 
 .reset {
@@ -1402,7 +1450,8 @@ html {
 .support-chip:focus-visible,
 .support-copy:focus-visible,
 .support-link:focus-visible,
-.support-mini:focus-visible {
+.support-mini:focus-visible,
+.footer-btn:focus-visible {
     outline: 2px solid var(--sync);
     outline-offset: 2px;
 }

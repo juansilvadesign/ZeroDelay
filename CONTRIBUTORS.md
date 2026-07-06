@@ -53,8 +53,10 @@ with every newly merged contribution.
   anyone who just installed it (**PR #28, merged**); the **"About ZeroDelay"** and
   **"Report an issue"** footer buttons linking the popup to the repository
   (**PR #32, merged**); the English translation of the developer documentation
-  (**PR #33, merged**); and the **light/dark theme toggle** in the popup header
-  with the preference saved outside the engine state (**PR #34, merged**).
+  (**PR #33, merged**); the **light/dark theme toggle** in the popup header
+  with the preference saved outside the engine state (**PR #34, merged**); and the
+  **live-proximity meter** on each mode's buffer chip, a marker sliding toward a
+  fixed live edge (**PR #35** — reworked for the new mode set and merged).
 - **aantonioprado** ([@aantonioprado](https://github.com/aantonioprado)) —
   preventive XSS hardening in the popup's SVG parsing (sanitizing `on*`,
   `javascript:`/`data:` and scriptable nodes) — **PR #30 (merged)**.

@@ -125,7 +125,6 @@ const ICONS = {
         '<path d="M21 4h-7"/><path d="M10 4H3"/><path d="M21 12h-9"/><path d="M8 12H3"/><path d="M21 20h-5"/><path d="M12 20H3"/><path d="M14 2v4"/><path d="M8 10v4"/><path d="M16 18v4"/>'),
     check: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
     wifi: solo('<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/>'),
-    gain: solo('<path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/>'),
     bmc: solo('<path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/>'),
 };
 
@@ -197,6 +196,25 @@ function renderStatic() {
     $('#issue-label').textContent = L.reportIssue;
 }
 
+// Buffer chip read as PROXIMITY TO LIVE: a track whose right end is the fixed
+// live-red edge, with the mode's marker riding toward it as the mode sits closer
+// to live (Extremo nearly touches it; the calmer modes sit back). Reframes the
+// old signal/gain icon, which read backwards. Decorative (aria-hidden); the
+// "buffer ~Xs" text still carries the number. Idea from @leandroohsr (PR #35).
+function buildLiveMeter(name, live) {
+    return el('span', {
+        class: 'live-meter' + (name === 'auto' ? ' live-meter--auto' : ''),
+        style: '--live:' + live, 'aria-hidden': 'true',
+    }, el('span', { class: 'live-track' }, el('span', { class: 'live-fill' }), el('span', { class: 'live-dot' })));
+}
+
+// Personalizado's proximity depends on its slider: map the target buffer (s) to a
+// marker position (more buffer = farther from live = smaller value).
+function liveForBuffer(cb) {
+    const v = (6.5 - cb) / 5;
+    return v < 0.08 ? 0.08 : v > 0.95 ? 0.95 : v;
+}
+
 function renderModes() {
     const container = $('#mode-cards');
     for (const name of common.modeOrder) {
@@ -210,7 +228,7 @@ function renderModes() {
                 el('span', { class: 'mode-name', text: meta.title }),
                 el('span', { class: 'mode-desc', text: meta.desc }),
                 el('span', { class: 'mode-conn' }, el('span', { class: 'conn-icon', html: ICONS.wifi }), el('span', { text: meta.conn })),
-                el('span', { class: 'mode-gain' + (name === 'off' ? ' is-none' : '') }, el('span', { class: 'gain-icon', html: ICONS.gain }), el('span', { text: meta.gain })),
+                el('span', { class: 'mode-gain' + (name === 'off' ? ' is-none' : '') }, name === 'off' ? null : buildLiveMeter(name, name === 'personalizado' ? liveForBuffer(state.centerBuffer) : meta.live), el('span', { text: meta.gain })),
             ),
             el('span', { class: 'mode-check', html: ICONS.check }),
         );
@@ -241,6 +259,9 @@ function renderBandControl() {
             common.minCenterBuffer, common.maxCenterBuffer, common.stepCenterBuffer);
         slider.value = v;
         $('#band-value').textContent = v.toFixed(1) + 's';
+        // Keep the Personalizado card's proximity marker in sync with the slider.
+        const meter = modeCards.personalizado && modeCards.personalizado.querySelector('.live-meter');
+        if (meter) meter.style.setProperty('--live', liveForBuffer(v));
     });
 }
 

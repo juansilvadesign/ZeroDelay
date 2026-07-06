@@ -23,6 +23,10 @@ with every newly merged contribution.
   and release automation (**PR #2**).
 - **bruno-gianini** ([@brunogianini](https://github.com/brunogianini)) — fixing
   memory leaks in player and `chrome.storage` listeners — **PR #17 (merged)**.
+- **RobertoMarconi** ([@RobertoMarconi](https://github.com/RobertoMarconi)) — idea of
+  playing **below 1.0x to rebuild the buffer** (the "Estável" mode with a target
+  slider, **PR #37**), reworked as buffer regulation into the **"Personalizado"**
+  mode and a universal anti-stall brake across all modes — **PR #39 (merged)**.
 
 ## UX and accessibility
 - **huandrey** ([@huandrey](https://github.com/huandrey)) — **keyboard shortcuts**

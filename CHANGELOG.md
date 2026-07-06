@@ -43,6 +43,13 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   ~9s para **~7s de latência** (colado no ao vivo), ao custo de algumas travadas a
   mais — o esperado de um modo agressivo. Os modos calmos (Equilibrado,
   Automático) não mudam.
+- **Medidor de "proximidade do ao vivo" no chip de cada modo**: no lugar do ícone
+  estático, cada modo mostra um marcador num trilho cuja ponta direita é a borda
+  vermelha fixa do ao vivo; o marcador desliza em direção a ela conforme o modo
+  fica mais perto do ao vivo (o Extremo quase encosta). O Automático deriva
+  (animado, parado sob `prefers-reduced-motion`) e o **Personalizado acompanha o
+  slider**. Decorativo (`aria-hidden`); o texto "buffer ~Xs" segue com o número.
+  Ideia de [@leandroohsr](https://github.com/leandroohsr) (PR #35).
 
 ### Removido
 

@@ -459,13 +459,17 @@ export const presets = {
 // Order shown in the UI, with display metadata.
 export const modeOrder = ['off', 'auto', 'balanced', 'aggressive', 'extreme', 'personalizado'];
 
+// `live` is each mode's proximity to the live edge (0 = most buffer / farthest
+// behind, 1 = right at live), driving the popup's chip meter — higher = closer to
+// live = less buffer. Off has no meter; Auto adapts (its marker drifts, via CSS);
+// Personalizado's marker tracks its slider (updated in popup.js).
 export const modeMeta = {
     off: { title: label.modeOff, desc: label.modeOffDesc, conn: label.modeOffConn, gain: label.modeOffGain },
-    auto: { title: label.modeAuto, desc: label.modeAutoDesc, conn: label.modeAutoConn, gain: label.modeAutoGain },
-    balanced: { title: label.modeBalanced, desc: label.modeBalancedDesc, conn: label.modeBalancedConn, gain: label.modeBalancedGain },
-    aggressive: { title: label.modeAggressive, desc: label.modeAggressiveDesc, conn: label.modeAggressiveConn, gain: label.modeAggressiveGain },
-    extreme: { title: label.modeExtreme, desc: label.modeExtremeDesc, conn: label.modeExtremeConn, gain: label.modeExtremeGain },
-    personalizado: { title: label.modePersonalizado, desc: label.modePersonalizadoDesc, conn: label.modePersonalizadoConn, gain: label.modePersonalizadoGain },
+    auto: { title: label.modeAuto, desc: label.modeAutoDesc, conn: label.modeAutoConn, gain: label.modeAutoGain, live: 0.35 },
+    balanced: { title: label.modeBalanced, desc: label.modeBalancedDesc, conn: label.modeBalancedConn, gain: label.modeBalancedGain, live: 0.5 },
+    aggressive: { title: label.modeAggressive, desc: label.modeAggressiveDesc, conn: label.modeAggressiveConn, gain: label.modeAggressiveGain, live: 0.7 },
+    extreme: { title: label.modeExtreme, desc: label.modeExtremeDesc, conn: label.modeExtremeConn, gain: label.modeExtremeGain, live: 0.9 },
+    personalizado: { title: label.modePersonalizado, desc: label.modePersonalizadoDesc, conn: label.modePersonalizadoConn, gain: label.modePersonalizadoGain, live: 0.7 },
 };
 
 /**

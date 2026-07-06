@@ -38,18 +38,6 @@
    "modeAutoGain": {
       "message": "adaptatif"
    },
-   "modeSuave": {
-      "message": "Doux"
-   },
-   "modeSuaveDesc": {
-      "message": "Plus de tampon pour la stabilité, tout en restant proche du direct. Bien pour une connexion instable."
-   },
-   "modeSuaveConn": {
-      "message": "Connexion lente ou instable (~3+ Mbps)"
-   },
-   "modeSuaveGain": {
-      "message": "tampon ~5s"
-   },
    "modeBalanced": {
       "message": "Équilibré"
    },
@@ -85,6 +73,21 @@
    },
    "modeExtremeGain": {
       "message": "tampon ~2s"
+   },
+   "modePersonalizado": {
+      "message": "Personnalisé"
+   },
+   "modePersonalizadoDesc": {
+      "message": "Vous choisissez le tampon cible (1 à 6s). Comme il ralentit sous 1.0x pour reconstituer le tampon, il tient des cibles plus serrées que les autres modes. Moins de tampon = plus proche du direct, mais risque de coupures."
+   },
+   "modePersonalizadoConn": {
+      "message": "Toute connexion (vous réglez)"
+   },
+   "modePersonalizadoGain": {
+      "message": "tampon réglable"
+   },
+   "centerLabel": {
+      "message": "Tampon cible"
    },
    "sectionIndicators": {
       "message": "Indicateurs du lecteur"

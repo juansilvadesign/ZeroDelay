@@ -55,11 +55,6 @@ export const label = {
     modeAutoConn: msg('modeAutoConn', 'Qualquer conexão (adapta-se)'),
     modeAutoGain: msg('modeAutoGain', 'adaptável'),
 
-    modeSuave: msg('modeSuave', 'Suave'),
-    modeSuaveDesc: msg('modeSuaveDesc', 'Mais folga de buffer para estabilidade, ainda bem perto do ao vivo. Boa para internet instável.'),
-    modeSuaveConn: msg('modeSuaveConn', 'Internet lenta ou instável (~3+ Mbps)'),
-    modeSuaveGain: msg('modeSuaveGain', 'buffer ~5s'),
-
     modeBalanced: msg('modeBalanced', 'Equilibrado'),
     modeBalancedDesc: msg('modeBalancedDesc', 'Bom meio-termo: latência baixa mantendo ~4s de buffer.'),
     modeBalancedConn: msg('modeBalancedConn', 'Internet comum (~5–10 Mbps)'),
@@ -74,6 +69,14 @@ export const label = {
     modeExtremeDesc: msg('modeExtremeDesc', 'No limite do ao vivo, com só ~2s de buffer. Só para internet muito rápida e estável — pode engasgar.'),
     modeExtremeConn: msg('modeExtremeConn', 'Internet muito rápida e estável (~50+ Mbps)'),
     modeExtremeGain: msg('modeExtremeGain', 'buffer ~2s'),
+
+    modePersonalizado: msg('modePersonalizado', 'Personalizado'),
+    modePersonalizadoDesc: msg('modePersonalizadoDesc', 'Você define o buffer alvo (1 a 6s). Como ele desacelera abaixo de 1.0x para recompor o colchão, aguenta alvos mais agressivos que os outros modos. Menos buffer = mais perto do ao vivo, mas pode travar.'),
+    modePersonalizadoConn: msg('modePersonalizadoConn', 'Qualquer conexão (você ajusta)'),
+    modePersonalizadoGain: msg('modePersonalizadoGain', 'buffer ajustável'),
+
+    // "Personalizado" mode — the target-buffer slider label.
+    bandCenter: msg('centerLabel', 'Buffer alvo'),
 
     // Player indicators
     sectionIndicators: msg('sectionIndicators', 'Indicadores no player'),
@@ -173,7 +176,7 @@ export const label = {
 // engine keeps resolving them (defaulting to off), even though the popup no
 // longer exposes a toggle for them.
 // ---------------------------------------------------------------------------
-export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'showCurrent', 'bufferTarget', 'auto', 'skip', 'skipThreathold'];
+export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'showCurrent', 'bufferTarget', 'auto', 'skip', 'skipThreathold', 'band', 'centerBuffer'];
 
 // ---------------------------------------------------------------------------
 // Donation nudge — gentle, optional, NEVER restricts usage. These keys live
@@ -339,10 +342,10 @@ export function donateEligible(d, now) {
 }
 
 // When the stream keeps stalling, the mode to suggest instead — one that keeps
-// more buffer (more stable). Returns null if already at the calmest mode (or off).
+// more buffer (more stable). Automatic is the calmest (it raises its own cushion
+// after stalls), so there is nothing gentler to offer past it or Off.
 export function calmerMode(mode) {
-    if (mode === 'off' || mode === 'suave') return null;
-    if (mode === 'auto') return 'suave';
+    if (mode === 'off' || mode === 'auto') return null;
     return 'auto';
 }
 
@@ -377,15 +380,33 @@ export const minSkipThreathold = 1.0;
 export const maxSkipThreathold = 999999.0;
 export const stepSkipThreathold = 1.0;
 
+// "Personalizado" (buffer-regulation) mode: `band` selects the buffer-regulation
+// controller; `centerBuffer` is the target buffer it parks around (the slider,
+// seconds). Off by default. Goes down to 1 s — an aggressive, close-to-live
+// target the sub-1.0x rebuild sustains better than a classic mode could, though
+// a cushion that thin still stalls on jitter (the expert tradeoff this mode
+// exposes on purpose).
+export const defaultBand = false;
+export const defaultCenterBuffer = 3.0;
+export const minCenterBuffer = 1.0;
+export const maxCenterBuffer = 6.0;
+export const stepCenterBuffer = 0.5;
+
 // ---------------------------------------------------------------------------
 // Presets — every setting is delivered through one of these modes. The popup
 // no longer edits primitives directly; clicking a mode writes its primitives,
 // and the active mode is derived back from them (see deriveMode).
 // ---------------------------------------------------------------------------
+// Every classic preset carries `band: false` so switching INTO it from
+// "Personalizado" turns the buffer-regulation controller off (chrome.storage.set
+// merges — keys a preset omits keep their old value). "Personalizado" is the
+// buffer-regulation mode (`band: true`) and deliberately omits `centerBuffer`:
+// the slider owns that value and must survive mode re-entry.
 export const presets = {
     off: {
         enabled: false,
         skip: false,
+        band: false,
     },
     auto: {
         enabled: true,
@@ -393,14 +414,7 @@ export const presets = {
         auto: true,
         skip: true,
         skipThreathold: 30.0,
-    },
-    suave: {
-        enabled: true,
-        playbackRate: 1.25,
-        auto: false,
-        bufferTarget: 5.0,
-        skip: true,
-        skipThreathold: 30.0,
+        band: false,
     },
     balanced: {
         enabled: true,
@@ -409,6 +423,7 @@ export const presets = {
         bufferTarget: 4.0,
         skip: true,
         skipThreathold: 30.0,
+        band: false,
     },
     aggressive: {
         enabled: true,
@@ -417,6 +432,7 @@ export const presets = {
         bufferTarget: 3.0,
         skip: true,
         skipThreathold: 30.0,
+        band: false,
     },
     extreme: {
         enabled: true,
@@ -425,19 +441,31 @@ export const presets = {
         bufferTarget: 2.0,
         skip: true,
         skipThreathold: 30.0,
+        band: false,
+    },
+    // Buffer-regulation mode: the user dials the target buffer (1-6 s) and it
+    // plays below 1.0x to hold it. Sits last, after the presets, as the manual
+    // option. Omits `centerBuffer` — the slider owns it.
+    personalizado: {
+        enabled: true,
+        playbackRate: 1.25,
+        auto: false,
+        band: true,
+        skip: true,
+        skipThreathold: 30.0,
     },
 };
 
 // Order shown in the UI, with display metadata.
-export const modeOrder = ['off', 'auto', 'suave', 'balanced', 'aggressive', 'extreme'];
+export const modeOrder = ['off', 'auto', 'balanced', 'aggressive', 'extreme', 'personalizado'];
 
 export const modeMeta = {
     off: { title: label.modeOff, desc: label.modeOffDesc, conn: label.modeOffConn, gain: label.modeOffGain },
     auto: { title: label.modeAuto, desc: label.modeAutoDesc, conn: label.modeAutoConn, gain: label.modeAutoGain },
-    suave: { title: label.modeSuave, desc: label.modeSuaveDesc, conn: label.modeSuaveConn, gain: label.modeSuaveGain },
     balanced: { title: label.modeBalanced, desc: label.modeBalancedDesc, conn: label.modeBalancedConn, gain: label.modeBalancedGain },
     aggressive: { title: label.modeAggressive, desc: label.modeAggressiveDesc, conn: label.modeAggressiveConn, gain: label.modeAggressiveGain },
     extreme: { title: label.modeExtreme, desc: label.modeExtremeDesc, conn: label.modeExtremeConn, gain: label.modeExtremeGain },
+    personalizado: { title: label.modePersonalizado, desc: label.modePersonalizadoDesc, conn: label.modePersonalizadoConn, gain: label.modePersonalizadoGain },
 };
 
 /**
@@ -447,7 +475,7 @@ export const modeMeta = {
  * @param {Object} d - Raw data as read from `chrome.storage.local`.
  */
 export function resolveSettings(d) {
-    return {
+    const s = {
         enabled: value(d.enabled, defaultEnabled),
         playbackRate: limitValue(d.playbackRate, defaultPlaybackRate, minPlaybackRate, maxPlaybackRate, stepPlaybackRate),
         showPlaybackRate: value(d.showPlaybackRate, defaultShowPlaybackRate),
@@ -459,7 +487,10 @@ export function resolveSettings(d) {
         auto: value(d.auto, defaultAuto),
         skip: value(d.skip, defaultSkip),
         skipThreathold: value(d.skipThreathold, defaultSkipThreathold),
+        band: value(d.band, defaultBand),
+        centerBuffer: limitValue(d.centerBuffer, defaultCenterBuffer, minCenterBuffer, maxCenterBuffer, stepCenterBuffer),
     };
+    return s;
 }
 
 // Derive which mode is active from the resolved settings.

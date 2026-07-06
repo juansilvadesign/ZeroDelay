@@ -5,6 +5,54 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado
+
+- **Modo "Personalizado"**: um novo modo (o último da lista, abaixo do Extremo)
+  em que você define o **buffer alvo num slider de 1 a 6 s**. Diferente dos
+  outros, ele **regula o buffer em torno do alvo tocando abaixo de 1.0x para
+  recompor o colchão** quando a conexão oscila — algo que nenhum modo fazia (os
+  demais só aceleram ou descansam em 1.0x, torcendo para a rede reabastecer).
+  Isso sustenta alvos mais agressivos (mais perto do ao vivo) do que um modo
+  comum. A física por trás: só dá pra ter bufferizado o que já foi publicado à
+  frente do playhead (`buffer <= latência − piso de pipeline`), então ficar um
+  pouco mais atrás do ao vivo é o que abre espaço para o colchão encher. Alvos
+  confortáveis estacionam sem travar (validado no `scripts/sim-live.mjs`); alvos
+  bem finos (1-2 s) trocam estabilidade por proximidade e podem travar — a
+  escolha é sua. Usa chaves de storage novas (`band`, `centerBuffer`), sem
+  renomear as existentes; os modos existentes (inclusive o Suave) não mudam.
+  Baseado na ideia do modo **"Estável"** da PR #37 de
+  [@RobertoMarconi](https://github.com/RobertoMarconi) — a recomposição abaixo de
+  1.0x e o slider de alvo.
+
+### Alterado
+
+- **Freio anti-travamento em todos os modos**: o controlador clássico (usado por
+  Automático, Equilibrado, Próximo e Extremo) agora, quando o buffer afina para a
+  zona de perigo, **toca abaixo de 1.0x para recompor o colchão** em vez de só
+  descansar em 1.0x torcendo para a rede reabastecer. O freio só dispara com o
+  buffer fino, então os modos confortáveis não mudam em nada, mas os agressivos
+  ficam bem mais difíceis de travar: no `scripts/sim-live.mjs` o **Próximo cai de
+  ~15 para ~1 travada** em 30 min, e sob conexão ruim de ~31 para 0. É a mesma
+  técnica do modo Personalizado, agora protegendo a lista inteira.
+- **Modos agressivos colam mais no ao vivo**: a histerese e o backoff do
+  controlador clássico agora escalam com o alvo do modo, então os modos de buffer
+  baixo rastreiam de perto o alvo em vez de flutuar bem acima dele. O **Extremo**
+  passa a entregar os ~2s de buffer que anuncia (antes segurava ~3,2s) e cai de
+  ~9s para **~7s de latência** (colado no ao vivo), ao custo de algumas travadas a
+  mais — o esperado de um modo agressivo. Os modos calmos (Equilibrado,
+  Automático) não mudam.
+
+### Removido
+
+- **Modo "Suave"**: removido. Com o freio agora em todos os modos, um modo
+  dedicado a "mais buffer / estabilidade" deixou de ser necessário — o Automático
+  já mantém um colchão folgado e se adapta, e o Personalizado cobre qualquer alvo
+  de buffer com o mesmo freio. Menos modos na lista (de 7 para 6). Quem tinha o
+  Suave lembrado para um canal apenas volta a não ter preferência salva ali; nada
+  quebra.
+
 ## [1.2.3] - 2026-07-05
 
 ### Adicionado

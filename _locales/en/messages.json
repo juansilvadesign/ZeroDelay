@@ -38,18 +38,6 @@
    "modeAutoGain": {
       "message": "adaptive"
    },
-   "modeSuave": {
-      "message": "Gentle"
-   },
-   "modeSuaveDesc": {
-      "message": "More buffer for stability, still close to live. Good for unstable internet."
-   },
-   "modeSuaveConn": {
-      "message": "Slow or unstable internet (~3+ Mbps)"
-   },
-   "modeSuaveGain": {
-      "message": "buffer ~5s"
-   },
    "modeBalanced": {
       "message": "Balanced"
    },
@@ -85,6 +73,21 @@
    },
    "modeExtremeGain": {
       "message": "buffer ~2s"
+   },
+   "modePersonalizado": {
+      "message": "Custom"
+   },
+   "modePersonalizadoDesc": {
+      "message": "You set the target buffer (1 to 6s). Because it slows below 1.0x to rebuild the cushion, it can hold tighter targets than the other modes. Less buffer = closer to live, but may stall."
+   },
+   "modePersonalizadoConn": {
+      "message": "Any connection (you tune it)"
+   },
+   "modePersonalizadoGain": {
+      "message": "custom buffer"
+   },
+   "centerLabel": {
+      "message": "Target buffer"
    },
    "sectionIndicators": {
       "message": "Player indicators"

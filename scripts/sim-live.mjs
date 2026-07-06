@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // sim-live.mjs — simulate the ZeroDelay controller under CazeTV-like live conditions
 // (2s segments, head-of-line jitter, pipeline latency floor). Born from the jul/2026
-// "1.05x with a dying buffer" investigation; acceptance bar: suave/balanced/auto with
+// "1.05x with a dying buffer" investigation; acceptance bar: the calm modes (balanced/auto) with
 // ZERO stalls and median buffer ~ the mode's target. Compare against the old
 // controller with: git show 5f0f420:engine/controller.js > /tmp/old.cjs
 //
@@ -15,7 +15,7 @@ const controllerPath = resolve(
     process.cwd(),
     process.argv[2] || resolve(dirname(fileURLToPath(import.meta.url)), '../engine/controller.js'),
 );
-const { createController } = require(controllerPath);
+const { createController, createBandController } = require(controllerPath);
 
 // ---- fixed simulation model (per spec, identical across agents) ----
 const DT = 0.25;            // s per tick (engine setInterval 250ms)
@@ -44,9 +44,14 @@ function quantile(sortedArr, q) {
   return sortedArr[lo] + (sortedArr[hi] - sortedArr[lo]) * (pos - lo);
 }
 
-function simulate({ name, target, auto, jitterProb }) {
+function simulate({ name, target, auto, jitterProb, band: useBand }) {
   const rand = mulberry32(42);           // fresh PRNG per mode: identical network trace
-  const ctrl = createController();       // fresh controller per mode: independent state
+  // "Personalizado" is the buffer-regulation controller (`band`), parked around `target`;
+  // the rest are the classic catch-up controller. Both take (SPEED, L, B, ...).
+  const ctrl = useBand ? createBandController(target) : createController();
+  const rateAt = useBand
+    ? (L, B) => ctrl.calcPlaybackRate(SPEED, L, B)
+    : (L, B) => ctrl.calcPlaybackRate(SPEED, L, B, target, auto);
   let L = 12.0;                          // latency (s)
   let B = 6.0;                           // buffer health (s downloaded ahead of playhead)
   // U (published, not yet downloaded) = max(0, L - PF - B) = max(0, -0.5) = 0 at init.
@@ -82,7 +87,7 @@ function simulate({ name, target, auto, jitterProb }) {
     const bIn = B, lIn = L;              // what the controller sees this tick
 
     // 3) controller decides the rate (called every tick, like the real engine loop)
-    const r = ctrl.calcPlaybackRate(SPEED, L, B, target, auto);
+    const r = rateAt(L, B);
 
     // 4) stall / playback
     if (stalled && B >= 1.0) {           // stall ends once 1.0s of buffer is back
@@ -174,39 +179,43 @@ function simulate({ name, target, auto, jitterProb }) {
 
 // ---- runs ----
 const runs = [
-  { name: 'suave',         target: 5, auto: false, jitterProb: JITTER_P },
-  { name: 'balanced',      target: 4, auto: false, jitterProb: JITTER_P },
-  { name: 'aggressive',    target: 3, auto: false, jitterProb: JITTER_P },
-  { name: 'extreme',       target: 2, auto: false, jitterProb: JITTER_P },
-  { name: 'auto',          target: 6, auto: true,  jitterProb: JITTER_P },
-  { name: 'suave_perfect', target: 5, auto: false, jitterProb: 0.0 },
+  { name: 'balanced',   target: 4, auto: false, jitterProb: JITTER_P },
+  { name: 'aggressive', target: 3, auto: false, jitterProb: JITTER_P },
+  { name: 'extreme',    target: 2, auto: false, jitterProb: JITTER_P },
+  { name: 'auto',       target: 6, auto: true,  jitterProb: JITTER_P },
+  // "Personalizado" (buffer-regulation) across the slider: comfortable targets
+  // park cleanly; thin ones trade stability for closeness (the expert tradeoff).
+  { name: 'custom_5',   target: 5, band: true,  jitterProb: JITTER_P },
+  { name: 'custom_3',   target: 3, band: true,  jitterProb: JITTER_P },
+  { name: 'custom_1',   target: 1, band: true,  jitterProb: JITTER_P },
 ];
 
 const results = {};
-let suaveRun = null;
+let excerptRun = null;
 for (const cfg of runs) {
   const out = simulate(cfg);
   results[cfg.name] = out.metrics;
-  if (cfg.name === 'suave') suaveRun = out;
+  if (cfg.name === 'extreme') excerptRun = out;
 }
 
 console.log('=== ZeroDelay controller simulation (' + controllerPath + ') ===');
 console.log(JSON.stringify(results, null, 2));
 
-// ---- excerpt: ~60 ticks around the first stall of the suave mode ----
-const firstStall = suaveRun.stalls[0];
+// ---- excerpt: ~60 ticks around the first stall of the extreme mode (the most
+// stall-prone one, where the brake's rebuild is easiest to see) ----
+const firstStall = excerptRun.stalls[0];
 if (firstStall) {
   const s = firstStall.startTick;
   const from = Math.max(0, s - 40), to = Math.min(TICKS - 1, s + 19);
-  console.log('\n=== suave: first stall excerpt (stall starts at t=' + (s * DT).toFixed(2) + 's) ===');
+  console.log('\n=== extreme: first stall excerpt (stall starts at t=' + (s * DT).toFixed(2) + 's) ===');
   console.log('t(s)\tL\tB\tr\tstalled');
   for (let i = from; i <= to; i++) {
-    const h = suaveRun.hist[i];
+    const h = excerptRun.hist[i];
     console.log(
       h.t.toFixed(2) + '\t' + h.L.toFixed(3) + '\t' + h.B.toFixed(3) + '\t' +
       h.r.toFixed(4) + '\t' + (h.stalled ? 'STALL' : '')
     );
   }
 } else {
-  console.log('\n(suave mode never stalled)');
+  console.log('\n(extreme mode never stalled)');
 }

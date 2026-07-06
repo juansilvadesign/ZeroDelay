@@ -38,18 +38,6 @@
    "modeAutoGain": {
       "message": "adaptável"
    },
-   "modeSuave": {
-      "message": "Suave"
-   },
-   "modeSuaveDesc": {
-      "message": "Mais folga de buffer para estabilidade, ainda bem perto do ao vivo. Boa para internet instável."
-   },
-   "modeSuaveConn": {
-      "message": "Internet lenta ou instável (~3+ Mbps)"
-   },
-   "modeSuaveGain": {
-      "message": "buffer ~5s"
-   },
    "modeBalanced": {
       "message": "Equilibrado"
    },
@@ -85,6 +73,21 @@
    },
    "modeExtremeGain": {
       "message": "buffer ~2s"
+   },
+   "modePersonalizado": {
+      "message": "Personalizado"
+   },
+   "modePersonalizadoDesc": {
+      "message": "Você define o buffer alvo (1 a 6s). Como ele desacelera abaixo de 1.0x para recompor o colchão, aguenta alvos mais agressivos que os outros modos. Menos buffer = mais perto do ao vivo, mas pode travar."
+   },
+   "modePersonalizadoConn": {
+      "message": "Qualquer conexão (você ajusta)"
+   },
+   "modePersonalizadoGain": {
+      "message": "buffer ajustável"
+   },
+   "centerLabel": {
+      "message": "Buffer alvo"
    },
    "sectionIndicators": {
       "message": "Indicadores no player"

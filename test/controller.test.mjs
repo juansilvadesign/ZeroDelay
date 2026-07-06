@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import controllerPkg from '../engine/controller.js';
-const { createController } = controllerPkg;
+const { createController, createBandController } = controllerPkg;
 
 const SPEED = 1.25;
 
@@ -74,13 +74,29 @@ test('a critically low instantaneous buffer refuses to accelerate', () => {
 // floor (1.5s), ground the buffer down to it and held ~1.05x with no margin.
 
 test('CazeTV regression: rests at 1.0x below the cushion even with permanent latency demand', () => {
-    // The reported scenario: stream floor ~8s (demand saturated), Suave mode
-    // (target 5s), buffer ground down to ~2.2s. The buggy controller returned
-    // exactly 1.05x here; the cushion semantics demand a full rest.
+    // The reported scenario: stream floor ~8s (demand saturated), a high-buffer
+    // mode (target 5s), buffer ground down to ~2.2s. The buggy controller returned
+    // exactly 1.05x here; the cushion semantics demand a full rest. (2.2s sits just
+    // above the 2.0s brake line, so it rests at 1.0x rather than rebuilding.)
     const c = primed(2.2, 8, 5);
     for (let i = 0; i < 5; i++) {
         assert.equal(c.calcPlaybackRate(SPEED, 8, 2.2, 5, false), 1.0);
     }
+});
+
+test('classic brake: rebuilds below 1.0x when the cushion is thin, rests at 1.0x above the danger line', () => {
+    // The brake fires only in the danger zone (smoothed buffer under ~2 s): there
+    // the controller plays BELOW 1.0x to rebuild instead of only resting at 1.0x.
+    const r = primed(1.0, 12, 4).getState().rate;
+    assert.ok(r < 1.0 && r >= 0.90 - 1e-9, `thin cushion rebuilds below 1.0x (>=0.90), got ${r}`);
+
+    // Comfortably above the danger line (still below the catch-up cushion): a plain
+    // 1.0x rest — the brake never touches the comfortable modes.
+    assert.equal(primed(3.5, 12, 4).getState().rate, 1.0);
+
+    // Far behind live the brake fades out — don't slow forever while drifting
+    // (the 30 s skip is the backstop).
+    assert.equal(primed(1.0, 25, 4).getState().rate, 1.0);
 });
 
 test('below the cushion the engine rests — the cushion is the equilibrium', () => {
@@ -167,4 +183,66 @@ test('each controller instance keeps independent state', () => {
     assert.ok(a.getState().catching_up, 'a is catching up');
     assert.equal(b.getState().buffer_ema, null); // untouched
     assert.equal(b.getState().catching_up, false);
+});
+
+// --------------------------------------------------------------------------
+// Buffer-regulation controller (the "Personalizado" mode). One rule:
+//   rate = 1 + K*(buffer_ema - center) — surplus above the target speeds up
+//   (capped 1.15x), deficit slows BELOW 1.0x to rebuild (floored 0.90x), eased
+//   out as latency climbs so we never drift behind live forever.
+// --------------------------------------------------------------------------
+
+// Same 0.9/0.1 buffer EMA as the classic controller, so one sample barely moves
+// it: feed a level until the EMA settles, then read the steady-state rate — what
+// the viewer actually experiences.
+function settle(c, { latency = 12, health, times = 120 } = {}) {
+    let rate;
+    for (let i = 0; i < times; i++) rate = c.calcPlaybackRate(SPEED, latency, health);
+    return rate;
+}
+
+test('band: exposes WARN_BUFFER and clamps the center to [1, 6]', () => {
+    assert.equal(typeof createBandController(3).WARN_BUFFER, 'number');
+    assert.equal(createBandController(2).center, 2);     // in range
+    assert.equal(createBandController(0.5).center, 1);   // clamped up to the min
+    assert.equal(createBandController(99).center, 6);    // clamped down to the max
+    assert.equal(createBandController(NaN).center, 3);   // safe default (3.0)
+});
+
+test('band: non-finite buffer is safe (1.0x)', () => {
+    assert.equal(createBandController(5).calcPlaybackRate(SPEED, 12, NaN), 1.0);
+});
+
+test('band: parks at the target — ~1.0x at center, slows below it', () => {
+    assert.ok(Math.abs(settle(createBandController(5), { health: 5 }) - 1.0) < 1e-9, 'dead center rests at 1.0x');
+    assert.ok(settle(createBandController(5), { health: 4.5 }) < 1.0, 'below the target it slows to rebuild');
+});
+
+test('band: surplus above the target speeds up, capped at 1.15x', () => {
+    const mild = settle(createBandController(5), { health: 5.8 });   // small surplus
+    const big = settle(createBandController(5), { health: 9 });      // large surplus
+    assert.ok(mild > 1.0 && mild < big, `speedup grows with surplus: ${mild} < ${big}`);
+    assert.ok(big > 1.14 && big <= 1.15 + 1e-9, `capped at 1.15, got ${big}`);
+});
+
+test('band: deficit rebuilds below 1.0x, harder the thinner the cushion, floored at 0.90', () => {
+    const mild = settle(createBandController(5), { health: 4.7 });   // small deficit
+    const deep = settle(createBandController(5), { health: 3.0 });   // big deficit
+    assert.ok(mild < 1.0 && mild > deep, `deeper deficit rebuilds harder: ${mild} vs ${deep}`);
+    assert.ok(Math.abs(deep - 0.90) < 1e-9, `bottoms at the 0.90 floor, got ${deep}`);
+});
+
+test('band: rebuild eases back to 1.0x as latency climbs (no infinite drift)', () => {
+    const near = settle(createBandController(5), { latency: 8, health: 3.5 });
+    const far = settle(createBandController(5), { latency: 25, health: 3.5 });
+    assert.ok(near < 0.95, `close to live it rebuilds hard, got ${near}`);
+    assert.ok(far > 0.99, `far behind it stops slowing (~1.0x), got ${far}`);
+});
+
+test('band: instances keep independent state', () => {
+    const a = createBandController(5);
+    const b = createBandController(5);
+    for (let i = 0; i < 30; i++) a.calcPlaybackRate(SPEED, 12, 9);
+    assert.ok(a.getState().catching_up, 'a is catching up');
+    assert.equal(b.getState().buffer_ema, null); // untouched
 });

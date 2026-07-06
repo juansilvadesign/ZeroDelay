@@ -43,12 +43,12 @@ test('donateEligible gates on usage, opt-out and snooze', () => {
     assert.equal(common.donateEligible(undefined, now), false);
 });
 
-test('calmerMode steps toward more buffer and stops at the calmest', () => {
-    assert.equal(common.calmerMode('min'), 'auto');
+test('calmerMode suggests Automatic for stall-prone modes, null at the calmest', () => {
+    assert.equal(common.calmerMode('extreme'), 'auto');
     assert.equal(common.calmerMode('aggressive'), 'auto');
     assert.equal(common.calmerMode('balanced'), 'auto');
-    assert.equal(common.calmerMode('auto'), 'suave');
-    assert.equal(common.calmerMode('suave'), null);
+    assert.equal(common.calmerMode('personalizado'), 'auto');
+    assert.equal(common.calmerMode('auto'), null);
     assert.equal(common.calmerMode('off'), null);
 });
 
@@ -81,8 +81,8 @@ test('toggleEnabledAction turns an active mode off and remembers it', () => {
 });
 
 test('toggleEnabledAction restores the remembered mode when currently off', () => {
-    const r = common.toggleEnabledAction(common.presets.off, 'suave');
-    assert.equal(common.deriveMode(r.apply), 'suave');
+    const r = common.toggleEnabledAction(common.presets.off, 'extreme');
+    assert.equal(common.deriveMode(r.apply), 'extreme');
     assert.equal(r.remember, undefined); // nothing to remember while turning on
 });
 
@@ -186,21 +186,34 @@ test('endOfToday: the "Hoje não" snooze lands on the next local midnight', () =
 test('per-channel memory: save (LRU + prune), suggest, forget', () => {
     const s = modes => ({ [common.channelModesKey]: modes });
     // add / update; never store 'off' or an unknown mode
-    assert.deepEqual(common.saveChannelMode({}, 'chA', 'suave'), { chA: 'suave' });
-    assert.deepEqual(common.saveChannelMode(s({ chA: 'suave' }), 'chB', 'aggressive'), { chA: 'suave', chB: 'aggressive' });
-    assert.deepEqual(common.saveChannelMode(s({ chA: 'suave' }), 'chA', 'off'), { chA: 'suave' }, "'off' is not remembered");
-    assert.deepEqual(common.saveChannelMode(s({ chA: 'suave' }), 'chA', 'nope'), { chA: 'suave' }, 'unknown mode ignored');
+    assert.deepEqual(common.saveChannelMode({}, 'chA', 'extreme'), { chA: 'extreme' });
+    assert.deepEqual(common.saveChannelMode(s({ chA: 'extreme' }), 'chB', 'aggressive'), { chA: 'extreme', chB: 'aggressive' });
+    assert.deepEqual(common.saveChannelMode(s({ chA: 'extreme' }), 'chA', 'off'), { chA: 'extreme' }, "'off' is not remembered");
+    assert.deepEqual(common.saveChannelMode(s({ chA: 'extreme' }), 'chA', 'nope'), { chA: 'extreme' }, 'unknown mode ignored');
     // re-saving a channel moves it to newest (LRU order)
-    assert.deepEqual(Object.keys(common.saveChannelMode(s({ chA: 'suave', chB: 'auto' }), 'chA', 'balanced')), ['chB', 'chA']);
+    assert.deepEqual(Object.keys(common.saveChannelMode(s({ chA: 'extreme', chB: 'auto' }), 'chA', 'balanced')), ['chB', 'chA']);
     // prune keeps only the newest `max`
-    assert.deepEqual(Object.keys(common.saveChannelMode(s({ chA: 'suave', chB: 'auto' }), 'chC', 'balanced', 2)), ['chB', 'chC']);
+    assert.deepEqual(Object.keys(common.saveChannelMode(s({ chA: 'extreme', chB: 'auto' }), 'chC', 'balanced', 2)), ['chB', 'chC']);
     // suggest validates shape + that the mode still exists
-    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'suave' }), 'chA'), 'suave');
-    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'suave' }), 'chZ'), null);
+    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'extreme' }), 'chA'), 'extreme');
+    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'extreme' }), 'chZ'), null);
     assert.equal(common.getSuggestedModeForChannel(s({ chA: 'ghost' }), 'chA'), null, 'stale/removed mode ignored');
     assert.equal(common.getSuggestedModeForChannel(null, 'chA'), null);
-    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'suave' }), ''), null);
+    assert.equal(common.getSuggestedModeForChannel(s({ chA: 'extreme' }), ''), null);
     // forget drops one; unknown channel is a no-op
-    assert.deepEqual(common.forgetChannelMode(s({ chA: 'suave', chB: 'auto' }), 'chA'), { chB: 'auto' });
-    assert.deepEqual(common.forgetChannelMode(s({ chA: 'suave' }), 'chZ'), { chA: 'suave' });
+    assert.deepEqual(common.forgetChannelMode(s({ chA: 'extreme', chB: 'auto' }), 'chA'), { chB: 'auto' });
+    assert.deepEqual(common.forgetChannelMode(s({ chA: 'extreme' }), 'chZ'), { chA: 'extreme' });
+});
+
+test('Personalizado: derives at any slider position, distinct from the classic modes', () => {
+    // Discriminated by band:true and omits centerBuffer, so any slider value
+    // still derives as "personalizado".
+    for (const centerBuffer of [common.minCenterBuffer, 3.0, common.maxCenterBuffer]) {
+        assert.equal(common.deriveMode({ ...common.presets.personalizado, centerBuffer }), 'personalizado', `center ${centerBuffer}`);
+    }
+    // Classic modes are untouched: they stay classic; new installs default to Automatic.
+    assert.equal(common.deriveMode(common.presets.balanced), 'balanced');
+    assert.equal(common.resolveSettings(common.presets.balanced).band, false);
+    assert.equal(common.resolveSettings({}).band, false);
+    assert.equal(common.deriveMode({}), 'auto');
 });

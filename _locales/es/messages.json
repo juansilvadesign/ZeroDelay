@@ -38,18 +38,6 @@
    "modeAutoGain": {
       "message": "adaptable"
    },
-   "modeSuave": {
-      "message": "Suave"
-   },
-   "modeSuaveDesc": {
-      "message": "Más búfer para estabilidad, aún muy cerca del directo. Buena para internet inestable."
-   },
-   "modeSuaveConn": {
-      "message": "Internet lenta o inestable (~3+ Mbps)"
-   },
-   "modeSuaveGain": {
-      "message": "búfer ~5s"
-   },
    "modeBalanced": {
       "message": "Equilibrado"
    },
@@ -85,6 +73,21 @@
    },
    "modeExtremeGain": {
       "message": "búfer ~2s"
+   },
+   "modePersonalizado": {
+      "message": "Personalizado"
+   },
+   "modePersonalizadoDesc": {
+      "message": "Tú defines el búfer objetivo (1 a 6s). Como baja de 1.0x para recomponer el colchón, aguanta objetivos más agresivos que los demás modos. Menos búfer = más cerca del directo, pero puede cortarse."
+   },
+   "modePersonalizadoConn": {
+      "message": "Cualquier conexión (tú ajustas)"
+   },
+   "modePersonalizadoGain": {
+      "message": "búfer ajustable"
+   },
+   "centerLabel": {
+      "message": "Búfer objetivo"
    },
    "sectionIndicators": {
       "message": "Indicadores del reproductor"

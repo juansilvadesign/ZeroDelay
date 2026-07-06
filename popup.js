@@ -111,9 +111,6 @@ const ICONS = {
     auto: morph(
         '<path d="M11 1h2v4h-2zm0 22h2v-4h-2zM9 5h2v4H9zm0 14h2v-4H9zm4-14h2v4h-2zm0 14h2v-4h-2zM5 9h4v2H5zm14 0h-4v2h4zM1 11h4v2H1zm22 0h-4v2h4zM5 13h4v2H5zm14 0h-4v2h4z"/>',
         '<path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/>'),
-    suave: morph(
-        '<path d="M4 2h16v2H4zM2 4h2v10H2zm18 0h2v10h-2zM4 14h2v2H4zm2 2h2v2H6zm4 4h4v2h-4zm10-6h-2v2h2zm-2 2h-2v2h2zm-2 2h-2v2h2zm-6 0H8v2h2z"/>',
-        '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>'),
     balanced: morph(
         '<path d="M5 19H3v-2h2v2Zm16 0h-2v-2h2v2ZM3 17H1v-6h2v6Zm11 0h-4v-4h1V5h2v8h1v4Zm9 0h-2v-6h2v6ZM5 11H3V9h2v2Zm16 0h-2V9h2v2ZM9 9H5V7h4v2Zm10 0h-4V7h4v2Z"/>',
         '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>'),
@@ -123,6 +120,9 @@ const ICONS = {
     extreme: morph(
         '<path d="M4 13h8v6h2v2h-2v2h-2v-8H2v-4h2v2Zm12 6h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2v-2h2v2Zm-6-6h8v4h-2v-2h-8V5h-2V3h2V1h2v8Zm-8 2H4V9h2v2Zm2-2H6V7h2v2Zm2-2H8V5h2v2Z"/>',
         '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>'),
+    personalizado: morph(
+        '<path d="M2 4h20v2H2zM13 3h4v4h-4zM2 11h20v2H2zM6 10h4v4H6zM2 18h20v2H2zM15 17h4v4h-4z"/>',
+        '<path d="M21 4h-7"/><path d="M10 4H3"/><path d="M21 12h-9"/><path d="M8 12H3"/><path d="M21 20h-5"/><path d="M12 20H3"/><path d="M14 2v4"/><path d="M8 10v4"/><path d="M16 18v4"/>'),
     check: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
     wifi: solo('<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/>'),
     gain: solo('<path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/>'),
@@ -219,6 +219,29 @@ function renderModes() {
     }
     const modeItems = common.modeOrder.map(n => modeCards[n]);
     rovingModes = wireRadiogroup(container, modeItems, idx => applyPreset(common.modeOrder[idx]));
+}
+
+// The "Personalizado" mode's single knob: the target buffer (seconds) the
+// buffer-regulation controller parks around. Shown only while that mode is
+// active (see refresh). Writes `centerBuffer`; the engine re-parks on it.
+function renderBandControl() {
+    const slider = $('#band-slider');
+    $('#band-label').textContent = L.bandCenter;
+    slider.min = common.minCenterBuffer;
+    slider.max = common.maxCenterBuffer;
+    slider.step = common.stepCenterBuffer;
+    slider.setAttribute('aria-label', L.bandCenter);
+    slider.addEventListener('input', () => {
+        const v = parseFloat(slider.value);
+        $('#band-value').textContent = v.toFixed(1) + 's';
+        setOne('centerBuffer', v);
+    });
+    updaters.push(() => {
+        const v = common.limitValue(state.centerBuffer, common.defaultCenterBuffer,
+            common.minCenterBuffer, common.maxCenterBuffer, common.stepCenterBuffer);
+        slider.value = v;
+        $('#band-value').textContent = v.toFixed(1) + 's';
+    });
 }
 
 function buildRow({ label, control }) {
@@ -608,6 +631,8 @@ function refresh() {
     // the global LIVE↔SYNCED seal (red/pulsing when syncing, gray/still when Off).
     // Reads existing state only — no storage, messages, or behavior touched.
     $('#app').dataset.signal = mode === 'off' ? 'degraded' : 'synced';
+    // The target-buffer slider belongs to the "Personalizado" mode only.
+    $('#band-control').hidden = mode !== 'personalizado';
     let activeIndex = -1;
     common.modeOrder.forEach((name, i) => {
         const on = name === mode;
@@ -676,6 +701,7 @@ function updateChannelHint() {
     renderThemeToggle();
     renderModes();
     renderChannelMemory();
+    renderBandControl();
     renderIndicators();
     renderHexa();
     watchHexaActive();

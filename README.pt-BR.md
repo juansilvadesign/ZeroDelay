@@ -3,7 +3,7 @@
 [English](README.md) · **Português (Brasil)**
 
 <p align="center">
-  <a href="https://chromewebstore.google.com/detail/zerodelay/">
+  <a href="https://chromewebstore.google.com/detail/zerodelay/gblbnnkemjblakamnbclcehoaobnhlpm">
     <img alt="Instalar o ZeroDelay no Chrome" src="https://img.shields.io/badge/Chrome%20Web%20Store-Instalar-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white">
   </a>
   &nbsp;

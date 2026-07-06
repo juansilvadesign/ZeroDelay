@@ -289,35 +289,6 @@ function renderIndicators() {
     }
 }
 
-// MODO HEXA prefs live outside the engine `state`/presets, so this toggle reads
-// and writes chrome.storage.local directly (content.js reacts via onChanged).
-function buildHexaToggle(key, defaultOn) {
-    const input = el('input', { type: 'checkbox', onchange: () => chrome.storage.local.set({ [key]: input.checked }) });
-    const sw = el('label', { class: 'switch' }, input, el('span', { class: 'track' }), el('span', { class: 'thumb' }));
-    const set = v => { input.checked = (v == null) ? defaultOn : !!v; };
-    chrome.storage.local.get([key], d => set(d[key]));
-    chrome.storage.onChanged.addListener((changes, area) => {
-        if (area === 'local' && changes[key]) set(changes[key].newValue);
-    });
-    return sw;
-}
-
-function renderHexa() {
-    $('#hexa-title').textContent = L.hexaSectionTitle;
-    const rows = $('#hexa-rows');
-    rows.append(buildRow({ label: L.hexaSuggestLabel, control: buildHexaToggle(common.hexaSuggestKey, true) }));
-    rows.append(buildRow({ label: L.hexaFullLabel, control: buildHexaToggle(common.hexaFullKey, false) }));
-}
-
-// Dress the popup with a few hexa touches while the theme is live on a tab.
-function watchHexaActive() {
-    const set = on => document.body.classList.toggle('hexa', !!on);
-    chrome.storage.local.get([common.hexaActiveKey], d => set(d[common.hexaActiveKey]));
-    chrome.storage.onChanged.addListener((changes, area) => {
-        if (area === 'local' && changes[common.hexaActiveKey]) set(changes[common.hexaActiveKey].newValue);
-    });
-}
-
 function renderAdvancedToggle() {
     const toggle = $('#advanced-toggle');
     const panel = $('#advanced-panel');
@@ -619,8 +590,8 @@ function renderSupport() {
 // Light/dark switch in the header. A saved choice ('light' | 'dark' under
 // common.themeKey) wins over the system scheme via html[data-theme]; with
 // nothing saved the popup keeps following prefers-color-scheme (CSS-only, so
-// the first paint is already right). Kept out of the engine `state`, like the
-// Hexa toggles, so "Restore defaults" never touches it.
+// the first paint is already right). Kept out of the engine `state`, so
+// "Restore defaults" never touches it.
 function renderThemeToggle() {
     const btn = $('#theme-toggle');
     const root = document.documentElement;
@@ -667,8 +638,8 @@ function refresh() {
 }
 
 // --------------------------------------------------- Per-channel mode memory
-// Opt-in toggle + a "remembered for this channel" hint. Like the Hexa toggles, it
-// reads/writes chrome.storage.local directly since it lives outside the engine
+// Opt-in toggle + a "remembered for this channel" hint. It reads/writes
+// chrome.storage.local directly since it lives outside the engine
 // `state`; content.js reacts and restores the saved mode on the page.
 function renderChannelMemory() {
     const rows = $('#channel-memory-rows');
@@ -724,8 +695,6 @@ function updateChannelHint() {
     renderChannelMemory();
     renderBandControl();
     renderIndicators();
-    renderHexa();
-    watchHexaActive();
     renderAdvancedToggle();
     renderFaq();
     renderReset();

@@ -185,30 +185,6 @@
    "commandGoLiveDesc": {
       "message": "Saltar al vivo"
    },
-   "commandHexaDesc": {
-      "message": "Activar/desactivar MODO HEXA"
-   },
-   "hexaInvite": {
-      "message": "Brasil jugando en vivo. ¿Activar el Modo Hexa?"
-   },
-   "hexaInviteCta": {
-      "message": "Activar"
-   },
-   "hexaDismiss": {
-      "message": "Ahora no"
-   },
-   "hexaActivated": {
-      "message": "Modo Hexa activado"
-   },
-   "hexaSectionTitle": {
-      "message": "Modo Hexa"
-   },
-   "hexaSuggestLabel": {
-      "message": "Sugerir en los partidos de Brasil en vivo"
-   },
-   "hexaFullLabel": {
-      "message": "Tema completo en YouTube"
-   },
    "a11yPlaybackRate": {
       "message": "Velocidad de reproducción"
    },
@@ -267,7 +243,7 @@
       "message": "¿Hay atajos de teclado?"
    },
    "faqShortcutsA": {
-      "message": "Tres atajos (en Mac, cambia Alt por ⌘ Command):\n• Alt+Shift+Y — activar/desactivar ZeroDelay\n• Alt+Shift+L — saltar al directo\n• Alt+Shift+H — activar/desactivar el Modo Hexa (tema de Brasil)\nPuedes verlos y cambiarlos en chrome://extensions/shortcuts."
+      "message": "Dos atajos (en Mac, cambia Alt por ⌘ Command):\n• Alt+Shift+Y — activar/desactivar ZeroDelay\n• Alt+Shift+L — saltar al directo\nPuedes verlos y cambiarlos en chrome://extensions/shortcuts."
    },
    "aboutLink": {
       "message": "Acerca de ZeroDelay"

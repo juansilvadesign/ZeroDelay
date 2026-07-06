@@ -82,8 +82,8 @@ SOFTWARE.
 
 ## 3. Departure Mono (`fonts/DepartureMono-Regular.woff2`)
 
-The self-hosted interface typeface (popup UI, and the "OLÊ OLÊ OLÁ" chant in the
-Modo Hexa activation on the YouTube page). Only the WOFF2 web font is bundled; the
+The self-hosted interface typeface for the popup UI. Only the WOFF2 web font is
+bundled; the
 full license text travels with it in [`fonts/OFL.txt`](fonts/OFL.txt).
 
 > Copyright 2022–2024 Helena Zhang (https://helenazhang.com)

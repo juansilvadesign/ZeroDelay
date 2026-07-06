@@ -185,30 +185,6 @@
    "commandGoLiveDesc": {
       "message": "Jump to live"
    },
-   "commandHexaDesc": {
-      "message": "Turn MODO HEXA on/off"
-   },
-   "hexaInvite": {
-      "message": "Brazil playing live. Turn on Hexa Mode?"
-   },
-   "hexaInviteCta": {
-      "message": "Turn on"
-   },
-   "hexaDismiss": {
-      "message": "Not now"
-   },
-   "hexaActivated": {
-      "message": "Hexa Mode on"
-   },
-   "hexaSectionTitle": {
-      "message": "Hexa Mode"
-   },
-   "hexaSuggestLabel": {
-      "message": "Suggest during live Brazil games"
-   },
-   "hexaFullLabel": {
-      "message": "Full theme on YouTube"
-   },
    "a11yPlaybackRate": {
       "message": "Playback speed"
    },
@@ -267,7 +243,7 @@
       "message": "Are there keyboard shortcuts?"
    },
    "faqShortcutsA": {
-      "message": "Three shortcuts (on Mac, swap Alt for ⌘ Command):\n• Alt+Shift+Y — turn ZeroDelay on/off\n• Alt+Shift+L — jump to live\n• Alt+Shift+H — turn Hexa Mode on/off (Brazil theme)\nYou can view and change them at chrome://extensions/shortcuts."
+      "message": "Two shortcuts (on Mac, swap Alt for ⌘ Command):\n• Alt+Shift+Y — turn ZeroDelay on/off\n• Alt+Shift+L — jump to live\nYou can view and change them at chrome://extensions/shortcuts."
    },
    "aboutLink": {
       "message": "About ZeroDelay"

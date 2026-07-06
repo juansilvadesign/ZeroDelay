@@ -76,9 +76,9 @@ function messageActiveTab(type) {
 
 /**
  * Handle a keyboard command. `toggle-enabled` writes storage, which every open
- * tab's content script reacts to. `go-live` and `toggle-hexa` are scoped to the
- * active tab only, sent directly via chrome.tabs.sendMessage (see messageActiveTab).
- * @param {'toggle-enabled'|'go-live'|'toggle-hexa'} command - Command id from the manifest.
+ * tab's content script reacts to. `go-live` is scoped to the active tab only,
+ * sent directly via chrome.tabs.sendMessage (see messageActiveTab).
+ * @param {'toggle-enabled'|'go-live'} command - Command id from the manifest.
  */
 function onCommand(command) {
     if (command === 'toggle-enabled') {
@@ -90,8 +90,6 @@ function onCommand(command) {
         });
     } else if (command === 'go-live') {
         messageActiveTab('go-live');
-    } else if (command === 'toggle-hexa') {
-        messageActiveTab('toggle-hexa');
     }
 }
 

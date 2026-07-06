@@ -59,6 +59,12 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   de buffer com o mesmo freio. Menos modos na lista (de 7 para 6). Quem tinha o
   Suave lembrado para um canal apenas volta a não ter preferência salva ali; nada
   quebra.
+- **Modo Hexa** removido: o tema verde-amarelo da Copa (reskin do player nos jogos
+  do Brasil, detecção de gol pela explosão do chat, bandeira no logo, os toggles no
+  popup e o atalho `Alt+Shift+H`) foi retirado agora que o Brasil saiu da Copa. O
+  código fica preservado na branch `archive/modo-hexa` e pode voltar num próximo
+  torneio. A memória de modo por canal, que usava o mesmo evento do player, segue
+  intacta.
 
 ## [1.2.3] - 2026-07-05
 

@@ -185,30 +185,6 @@
    "commandGoLiveDesc": {
       "message": "Pular para o ao vivo"
    },
-   "commandHexaDesc": {
-      "message": "Ativar/desativar o MODO HEXA"
-   },
-   "hexaInvite": {
-      "message": "Jogo do Brasil ao vivo. Ativar o Modo Hexa?"
-   },
-   "hexaInviteCta": {
-      "message": "Ativar"
-   },
-   "hexaDismiss": {
-      "message": "Agora não"
-   },
-   "hexaActivated": {
-      "message": "Modo Hexa ativado"
-   },
-   "hexaSectionTitle": {
-      "message": "Modo Hexa"
-   },
-   "hexaSuggestLabel": {
-      "message": "Sugerir nos jogos do Brasil ao vivo"
-   },
-   "hexaFullLabel": {
-      "message": "Tema completo no YouTube"
-   },
    "a11yPlaybackRate": {
       "message": "Velocidade de reprodução"
    },
@@ -267,7 +243,7 @@
       "message": "Existem atalhos de teclado?"
    },
    "faqShortcutsA": {
-      "message": "São três atalhos (no Mac, troque Alt por ⌘ Command):\n• Alt+Shift+Y — ativar/desativar o ZeroDelay\n• Alt+Shift+L — pular para o ao vivo\n• Alt+Shift+H — ativar/desativar o Modo Hexa (tema do Brasil)\nVocê pode vê-los e mudá-los em chrome://extensions/shortcuts."
+      "message": "São dois atalhos (no Mac, troque Alt por ⌘ Command):\n• Alt+Shift+Y — ativar/desativar o ZeroDelay\n• Alt+Shift+L — pular para o ao vivo\nVocê pode vê-los e mudá-los em chrome://extensions/shortcuts."
    },
    "aboutLink": {
       "message": "Sobre o ZeroDelay"

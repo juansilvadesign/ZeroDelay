@@ -536,31 +536,26 @@
 
     document.addEventListener('_live_catch_up_go_live', seek_to_live);
 
-    // --- MODO HEXA bridge ----------------------------------------------------
-    // The content script (isolated world) owns the theme but cannot call the
-    // private player API, so we report the current video's identity/liveness
-    // to it. It parses the title for a Brazil match and toggles the theme.
-    // Deduped by (video_id, isLive, title) so navigation/title changes flip the
-    // theme but a stable live doesn't spam the isolated world.
+    // --- Video-meta bridge (per-channel mode memory) ------------------------
+    // The content script (isolated world) can't call the private player API, so
+    // the engine reports the current video's channel to it — used to remember /
+    // restore the mode per channel. Deduped by video id so a stable video doesn't
+    // spam the isolated world.
     function dispatch_video_meta() {
         const p = document.getElementById('movie_player');
-        let title = '', author = '', isLive = false, video_id = '', channel_id = '';
+        let video_id = '', channel_id = '';
         if (p && typeof p.getVideoData === 'function') {
             let vd;
             try { vd = p.getVideoData(); } catch { vd = null; }
             if (vd) {
-                title = vd.title || '';
-                author = vd.author || '';
                 video_id = vd.video_id || '';
-                channel_id = vd.channel_id || '';   // stable per-channel key (per-channel mode memory)
-                isLive = !!vd.isLive; // false for VOD/replay — blocks non-live Brazil games
+                channel_id = vd.channel_id || '';   // stable per-channel key
             }
         }
-        const key = video_id + '|' + isLive + '|' + title;
-        if (key === last_meta_key) return;
-        last_meta_key = key;
+        if (video_id === last_meta_key) return;
+        last_meta_key = video_id;
         document.dispatchEvent(new CustomEvent('_live_catch_up_video_meta', {
-            detail: { title, author, isLive, video_id, channel_id },
+            detail: { video_id, channel_id },
         }));
     }
 

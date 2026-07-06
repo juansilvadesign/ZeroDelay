@@ -844,17 +844,6 @@ html {
     flex-direction: column;
 }
 
-/* Small label heading a group of rows (e.g. Modo Hexa). */
-.group-title {
-    margin: 0;
-    padding: 11px 14px 0;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: var(--text-faint);
-}
-
 /* ---------------------------------------------------------------- Rows */
 .row {
     display: flex;
@@ -1698,48 +1687,4 @@ html {
     .live-meter--auto .live-fill {
         animation: none;
     }
-}
-
-/* ---------------------------------------------------------------- Modo Hexa dress */
-/* While the theme is live on a tab, the popup HEADER wears the shirt: a full-bleed
-   green band (the selecao's field), a tricolor tear-line under it, the wordmark
-   "o" seal going gold, and text lifted for contrast. Driven by body.hexa. */
-body.hexa .app-header {
-    position: relative;
-    margin: -18px -16px 4px;
-    padding: 18px 16px 15px;
-    background: linear-gradient(180deg, #0c4527, #083a20);
-}
-
-body.hexa .app-header::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #009c3b 0 33%, #ffdf00 33% 66%, #002776 66% 100%);
-}
-
-body.hexa .brand-name {
-    color: #fff6d5;
-}
-
-body.hexa .brand-tagline {
-    color: #cfe3c9;
-}
-
-/* The live "o" seal wears gold on the green field (still pulses when synced). */
-body.hexa .brand-o {
-    border-color: #ffdf00;
-}
-
-body.hexa [data-signal="synced"] .brand-o {
-    border-color: #ffdf00;
-    background: #ffdf00;
-    box-shadow: 0 0 9px -1px rgba(255, 223, 0, 0.55);
-}
-
-body.hexa [data-signal="synced"] .brand-o::after {
-    border-color: #ffdf00;
 }

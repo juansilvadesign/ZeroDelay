@@ -2,6 +2,16 @@
 
 **English** · [Português (Brasil)](README.pt-BR.md)
 
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/zerodelay/">
+    <img alt="Get ZeroDelay for Chrome" src="https://img.shields.io/badge/Chrome%20Web%20Store-Install-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white">
+  </a>
+  &nbsp;
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/zerodelay/">
+    <img alt="Get ZeroDelay for Firefox" src="https://img.shields.io/badge/Firefox%20Add--ons-Install-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white">
+  </a>
+</p>
+
 A browser extension that helps YouTube live streams get back to real time when
 the player falls behind.
 

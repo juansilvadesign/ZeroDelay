@@ -2,6 +2,16 @@
 
 [English](README.md) · **Português (Brasil)**
 
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/zerodelay/">
+    <img alt="Instalar o ZeroDelay no Chrome" src="https://img.shields.io/badge/Chrome%20Web%20Store-Instalar-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white">
+  </a>
+  &nbsp;
+  <a href="https://addons.mozilla.org/pt-BR/firefox/addon/zerodelay/">
+    <img alt="Instalar o ZeroDelay no Firefox" src="https://img.shields.io/badge/Firefox%20Add--ons-Instalar-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white">
+  </a>
+</p>
+
 Uma extensão de navegador que ajuda as lives do YouTube a voltarem ao tempo real
 quando o player fica para trás.
 

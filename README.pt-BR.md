@@ -60,15 +60,18 @@ conexão melhor. O pulo para o ao vivo vem ligado por padrão em 30s.
 | --- | --- | --- |
 | **Desligado** | — | Qualquer |
 | **Automático** ⭐ | adapta | Qualquer (se ajusta) |
-| **Suave** | ~8s | Lenta/instável (~3+ Mbps) |
-| **Equilibrado** | ~6s | ~5–10 Mbps |
-| **Próximo** | ~4,5s | Estável ~15+ Mbps |
-| **Latência Mínima** | ~3,5s | Rápida/estável ~25+ Mbps |
+| **Equilibrado** | ~4s | ~5–10 Mbps |
+| **Próximo** | ~3s | Estável ~15+ Mbps |
+| **Extremo** | ~2s | Rápida/estável ~50+ Mbps |
+| **Personalizado** | 1–6s (você escolhe) | Qualquer (você ajusta) |
 
 **Automático** (o padrão) mede sua conexão (banda, estabilidade do buffer,
 travadas) e ajusta o alvo de buffer na hora — mais perto do ao vivo quando a
-internet aguenta, mais buffer quando ela oscila. Um guarda de buffer nunca
-acelera quando o buffer está baixo, em nenhum modo. A menor latência possível é o
+internet aguenta, mais buffer quando ela oscila. Em todos os modos, um freio
+anti-travamento desacelera de leve abaixo de `1.0x` para recompor o colchão quando
+ele afina (em vez de só descansar em `1.0x`), então até os modos agressivos ficam
+bem mais difíceis de travar. O **Personalizado** deixa você definir o buffer alvo
+(slider de 1 a 6s), seguro por esse mesmo freio. A menor latência possível é o
 próprio ponto ao vivo da transmissão (o piso de codificação → ingestão →
 transcodificação → CDN do servidor), que nenhuma ferramenta do lado do
 espectador consegue furar.

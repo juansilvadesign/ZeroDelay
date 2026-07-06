@@ -57,17 +57,20 @@ better connection. Jump to live is on by default at 30s.
 | --- | --- | --- |
 | **Off** | — | Any |
 | **Automatic** ⭐ | adapts | Any (adjusts) |
-| **Gentle** | ~8s | Slow/unstable (~3+ Mbps) |
-| **Balanced** | ~6s | ~5–10 Mbps |
-| **Close** | ~4.5s | Stable ~15+ Mbps |
-| **Minimum Latency** | ~3.5s | Fast/stable ~25+ Mbps |
+| **Balanced** | ~4s | ~5–10 Mbps |
+| **Close** | ~3s | Stable ~15+ Mbps |
+| **Extreme** | ~2s | Fast/stable ~50+ Mbps |
+| **Custom** | 1–6s (you set) | Any (you tune it) |
 
 **Automatic** (the default) measures your connection (bandwidth, buffer
 stability, stalls) and adjusts the buffer target on the fly — closer to live when
-your internet can take it, more buffer when it wavers. A buffer guard never
-speeds up when the buffer is low, in any mode. The lowest possible latency is the
-stream's own live edge (the encoding → ingest → transcoding → server CDN floor),
-which no viewer-side tool can beat.
+your internet can take it, more buffer when it wavers. In every mode an anti-stall
+brake slows playback slightly below `1.0x` to rebuild the cushion when it runs thin
+(instead of only resting at `1.0x`), so even the aggressive modes are much harder to
+stall. **Custom** lets you set the target buffer yourself (a 1–6s slider), held by
+that same brake. The lowest possible latency is the stream's own live edge (the
+encoding → ingest → transcoding → server CDN floor), which no viewer-side tool can
+beat.
 
 ### Player indicators
 

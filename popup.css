@@ -49,6 +49,8 @@
     --degraded: #909090;
     --degraded-strong: #b0b0b0;
     --degraded-soft: rgba(144, 144, 144, 0.14);
+    /* Gray twin of --sync-ghost, for the sticker shadow of the selected Off card. */
+    --degraded-ghost: rgba(144, 144, 144, 0.45);
 
     /* Faint CRT scanline texture — shown while degraded, cleared when synced. */
     --scanline: rgba(255, 255, 255, 0.035);
@@ -94,6 +96,7 @@
         --degraded: #6f6f6f;
         --degraded-strong: #505050;
         --degraded-soft: rgba(96, 96, 96, 0.10);
+        --degraded-ghost: rgba(111, 111, 111, 0.45);
         --scanline: rgba(0, 0, 0, 0.045);
         --cta-bg: #fff6db;
     }
@@ -115,6 +118,7 @@
     --degraded: #6f6f6f;
     --degraded-strong: #505050;
     --degraded-soft: rgba(96, 96, 96, 0.10);
+    --degraded-ghost: rgba(111, 111, 111, 0.45);
     --scanline: rgba(0, 0, 0, 0.045);
     --cta-bg: #fff6db;
 }
@@ -408,12 +412,122 @@ html {
     transform: scale(0.99);
 }
 
-/* Selected = synced: the card locks to live-red and pops hard off a solid red
- * offset shadow — part sticker lift, part broadcast chroma-ghost. */
+/* Mode temperature — the selected card's accent rides a cool → live-red axis.
+ * Personalizado sits on a cool blue, set apart as the hand-tuned mode; Balanced
+ * warms to violet, Aggressive to magenta, and Auto to a coral just shy of the
+ * peak — hot and live-leaning as it adapts, yet held back from the pure brand
+ * live-red that Extreme owns alone, where the card converges with the AO VIVO
+ * seal. Off is degraded gray — no signal, no temperature. Only the card's own
+ * visuals read these tokens; the header seal, focus rings and CTA stay on the
+ * global live-red. */
+.mode-card {
+    --card-sync: var(--sync);
+    --card-strong: var(--sync-strong);
+    --card-soft: var(--sync-soft);
+    --card-ghost: var(--sync-ghost);
+}
+
+.mode-card[data-mode="off"] {
+    --card-sync: var(--degraded);
+    --card-strong: var(--degraded-strong);
+    --card-soft: var(--degraded-soft);
+    --card-ghost: var(--degraded-ghost);
+}
+
+.mode-card[data-mode="personalizado"] {
+    --card-sync: #4696ff;
+    --card-strong: #6cadff;
+    --card-soft: rgba(70, 150, 255, 0.14);
+    --card-ghost: rgba(70, 150, 255, 0.5);
+}
+
+.mode-card[data-mode="balanced"] {
+    --card-sync: #9a5cff;
+    --card-strong: #b385ff;
+    --card-soft: rgba(154, 92, 255, 0.14);
+    --card-ghost: rgba(154, 92, 255, 0.5);
+}
+
+.mode-card[data-mode="aggressive"] {
+    --card-sync: #ec3fa0;
+    --card-strong: #f26bb8;
+    --card-soft: rgba(236, 63, 160, 0.14);
+    --card-ghost: rgba(236, 63, 160, 0.5);
+}
+
+/* Auto — coral one notch below the peak: hot and live-leaning as it adapts, but
+ * the pure brand live-red is reserved for Extreme (the seal-converging peak). */
+.mode-card[data-mode="auto"] {
+    --card-sync: #ff5a36;
+    --card-strong: #ff8a6b;
+    --card-soft: rgba(255, 90, 54, 0.14);
+    --card-ghost: rgba(255, 90, 54, 0.5);
+}
+
+/* Light-theme ramp: darken the strongs so the small conn/gain text keeps
+ * contrast on light surfaces (the dark-theme strongs are lightened tints), and
+ * thin the softs to 0.10 alpha — the same reduction --sync-soft/--degraded-soft
+ * get in the light :root. Two routes with the SAME values (keep both in sync),
+ * mirroring the palette blocks at the top: system-light unless the user
+ * explicitly chose dark, and the explicit light choice persisted by the theme
+ * toggle. The :root prefix also lifts these above the base [data-mode] blocks
+ * in specificity, so they win on either route. */
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .mode-card[data-mode="personalizado"] {
+        --card-strong: #2b7fe3;
+        --card-soft: rgba(70, 150, 255, 0.10);
+    }
+
+    :root:not([data-theme="dark"]) .mode-card[data-mode="balanced"] {
+        --card-strong: #8348e6;
+        --card-soft: rgba(154, 92, 255, 0.10);
+    }
+
+    :root:not([data-theme="dark"]) .mode-card[data-mode="aggressive"] {
+        --card-strong: #d42e8c;
+        --card-soft: rgba(236, 63, 160, 0.10);
+    }
+
+    :root:not([data-theme="dark"]) .mode-card[data-mode="auto"] {
+        --card-strong: #c2401b;
+        --card-soft: rgba(255, 90, 54, 0.10);
+    }
+}
+
+:root[data-theme="light"] .mode-card[data-mode="personalizado"] {
+    --card-strong: #2b7fe3;
+    --card-soft: rgba(70, 150, 255, 0.10);
+}
+
+:root[data-theme="light"] .mode-card[data-mode="balanced"] {
+    --card-strong: #8348e6;
+    --card-soft: rgba(154, 92, 255, 0.10);
+}
+
+:root[data-theme="light"] .mode-card[data-mode="aggressive"] {
+    --card-strong: #d42e8c;
+    --card-soft: rgba(236, 63, 160, 0.10);
+}
+
+:root[data-theme="light"] .mode-card[data-mode="auto"] {
+    --card-strong: #c2401b;
+    --card-soft: rgba(255, 90, 54, 0.10);
+}
+
+/* Keyboard focus follows the card's own accent (arrow keys both move focus and
+ * select, so the focus ring and the selection ring almost always co-occur — a
+ * red outline hugging a blue/violet ring read as two competing signals). Wins
+ * over the global red :focus-visible rule by specificity (0,2,0 vs 0,1,1). */
+.mode-card:focus-visible {
+    outline-color: var(--card-sync);
+}
+
+/* Selected = synced: the card locks to its temperature accent and pops hard off
+ * a solid offset shadow — part sticker lift, part broadcast chroma-ghost. */
 .mode-card[aria-checked="true"] {
-    border-color: var(--sync);
-    background: linear-gradient(180deg, var(--sync-soft), transparent 140%);
-    box-shadow: 0 0 0 2px var(--sync), 7px 7px 0 0 var(--sync-ghost);
+    border-color: var(--card-sync);
+    background: linear-gradient(180deg, var(--card-soft), transparent 140%);
+    box-shadow: 0 0 0 2px var(--card-sync), 7px 7px 0 0 var(--card-ghost);
     transform: translate(-2px, -2px);
 }
 
@@ -431,7 +545,7 @@ html {
 }
 
 .mode-card[aria-checked="true"] .mode-icon {
-    background: var(--sync);
+    background: var(--card-sync);
     color: #fff;
 }
 
@@ -517,7 +631,7 @@ html {
 }
 
 .mode-card[aria-checked="true"] .mode-conn {
-    color: var(--sync-strong);
+    color: var(--card-strong);
 }
 
 .conn-icon {
@@ -551,8 +665,8 @@ html {
 }
 
 .mode-card[aria-checked="true"] .mode-gain:not(.is-none) {
-    background: var(--sync-soft);
-    color: var(--sync-strong);
+    background: var(--card-soft);
+    color: var(--card-strong);
 }
 
 .mode-gain.is-none {
@@ -654,9 +768,10 @@ html {
     transition: opacity 160ms var(--ease), transform 220ms var(--spring);
 }
 
+/* The check glyph itself stays white (hardcoded in the SVG) on every accent. */
 .mode-card[aria-checked="true"] .mode-check {
-    border-color: var(--sync);
-    background: var(--sync);
+    border-color: var(--card-sync);
+    background: var(--card-sync);
 }
 
 .mode-card[aria-checked="true"] .mode-check svg {

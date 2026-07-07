@@ -414,11 +414,12 @@ html {
 
 /* Mode temperature — the selected card's accent rides a cool → live-red axis.
  * Personalizado sits on a cool blue, set apart as the hand-tuned mode; Balanced
- * warms to violet and Aggressive to magenta, heading toward the brand's live-red
- * that Extreme and Auto own outright (Extreme converges with the AO VIVO seal;
- * Auto adapts toward live, so it keeps the brand color). Off is degraded gray —
- * no signal, no temperature. Only the card's own visuals read these tokens; the
- * header seal, focus rings and CTA stay on the global live-red. */
+ * warms to violet, Aggressive to magenta, and Auto to a coral just shy of the
+ * peak — hot and live-leaning as it adapts, yet held back from the pure brand
+ * live-red that Extreme owns alone, where the card converges with the AO VIVO
+ * seal. Off is degraded gray — no signal, no temperature. Only the card's own
+ * visuals read these tokens; the header seal, focus rings and CTA stay on the
+ * global live-red. */
 .mode-card {
     --card-sync: var(--sync);
     --card-strong: var(--sync-strong);
@@ -454,6 +455,15 @@ html {
     --card-ghost: rgba(236, 63, 160, 0.5);
 }
 
+/* Auto — coral one notch below the peak: hot and live-leaning as it adapts, but
+ * the pure brand live-red is reserved for Extreme (the seal-converging peak). */
+.mode-card[data-mode="auto"] {
+    --card-sync: #ff5a36;
+    --card-strong: #ff8a6b;
+    --card-soft: rgba(255, 90, 54, 0.14);
+    --card-ghost: rgba(255, 90, 54, 0.5);
+}
+
 /* Light-theme ramp: darken the strongs so the small conn/gain text keeps
  * contrast on light surfaces (the dark-theme strongs are lightened tints), and
  * thin the softs to 0.10 alpha — the same reduction --sync-soft/--degraded-soft
@@ -477,6 +487,11 @@ html {
         --card-strong: #d42e8c;
         --card-soft: rgba(236, 63, 160, 0.10);
     }
+
+    :root:not([data-theme="dark"]) .mode-card[data-mode="auto"] {
+        --card-strong: #c2401b;
+        --card-soft: rgba(255, 90, 54, 0.10);
+    }
 }
 
 :root[data-theme="light"] .mode-card[data-mode="personalizado"] {
@@ -492,6 +507,11 @@ html {
 :root[data-theme="light"] .mode-card[data-mode="aggressive"] {
     --card-strong: #d42e8c;
     --card-soft: rgba(236, 63, 160, 0.10);
+}
+
+:root[data-theme="light"] .mode-card[data-mode="auto"] {
+    --card-strong: #c2401b;
+    --card-soft: rgba(255, 90, 54, 0.10);
 }
 
 /* Keyboard focus follows the card's own accent (arrow keys both move focus and

@@ -84,11 +84,20 @@ test('CazeTV regression: rests at 1.0x below the cushion even with permanent lat
     }
 });
 
-test('classic brake: rebuilds below 1.0x when the cushion is thin, rests at 1.0x above the danger line', () => {
-    // The brake fires only in the danger zone (smoothed buffer under ~2 s): there
-    // the controller plays BELOW 1.0x to rebuild instead of only resting at 1.0x.
-    const r = primed(1.0, 12, 4).getState().rate;
-    assert.ok(r < 1.0 && r >= 0.90 - 1e-9, `thin cushion rebuilds below 1.0x (>=0.90), got ${r}`);
+test('conservative brake: gentle sub-1.0x only when the cushion is thin AND draining', () => {
+    // Thin AND still draining (a sustained decline into the danger zone): a gentle
+    // sub-1.0x rebuild, never past the 0.95x floor.
+    const draining = createController();
+    for (let i = 0; i < 40; i++) draining.calcPlaybackRate(SPEED, 12, 5, 4, false); // settle fat & calm
+    for (let h = 5; h > 1.2; h -= 0.03) draining.calcPlaybackRate(SPEED, 12, h, 4, false);
+    const r = draining.calcPlaybackRate(SPEED, 12, 1.2, 4, false);
+    assert.ok(r < 1.0 && r >= 0.95 - 1e-9, `thin & draining rebuilds gently (>=0.95), got ${r}`);
+
+    // Thin but NOT draining (buffer settled low and flat): the connection is
+    // holding, so it rests at 1.0x and never falls behind live for nothing.
+    const flat = createController();
+    for (let i = 0; i < 80; i++) flat.calcPlaybackRate(SPEED, 12, 1.8, 4, false);
+    assert.equal(flat.calcPlaybackRate(SPEED, 12, 1.8, 4, false), 1.0);
 
     // Comfortably above the danger line (still below the catch-up cushion): a plain
     // 1.0x rest — the brake never touches the comfortable modes.
@@ -96,7 +105,10 @@ test('classic brake: rebuilds below 1.0x when the cushion is thin, rests at 1.0x
 
     // Far behind live the brake fades out — don't slow forever while drifting
     // (the 30 s skip is the backstop).
-    assert.equal(primed(1.0, 25, 4).getState().rate, 1.0);
+    const drift = createController();
+    for (let i = 0; i < 40; i++) drift.calcPlaybackRate(SPEED, 25, 5, 4, false);
+    for (let h = 5; h > 1.2; h -= 0.03) drift.calcPlaybackRate(SPEED, 25, h, 4, false);
+    assert.equal(drift.calcPlaybackRate(SPEED, 25, 1.2, 4, false), 1.0);
 });
 
 test('below the cushion the engine rests — the cushion is the equilibrium', () => {

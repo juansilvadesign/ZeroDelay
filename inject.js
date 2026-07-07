@@ -179,6 +179,13 @@
         }
     }
 
+    // Calm "good moment" state for the content script's optional donation motion.
+    // We never claim to "reach live" (a live always trails its pipeline floor by a
+    // few seconds); this just marks a relaxed stretch (resting at ~1.0x, healthy
+    // buffer). The pulse is emitted from the tick loop below; content.js decides.
+    let calm_since = 0;
+    let last_ok_emit = 0;
+
     function set_playbackRate(speed, latency, health, bufferTarget, auto) {
         if (!controller) return;
         apply_playback_rate(controller.calcPlaybackRate(speed, latency, health, bufferTarget, auto));
@@ -439,6 +446,19 @@
             settings.enabled
                 ? set_playbackRate(settings.playbackRate, latency, health, settings.bufferTarget, settings.auto)
                 : reset_playbackRate();
+        }
+
+        // Calm "good moment" for the optional donation motion: stream stable (resting
+        // at ~1.0x with a healthy buffer), held a few seconds, re-announced at most
+        // every 20s. content.js gates it to an eligible viewer, once per session.
+        if (settings.enabled && applied_rate <= 1.01 && isFinite(health) && health >= 2.0) {
+            if (!calm_since) calm_since = active_now;
+            if (active_now - calm_since > 5000 && active_now - last_ok_emit > 20000) {
+                last_ok_emit = active_now;
+                document.dispatchEvent(new CustomEvent('_zd_ok_moment'));
+            }
+        } else {
+            calm_since = 0;
         }
 
         if (settings.skip) {

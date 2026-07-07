@@ -18,6 +18,7 @@ const SHIP_FILES = [
     'common.js',
     'content.js',
     'inject.js',
+    'overlay.js',
     'engine/controller.js',
     'pix.js',
     'popup.js',

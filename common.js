@@ -106,6 +106,9 @@ export const label = {
     donateOptOut: msg('donateOptOut', 'Não quero apoiar'),
     donateBannerText: msg('donateBannerText', 'Curtindo o ZeroDelay? Apoie com uma cerveja. 🍺'),
     donateBannerCta: msg('donateBannerCta', 'Apoiar'),
+    // In-player PIX motion (BR only): "Apoie o" + the ZeroDelay wordmark + QR.
+    donateOverlayKicker: msg('donateOverlayKicker', 'Apoie o'),
+    donateOverlayAria: msg('donateOverlayAria', 'Apoie o ZeroDelay via PIX'),
     donateBannerClose: msg('donateBannerClose', 'Fechar'),
 
     // Stall watchdog

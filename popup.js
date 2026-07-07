@@ -138,14 +138,14 @@ const drink = paths => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 // "beer" tell (foam/fill line, pull-tab, label) so they read as a family.
 const BEER = {
     // Copo americano: short tumbler flaring to the rim, beer level near the top.
-    1: drink('<path d="M7.6 7h8.8l-1 12.2a1 1 0 0 1-1 .9H9.6a1 1 0 0 1-1-.9z"/><path d="M8.2 10.5h7.6"/>'),
+    2: drink('<path d="M7.6 7h8.8l-1 12.2a1 1 0 0 1-1 .9H9.6a1 1 0 0 1-1-.9z"/><path d="M8.2 10.5h7.6"/>'),
     // Lata: an oval lid on top, shoulders flaring OUT wider than the lid (the can
     // tell), a straight body with a base rim, and the pull-tab ring on the lid.
-    3: drink('<path d="M8.6 6.6c-1.3.3-1.4 1.1-1.4 2v9.6a4.6 1.3 0 0 0 9.6 0V8.6c0-.9-.1-1.7-1.4-2"/><ellipse cx="12" cy="6.1" rx="3.5" ry="1.3"/><ellipse cx="12" cy="6" rx="1.6" ry="0.65"/>'),
+    5: drink('<path d="M8.6 6.6c-1.3.3-1.4 1.1-1.4 2v9.6a4.6 1.3 0 0 0 9.6 0V8.6c0-.9-.1-1.7-1.4-2"/><ellipse cx="12" cy="6.1" rx="3.5" ry="1.3"/><ellipse cx="12" cy="6" rx="1.6" ry="0.65"/>'),
     // Long neck: slim neck + shoulders into the body, cap on top, rectangular label.
-    5: drink('<path d="M10 2.2h4v3.6a3 3 0 0 0 .44 1.57l.62 1A3 3 0 0 1 16 9.95V19a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9.95a3 3 0 0 1 .94-2.18l.62-1A3 3 0 0 0 10 5.8z"/><path d="M8.4 13.4h7.2v3.4H8.4z"/><path d="M10 2.4h4"/>'),
+    10: drink('<path d="M10 2.2h4v3.6a3 3 0 0 0 .44 1.57l.62 1A3 3 0 0 1 16 9.95V19a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9.95a3 3 0 0 1 .94-2.18l.62-1A3 3 0 0 0 10 5.8z"/><path d="M8.4 13.4h7.2v3.4H8.4z"/><path d="M10 2.4h4"/>'),
     // Caneca: full mug with handle + foam head (Lucide "beer").
-    10: drink('<path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6"/><path d="M13 12v6"/><path d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/>'),
+    25: drink('<path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6"/><path d="M13 12v6"/><path d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/>'),
 };
 
 // Beer-mug outline for the header support toggle, swapped in for BR (matches the

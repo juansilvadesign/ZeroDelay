@@ -144,6 +144,22 @@ function initDonation(common) {
     // and it also gates WHERE the invite may appear (only over a live playing now).
     document.addEventListener('_live_catch_up_active', () => { donateLastActive = Date.now(); });
 
+    // The in-player PIX motion (BR) rides a "calm moment" pulse from the engine
+    // (stream stable, healthy buffer) rather than a fictitious "reached live". It is
+    // a SEPARATE surface from the usage banner below, with its own per-session slot.
+    document.addEventListener('_zd_ok_moment', () => maybeShowMotion(common));
+
+    // The usage banner is windowed-only; if the viewer goes fullscreen while it is
+    // up, retract it (the in-player motion is what covers fullscreen).
+    document.addEventListener('fullscreenchange', () => { if (isFullscreen() && donationBannerEl) donationBannerEl.zdRemove(); });
+
+    // BR viewers also get the in-player PIX motion (overlay.js). Preload its QR lib
+    // and module now so it renders the instant the reached-live moment fires.
+    if (common.isBrazil()) {
+        injectPageScript('vendor/qrcode.js');
+        injectPageScript('overlay.js');
+    }
+
     setTimeout(() => maybeShowBanner(common), 8000);
     const usageTimer = setInterval(() => {
         if (!extensionAlive()) { clearInterval(usageTimer); return; }
@@ -166,36 +182,54 @@ function initDonation(common) {
 
 let donationBannerEl = null;
 let donateLastActive = 0;   // last _live_catch_up_active ping — proves a live is playing NOW
-let donateShownThisTab = false;   // fallback dedup when storage.session is unreachable
+const tabShown = { banner: false, motion: false };   // per-tab fallback when storage.session is unreachable
 
+const isFullscreen = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+// Run showFn at most once per BROWSER SESSION (storage.session clears on close);
+// degrade to once per tab if the session store is missing or throws. Seeing or
+// ✕-closing an invite silences nothing; only the explicit buttons do ("Hoje não"
+// rests until tomorrow, "Não quero apoiar" opts out).
+function oncePerSession(sessionKey, tabKey, showFn) {
+    const onceTab = () => { if (tabShown[tabKey]) return; tabShown[tabKey] = true; showFn(); };
+    const sess = chrome.storage.session;
+    if (!sess) { onceTab(); return; }
+    try {
+        sess.get([sessionKey], s => {
+            if (chrome.runtime.lastError) { onceTab(); return; }
+            if (s[sessionKey]) return;
+            sess.set({ [sessionKey]: true });
+            showFn();
+        });
+    } catch { onceTab(); }   // engines that throw instead of setting lastError
+}
+
+// The usage-based invite (everyone): a discreet card after enough watch time.
+// Windowed only; never over a fullscreen video (the in-player motion covers that).
 function maybeShowBanner(common) {
-    if (donationBannerEl || !extensionAlive()) return;
+    if (donationBannerEl || !extensionAlive() || isFullscreen()) return;
     // Only over a live that is actually playing right now — never on a VOD or an idle tab.
     if (Date.now() - donateLastActive > 6000) return;
     chrome.storage.local.get(common.donateKeys, d => {
-        if (donationBannerEl) return;
+        if (donationBannerEl || isFullscreen()) return;
         if (!common.donateEligible(d, Date.now())) return;
-        // Once per BROWSER SESSION, never once-per-lifetime: seeing the invite
-        // (or ✕-closing it) silences nothing — only the explicit buttons do
-        // ("Hoje não" rests until tomorrow, "Não quero apoiar" opts out).
-        // storage.session clears when the browser closes; the background grants
-        // content scripts access on boot. If the grant/API is missing, degrade
-        // to once per tab instead of nagging on every usage tick.
-        const showOncePerTab = () => {
-            if (donateShownThisTab || donationBannerEl) return;
-            donateShownThisTab = true;
-            showDonationBanner(common);
-        };
-        const sess = chrome.storage.session;
-        if (!sess) { showOncePerTab(); return; }
-        try {
-            sess.get(['donateSessionShown'], s => {
-                if (chrome.runtime.lastError) { showOncePerTab(); return; }
-                if (s.donateSessionShown || donationBannerEl) return;
-                sess.set({ donateSessionShown: true });
-                showDonationBanner(common);
-            });
-        } catch { showOncePerTab(); }   // engines that throw instead of setting lastError
+        oncePerSession('donateSessionShown', 'banner',
+            () => { if (!donationBannerEl && !isFullscreen()) showDonationBanner(common); });
+    });
+}
+
+// The in-player PIX motion (BR only), shown once per session at a calm moment once
+// the viewer is eligible. Its OWN per-session slot, independent of the banner, and
+// it DOES show in fullscreen (it lives inside the player element). `motionDone`
+// stops this tab re-checking after its one eligible attempt (the pulse repeats).
+let motionDone = false;
+function maybeShowMotion(common) {
+    if (motionDone || !extensionAlive() || !common.isBrazil()) return;
+    if (Date.now() - donateLastActive > 6000) return;
+    chrome.storage.local.get(common.donateKeys, d => {
+        if (motionDone || !common.donateEligible(d, Date.now())) return;
+        motionDone = true;   // one eligible attempt per tab; oncePerSession dedups across tabs
+        oncePerSession('donateMotionSessionShown', 'motion', () => showDonation(common));
     });
 }
 
@@ -280,6 +314,35 @@ function showDonationBanner(common) {
         autoHideMs: 15000,
         onRemove: () => { donationBannerEl = null; },
     });
+}
+
+// The in-player PIX motion (overlay.js, page world). BR-gated by the caller; the
+// open-amount PIX code is static, so import pix.js once and memoise it.
+let zdPixCode = null;
+function showDonation(common) {
+    const fire = () => {
+        const detail = { pixCode: zdPixCode, strings: { kicker: common.label.donateOverlayKicker, pix: 'PIX', aria: common.label.donateOverlayAria } };
+        // Firefox: the detail must be cloned into the page realm to survive the hop.
+        const payload = (typeof cloneInto === 'function') ? cloneInto(detail, document.defaultView) : detail;
+        document.dispatchEvent(new CustomEvent('_zd_donation_show', { detail: payload }));
+    };
+    if (zdPixCode != null) { fire(); return; }
+    import(chrome.runtime.getURL('pix.js'))
+        .then(pix => { zdPixCode = pix.buildPixCode(0); fire(); })
+        .catch(() => {});   // if the PIX module fails, skip (the banner still asks separately)
+}
+
+// Inject an extension page-world script once (dedup) — the QR lib + overlay module
+// live in the page realm so overlay.js can read the YouTube player element.
+const zdInjected = new Set();
+function injectPageScript(file) {
+    if (zdInjected.has(file)) return;
+    zdInjected.add(file);
+    const s = document.createElement('script');
+    s.src = chrome.runtime.getURL(file);
+    s.async = false;
+    s.onload = () => s.remove();
+    (document.head || document.documentElement).append(s);
 }
 
 // --------------------------------------------------------------- Stall offer

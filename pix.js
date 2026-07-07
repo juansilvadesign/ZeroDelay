@@ -14,9 +14,11 @@ export const PIX_KEY = '95a360d8-00bd-4186-bfbe-e39d554915a4';
 export const MERCHANT_NAME = 'JOAO GUSTAVO FRANCA';
 export const MERCHANT_CITY = 'BRASIL';
 
-// Suggested tip amounts, in BRL. The first one is the default selection.
-export const PIX_AMOUNTS = [1, 3, 5, 10];
-export const PIX_DEFAULT_AMOUNT = 1;
+// Suggested tip amounts, in BRL. Anchored a little higher on purpose: the
+// smallest preset is R$2 and the default selection is R$5, nudging the typical
+// tip up from the old R$1 floor.
+export const PIX_AMOUNTS = [2, 5, 10, 25];
+export const PIX_DEFAULT_AMOUNT = 5;
 
 // One EMV field: ID + 2-digit length + value.
 function field(id, value) {

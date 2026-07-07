@@ -5,6 +5,34 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.0] - 2026-07-07
+
+### Adicionado
+
+- **Convite de doação dentro do player (Brasil)**: no lugar do banner simples,
+  quem está no Brasil vê um "motion" discreto no canto do player, no estilo dos
+  gráficos de transmissão. Uma bolinha de futebol rola da lateral, quica no canto
+  e abre um cartão "Apoie o ZeroDelay" com um QR Code do PIX (sem valor definido).
+  É pequeno (92 px), some sozinho em poucos segundos, sai da frente dos controles
+  e funciona em tela cheia. Aparece uma vez por sessão, num momento calmo (com a
+  transmissão estável) e só para quem já usou a extensão por um tempo. Segue 100%
+  client-side: PIX estático, sem servidor e sem coleta de dados. O banner de uso
+  comum continua para os demais casos (e não aparece em tela cheia).
+- **"Temperatura" dos modos** (ideia e implementação de
+  [@leandroohsr](https://github.com/leandroohsr), **PR #41**): cada modo ganha um
+  accent próprio que esquenta em direção ao vermelho do "ao vivo" conforme fica
+  mais agressivo, com a rampa clara correta nos temas claro e escuro.
+
+### Alterado
+
+- **Valores de doação ancorados um pouco mais para cima**: o menor preset passa a
+  ser R$ 2 e o padrão selecionado é R$ 5 (presets de 2, 5, 10 e 25).
+- **Freio anti-travamento mais conservador**: agora ele só desacelera quando o
+  buffer está genuinamente fino e ainda caindo, com um piso mais suave (0.95x) e
+  imperceptível. Se um empurrão gentil não resolve, ele deixa a rede se recuperar
+  em vez de arrastar o vídeo para baixo. No simulador, empata ou melhora frente à
+  1.3.0 em todos os cenários.
+
 ## [1.3.0] - 2026-07-06
 
 ### Adicionado

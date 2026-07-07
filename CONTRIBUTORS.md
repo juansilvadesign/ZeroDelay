@@ -56,7 +56,9 @@ with every newly merged contribution.
   (**PR #33, merged**); the **light/dark theme toggle** in the popup header
   with the preference saved outside the engine state (**PR #34, merged**); and the
   **live-proximity meter** on each mode's buffer chip, a marker sliding toward a
-  fixed live edge (**PR #35** — reworked for the new mode set and merged).
+  fixed live edge (**PR #35** — reworked for the new mode set and merged); and the
+  **per-mode accent "temperature"**, giving each mode a colour that warms toward the
+  live red as it gets more aggressive (**PR #41, merged**).
 - **aantonioprado** ([@aantonioprado](https://github.com/aantonioprado)) —
   preventive XSS hardening in the popup's SVG parsing (sanitizing `on*`,
   `javascript:`/`data:` and scriptable nodes) — **PR #30 (merged)**.

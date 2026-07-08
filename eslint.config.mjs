@@ -19,11 +19,11 @@ export default [
         },
     },
 
-    // Classic scripts in the page (MAIN) world — not ES modules. controller.js
-    // is ALSO loaded as CommonJS in Node/tests, so it legitimately touches
+    // Classic scripts in the page (MAIN) world — not ES modules. engine/*.js are
+    // ALSO loaded as CommonJS in Node/tests, so they legitimately touch
     // `module`/`exports`; those globals are harmless for inject.js, which ignores them.
     {
-        files: ['inject.js', 'engine/controller.js'],
+        files: ['inject.js', 'engine/*.js'],
         languageOptions: {
             sourceType: 'script',
             globals: { ...globals.browser, ...globals.commonjs, ZeroDelay: 'writable' },

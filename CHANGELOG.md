@@ -5,6 +5,16 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Unreleased]
+
+### Corrigido
+
+- **Firefox/Gecko: reduz risco de áudio adiantar ao acelerar lives**: o motor
+  agora aplica a velocidade por um adaptador testado que mantém cada degrau por
+  um curto intervalo no Gecko, volta para `1.0x` imediatamente ao descansar e
+  sincroniza o `<video>` com o eco real do player do YouTube. Isso evita rajadas
+  de microajustes de velocidade durante o catch-up em lives, mirando a issue #40.
+
 ## [1.4.0] - 2026-07-07
 
 ### Adicionado

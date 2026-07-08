@@ -20,6 +20,7 @@ const SHIP_FILES = [
     'inject.js',
     'overlay.js',
     'engine/controller.js',
+    'engine/rate-applier.js',
     'pix.js',
     'popup.js',
     'popup.css',

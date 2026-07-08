@@ -115,9 +115,9 @@ function main(common) {
         });
     }
 
-    // Inject the controller first, then the engine. `async = false` preserves
-    // execution order for dynamically-inserted scripts, so window.ZeroDelay is
-    // ready by the time inject.js runs.
+    // Inject the controller/rate adapter first, then the engine. `async = false`
+    // preserves execution order for dynamically-inserted scripts, so
+    // window.ZeroDelay is ready by the time inject.js runs.
     const injectScript = file => {
         const s = document.createElement('script');
         s.src = chrome.runtime.getURL(file);
@@ -127,6 +127,7 @@ function main(common) {
         return s;
     };
     injectScript('engine/controller.js');
+    injectScript('engine/rate-applier.js');
     injectScript('inject.js').id = '_live_catch_up';
 }
 

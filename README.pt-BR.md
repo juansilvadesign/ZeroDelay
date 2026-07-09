@@ -42,6 +42,8 @@ YouTube.
 - **Copiar diagnóstico** em um toque (os últimos ~2 minutos do motor, pronto
   para colar num relatório de bug) e um **resumo da sessão** compartilhável —
   ambos 100% locais, copiados só quando você pede
+- **Latência no ícone da extensão** (opcional) — confira se está no ao vivo
+  sem abrir o popup (por aba, desligado por padrão)
 
 ## Configurações
 

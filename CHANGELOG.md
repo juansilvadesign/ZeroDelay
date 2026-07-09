@@ -18,6 +18,11 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - **"Resumo da sessão"** ao lado do diagnóstico: copia um texto curto e
   compartilhável com o tempo assistido, o atraso recuperado pelo catch-up, os
   pulos para o ao vivo, as travadas e a latência média da live atual.
+- **Latência no ícone da extensão** (opt-in, junto aos indicadores): a latência
+  atual da live vira o badge do ícone na barra — dá para conferir se você está
+  no ao vivo sem abrir o popup. Por aba (cada live mostra a sua), em cinza
+  neutro para não parecer alerta, e só atualiza quando o número muda. Nova
+  chave de storage `showBadge` (padrão: desligado).
 
 ## [1.4.0] - 2026-07-07
 

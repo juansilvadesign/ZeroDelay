@@ -315,6 +315,7 @@ function renderIndicators() {
         { key: 'showPlaybackRate', label: L.showPlaybackRate },
         { key: 'showLatency', label: L.showLatency },
         { key: 'showHealth', label: L.showHealth },
+        { key: 'showBadge', label: L.showBadge },
     ];
     for (const d of defs) {
         rows.append(buildRow({ label: d.label, control: buildToggle(d.key) }));

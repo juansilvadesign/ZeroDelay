@@ -98,6 +98,15 @@ function main(common) {
         return true;   // keep the message channel open for the async response
     }
 
+    // Latency badge (opt-in): the engine emits a deduped text for the toolbar
+    // badge; the service worker paints it per-tab (background.js). Any frame
+    // may report — a tab has one live, wherever it's embedded.
+    function onBadgeEvent(e) {
+        if (!extensionAlive()) return;
+        const text = typeof e.detail?.text === 'string' ? e.detail.text : '';
+        try { chrome.runtime.sendMessage({ type: 'zd-badge', text }); } catch { /* context died mid-flight */ }
+    }
+
     // Guard against double-registration if the content script re-inits in the
     // same page — listeners would otherwise stack up (PR #17).
     if (!storageListenersAttached) {
@@ -105,6 +114,7 @@ function main(common) {
         chrome.storage.onChanged.addListener(onEngineSettingsChanged);
         chrome.storage.onChanged.addListener(onGoLiveSignalChanged);
         chrome.runtime.onMessage.addListener(onRuntimeMessage);
+        document.addEventListener('_zd_badge', onBadgeEvent);
     }
 
     document.addEventListener('_live_catch_up_init', () => {

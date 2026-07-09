@@ -101,6 +101,9 @@
    "showHealth": {
       "message": "Exibir saúde atual do buffer"
    },
+   "showBadge": {
+      "message": "Exibir latência no ícone da extensão"
+   },
    "reset": {
       "message": "Restaurar padrões"
    },

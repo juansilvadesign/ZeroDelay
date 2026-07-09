@@ -44,6 +44,8 @@ YouTube.
   ambos 100% locais, copiados só quando você pede
 - **Latência no ícone da extensão** (opcional) — confira se está no ao vivo
   sem abrir o popup (por aba, desligado por padrão)
+- Modo, indicadores e tema **acompanham seu perfil do navegador entre
+  computadores** (`storage.sync`) — doação e estado por dispositivo ficam locais
 
 ## Configurações
 

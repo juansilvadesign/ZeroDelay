@@ -5,6 +5,17 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado (ferramentas do repositório)
+
+- **Rascunho de post por release** (`.github/workflows/social-draft.yml` +
+  `scripts/social-draft.mjs`, issue #27): a cada release, a seção do CHANGELOG
+  vira um rascunho de post e um PR em `social/drafts/` para revisão humana —
+  nada publica sozinho. Com o segredo `ANTHROPIC_API_KEY` o texto é escrito
+  por IA (limitado ao que o changelog diz); sem ele, sai um template dos
+  bullets. Guia de co-criação da comunidade em `social/README.md`.
+
 ## [1.4.0] - 2026-07-07
 
 ### Adicionado

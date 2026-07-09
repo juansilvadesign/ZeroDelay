@@ -17,6 +17,17 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   Ficam locais de propósito: contadores de doação (senão contariam em dobro),
   o sinal de "ir ao vivo", o canal da aba atual e o `lastSeenVersion`.
 
+### Adicionado (ferramentas do repositório)
+
+- **Canário noturno no CI** (`.github/workflows/canary.yml` +
+  `scripts/canary.mjs` / `npm run canary`): todo dia, carrega a extensão numa
+  live 24/7 de verdade e confere (1) que as APIs privadas do player que o motor
+  usa ainda existem e (2) que o motor liga e amostra a live (pela ponte de
+  diagnóstico). Falha abre/atualiza UMA issue deduplicada (label `canary`) —
+  nunca bloqueia merge, porque YouTube visto de IP de datacenter é
+  naturalmente instável. É o alarme antecipado para o risco que o ROADMAP
+  aponta como existencial: o YouTube refatorar o player e quebrar todo mundo.
+
 ## [1.5.0] - 2026-07-14
 
 ### Adicionado

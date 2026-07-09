@@ -59,6 +59,37 @@ function sanitizeSvg(node) {
 
 const getStorage = keys => new Promise(res => chrome.storage.local.get(keys, res));
 
+// Copy plain text to the clipboard; execCommand is the fallback when the
+// async Clipboard API is unavailable or denied (same recipe as the PIX button).
+async function copyText(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        return true;
+    } catch {
+        try {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.append(ta);
+            ta.select();
+            const ok = document.execCommand('copy');
+            ta.remove();
+            return ok;
+        } catch { return false; }
+    }
+}
+
+// "45s" / "12m30s" / "1h04m" — durations in the session summary.
+function fmtDuration(sec) {
+    if (!Number.isFinite(sec) || sec < 0) return '—';
+    const s = Math.round(sec);
+    if (s < 60) return s + 's';
+    const m = Math.floor(s / 60), r = s % 60;
+    if (m < 60) return r ? `${m}m${String(r).padStart(2, '0')}s` : `${m}m`;
+    return `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}m`;
+}
+
 /**
  * Wire ARIA radiogroup keyboard behavior: one tab-stop for the group (roving
  * tabindex) plus arrow/Home/End navigation that also activates the option.
@@ -288,6 +319,84 @@ function renderIndicators() {
     for (const d of defs) {
         rows.append(buildRow({ label: d.label, control: buildToggle(d.key) }));
     }
+}
+
+// ------------------------------------------------ Diagnostics / session copy
+// Ask the active tab's engine for its diagnostics payload. content.js relays
+// the request into the page; inject.js only answers from a frame actually
+// tracking a live, so a silent tab (VOD, no YouTube, no live yet) resolves
+// null through the timeout and the button says "open a live" instead.
+function requestDiagnostics() {
+    const viaTab = new Promise(resolve => {
+        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+            const tabId = tabs?.[0]?.id;
+            if (tabId == null) { resolve(null); return; }
+            try {
+                chrome.tabs.sendMessage(tabId, { type: 'zd-diagnostics' }, resp => {
+                    void chrome.runtime.lastError;   // no receiver = not a YouTube tab
+                    resolve(resp || null);
+                });
+            } catch { resolve(null); }
+        });
+    });
+    const timeout = new Promise(resolve => setTimeout(() => resolve(null), 1200));
+    return Promise.race([viaTab, timeout]);
+}
+
+function renderTools() {
+    const rows = $('#tools-rows');
+
+    const wireCopy = (labelText, build) => {
+        const btn = el('button', { class: 'tool-copy', type: 'button', text: L.toolCopy });
+        let revert;
+        const flash = (cls, text) => {
+            clearTimeout(revert);
+            btn.classList.remove('is-done', 'is-fail');
+            btn.classList.add(cls);
+            btn.textContent = text;
+            revert = setTimeout(() => {
+                btn.classList.remove('is-done', 'is-fail');
+                btn.textContent = L.toolCopy;
+            }, 1800);
+        };
+        btn.addEventListener('click', async () => {
+            const payload = await requestDiagnostics();
+            const text = payload ? build(payload) : null;
+            if (text && await copyText(text)) flash('is-done', L.toolCopied);
+            else flash('is-fail', L.toolNoLive);
+        });
+        rows.append(buildRow({ label: labelText, control: btn }));
+    };
+
+    // Full diagnostics: the engine's own truth (caps, controller state, the
+    // last two minutes of samples) plus what only this world knows — version,
+    // browser, resolved settings/mode. JSON, ready to paste into an issue.
+    wireCopy(L.diagLabel, payload => {
+        const report = {
+            zerodelay: chrome.runtime.getManifest().version,
+            browser: navigator.userAgent,
+            lang: chrome.i18n.getUILanguage(),
+            mode: common.deriveMode(state),
+            settings: Object.fromEntries(common.storage.map(k => [k, state[k]])),
+            ...payload,
+        };
+        delete report.ok;   // transport flag, not diagnostics
+        return JSON.stringify(report, null, 2);
+    });
+
+    // Session summary: a short, human, shareable text.
+    wireCopy(L.summaryLabel, payload => {
+        const s = payload.session;
+        if (!s) return null;
+        return [
+            `ZeroDelay — ${L.summaryTitle}`,
+            `${L.summaryWatched}: ${fmtDuration(s.watchSec)}`,
+            `${L.summaryRecovered}: ${fmtDuration(s.recoveredSec)}`,
+            `${L.summaryJumps}: ${s.jumps} · ${L.summaryStalls}: ${s.stalls}`,
+            s.latencyAvg != null ? `${L.summaryAvgLatency}: ${s.latencyAvg}s` : null,
+            'github.com/joaogfc/ZeroDelay',
+        ].filter(Boolean).join('\n');
+    });
 }
 
 function renderAdvancedToggle() {
@@ -696,6 +805,7 @@ function updateChannelHint() {
     renderChannelMemory();
     renderBandControl();
     renderIndicators();
+    renderTools();
     renderAdvancedToggle();
     renderFaq();
     renderReset();

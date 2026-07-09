@@ -10,6 +10,11 @@
     const zd = (typeof window !== 'undefined' && window.ZeroDelay) ? window.ZeroDelay : null;
     const classicFactory = (zd && typeof zd.createController === 'function') ? zd.createController : null;
     const bandFactory = (zd && typeof zd.createBandController === 'function') ? zd.createBandController : null;
+    // Local telemetry (engine/telemetry.js, injected alongside the controller):
+    // powers "Copy diagnostics" + the session summary. Optional — a load failure
+    // only disables those two popup buttons, never the engine itself.
+    const sampleLogFactory = (zd && typeof zd.createSampleLog === 'function') ? zd.createSampleLog : null;
+    const sessionStatsFactory = (zd && typeof zd.createSessionStats === 'function') ? zd.createSessionStats : null;
 
     // Pick the controller for the current settings: the buffer-regulation one
     // ("Personalizado") when `band` is on, otherwise the classic catch-up one. Both
@@ -207,6 +212,7 @@
             if (player.getPlayerStateObject()?.isPlaying) {
                 player.seekToLiveHead();
                 if (caps.playVideo) player.playVideo();
+                if (session_stats) session_stats.onJump();
             }
         }
     }
@@ -216,6 +222,7 @@
         if (!player || !caps?.seekLive) return;
         player.seekToLiveHead();
         if (caps.playVideo) player.playVideo();
+        if (session_stats) session_stats.onJump();
     }
 
     function video_instance() {
@@ -321,6 +328,8 @@
     let current_settings;
     let last_active_ping = 0;
     let last_meta_key = null;     // dedupes _live_catch_up_video_meta dispatches
+    let sample_log = sampleLogFactory ? sampleLogFactory() : null;          // diagnostics ring log
+    let session_stats = sessionStatsFactory ? sessionStatsFactory() : null; // session summary counters
 
     // --- Resilience state (R1/R2/R3) ----------------------------------------
     // The engine drives entirely off UNDOCUMENTED player methods. `caps` records
@@ -356,6 +365,7 @@
         const now = Date.now();
         if (now < stall_cooldown_until || now - last_stall < 5000) return;
         last_stall = now;
+        if (session_stats) session_stats.onStall();
         stall_times = stall_times.filter(t => now - t < 90000);
         stall_times.push(now);
         if (stall_times.length >= 2) {
@@ -447,6 +457,12 @@
                 ? set_playbackRate(settings.playbackRate, latency, health, settings.bufferTarget, settings.auto)
                 : reset_playbackRate();
         }
+
+        // Local telemetry: one sample per second of what the engine saw and did
+        // (applied_rate is the player's own echo — what actually played, not
+        // what we asked for). Page-memory only; see engine/telemetry.js.
+        if (sample_log) sample_log.add(active_now, latency, health, applied_rate);
+        if (session_stats) session_stats.onTick(active_now, applied_rate, latency);
 
         // Calm "good moment" for the optional donation motion: stream stable (resting
         // at ~1.0x with a healthy buffer), held a few seconds, re-announced at most
@@ -579,6 +595,37 @@
         }));
     }
 
+    // --- Diagnostics bridge ("Copy diagnostics" in the popup) ----------------
+    // Request/response over CustomEvents, like the video-meta bridge above. The
+    // engine only answers when it actually has live samples to report: a VOD or
+    // idle frame stays silent, so the popup's timeout can say "open a live"
+    // instead of copying an empty shell (and, with several frames listening,
+    // the first response is by construction the one with the live). The payload
+    // is engine-side truth only — the popup adds version/settings/mode from its
+    // own world. Nothing here is persisted or sent anywhere; the viewer sees
+    // the JSON on their clipboard and decides where it goes.
+    document.addEventListener('_zd_diag_request', () => {
+        const samples = sample_log ? sample_log.list() : [];
+        if (!player || samples.length === 0) return;
+        let vd = null;
+        if (caps?.videoData) {
+            try { vd = player.getVideoData(); } catch { vd = null; }
+        }
+        document.dispatchEvent(new CustomEvent('_zd_diag_response', {
+            detail: {
+                ok: true,
+                degraded: engine_degraded,
+                caps,
+                video: vd ? { id: vd.video_id || '', channel: vd.channel_id || '', isLive: vd.isLive === true } : null,
+                appliedRate: applied_rate,
+                yieldedToUser: yielded_to_user,
+                controller: (controller && typeof controller.getState === 'function') ? controller.getState() : null,
+                session: session_stats ? session_stats.snapshot() : null,
+                samples,
+            },
+        }));
+    });
+
     // --- Player detection + (re)attach (R2) ---------------------------------
     // Runs on first load AND on every SPA navigation (YouTube reuses the tab and
     // may rebuild the player bar). Idempotent: video listeners bind once per
@@ -626,6 +673,11 @@
         controller_band = !!(current_settings && current_settings.band);
         controller_center = current_settings ? current_settings.centerBuffer : null;
         seekableEnds = [];
+
+        // Fresh stream, fresh telemetry: the sample log and the session counters
+        // describe THIS live only (mirrors the controller reset above).
+        sample_log = sampleLogFactory ? sampleLogFactory() : null;
+        session_stats = sessionStatsFactory ? sessionStatsFactory() : null;
 
         // The stall watchdog counts buffering events for THIS stream (a mode too
         // aggressive for this connection). Reset the count on a fresh stream, or a

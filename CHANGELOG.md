@@ -5,6 +5,20 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado
+
+- **"Copiar diagnóstico"** no painel avançado do popup: copia um JSON com os
+  últimos ~2 minutos do motor (latência, buffer e velocidade aplicada, 1
+  amostra/s), as capacidades detectadas do player, o estado do controlador, o
+  modo e as configurações — pronto para colar num relatório de bug (o template
+  de issue já traz o espaço). 100% local: nada é coletado nem enviado; o dado
+  só existe na memória da aba e só sai do navegador se você mesmo colar.
+- **"Resumo da sessão"** ao lado do diagnóstico: copia um texto curto e
+  compartilhável com o tempo assistido, o atraso recuperado pelo catch-up, os
+  pulos para o ao vivo, as travadas e a latência média da live atual.
+
 ## [1.4.0] - 2026-07-07
 
 ### Adicionado

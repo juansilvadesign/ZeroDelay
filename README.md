@@ -41,6 +41,8 @@ YouTube player UI.
   copied only when you ask
 - Optional **latency badge on the toolbar icon** — glance whether you're at
   live without opening the popup (per-tab, off by default)
+- Your mode, indicators and theme **follow your browser profile across
+  devices** (`storage.sync`) — donation choices and per-device state stay local
 
 ## Settings
 

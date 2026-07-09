@@ -170,3 +170,35 @@ test('Personalizado: derives at any slider position, distinct from the classic m
     assert.equal(common.resolveSettings({}).band, false);
     assert.equal(common.deriveMode({}), 'auto');
 });
+
+test('syncedKeys roam the preference-class keys and nothing device-local', () => {
+    // Engine settings + last mode + channel memory + theme roam...
+    for (const k of [...common.storage, common.lastModeKey, common.channelMemoryKey, common.channelModesKey, common.themeKey]) {
+        assert.ok(common.syncedKeys.includes(k), `"${k}" should roam`);
+    }
+    // ...while per-device state must never: donation counters would
+    // double-count, the go-live nonce is transient, currentChannelId is
+    // literally "this device's tab", and each device meets an update alone.
+    for (const k of [...common.donateKeys, common.goLiveSignalKey, common.currentChannelIdKey, common.lastSeenVersionKey]) {
+        assert.ok(!common.syncedKeys.includes(k), `"${k}" must stay local`);
+    }
+});
+
+test('planSyncMigration copies local settings when sync is empty, then cleans local', () => {
+    const local = { enabled: true, bufferTarget: 4.0, lastMode: 'balanced', donateOptOut: true };
+    const plan = common.planSyncMigration(local, {});
+    assert.deepEqual(plan.copy, { enabled: true, bufferTarget: 4.0, lastMode: 'balanced' }, 'donate keys never migrate');
+    assert.deepEqual(plan.removeLocal.sort(), ['bufferTarget', 'enabled', 'lastMode']);
+});
+
+test('planSyncMigration lets an already-populated sync win (first device migrated)', () => {
+    const plan = common.planSyncMigration({ enabled: false }, { enabled: true, auto: true });
+    assert.equal(plan.copy, null, 'nothing is copied over the sync data');
+    assert.deepEqual(plan.removeLocal, ['enabled'], 'stale local copy is cleaned');
+});
+
+test('planSyncMigration is a no-op without local settings', () => {
+    assert.deepEqual(common.planSyncMigration({}, {}), { copy: null, removeLocal: [] });
+    assert.deepEqual(common.planSyncMigration({ donateUsageSeconds: 99 }, {}), { copy: null, removeLocal: [] });
+    assert.deepEqual(common.planSyncMigration(null, null), { copy: null, removeLocal: [] });
+});

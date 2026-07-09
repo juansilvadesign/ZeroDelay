@@ -27,6 +27,13 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   aponta para o CHANGELOG até ser lido ou dispensado — as melhorias quase
   diárias deixam de ficar escondidas no repositório (parte da issue #27).
   Instalação nova não mostra nada. Nova chave local `lastSeenVersion`.
+- **Configurações que te acompanham (storage.sync)**: modo, indicadores,
+  memória por canal e tema agora seguem o perfil do navegador entre
+  computadores. Migração automática e única do `storage.local` na primeira
+  execução, com leitura de reserva no dado antigo até ela acontecer — nenhuma
+  chave é renomeada, e um downgrade encontra os padrões, nunca dado corrompido.
+  Ficam locais de propósito: contadores de doação (senão contariam em dobro),
+  o sinal de "ir ao vivo", o canal da aba atual e o `lastSeenVersion`.
 
 ## [1.4.0] - 2026-07-07
 

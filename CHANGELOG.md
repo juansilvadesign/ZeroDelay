@@ -5,6 +5,16 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado
+
+- **Latência no ícone da extensão** (opt-in, junto aos indicadores): a latência
+  atual da live vira o badge do ícone na barra — dá para conferir se você está
+  no ao vivo sem abrir o popup. Por aba (cada live mostra a sua), em cinza
+  neutro para não parecer alerta, e só atualiza quando o número muda. Nova
+  chave de storage `showBadge` (padrão: desligado).
+
 ## [1.4.0] - 2026-07-07
 
 ### Adicionado

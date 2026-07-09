@@ -388,6 +388,19 @@
         hide_health();
         hide_estimation();
         hide_current();
+        emit_badge('');   // no live being tracked -> no stale number on the icon
+    }
+
+    // --- Latency badge (opt-in) ----------------------------------------------
+    // Mirrors the current latency onto the toolbar icon, so the number is
+    // glanceable without opening the popup. Deduped here (whole seconds), so
+    // the content script only relays — and the service worker only wakes —
+    // when the text actually changes.
+    let last_badge = '';
+    function emit_badge(text) {
+        if (text === last_badge) return;
+        last_badge = text;
+        document.dispatchEvent(new CustomEvent('_zd_badge', { detail: { text } }));
     }
 
     let a11y_labeled = false;
@@ -446,6 +459,13 @@
             settings.enabled
                 ? set_playbackRate(settings.playbackRate, latency, health, settings.bufferTarget, settings.auto)
                 : reset_playbackRate();
+        }
+
+        // Latency on the toolbar icon (whole seconds; a badge fits ~4 chars).
+        if (settings.showBadge && isFinite(latency)) {
+            emit_badge(latency >= 99.5 ? '99+' : Math.round(latency) + 's');
+        } else {
+            emit_badge('');
         }
 
         // Calm "good moment" for the optional donation motion: stream stable (resting
@@ -543,7 +563,7 @@
 
         clearInterval(interval);
         if (engine_degraded) return; // paused until the next navigation retries
-        if (settings.enabled || settings.skip || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent) {
+        if (settings.enabled || settings.skip || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent || settings.showBadge) {
             // Fallback driver for paused/idle states — while the video PLAYS,
             // 'timeupdate' (bound in detect_and_attach) is what actually keeps
             // the loop alive in throttled background tabs.

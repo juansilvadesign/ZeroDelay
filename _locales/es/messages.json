@@ -101,6 +101,9 @@
    "showHealth": {
       "message": "Mostrar el estado actual del búfer"
    },
+   "showBadge": {
+      "message": "Mostrar la latencia en el icono de la extensión"
+   },
    "reset": {
       "message": "Restaurar valores predeterminados"
    },

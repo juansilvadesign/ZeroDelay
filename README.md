@@ -36,6 +36,8 @@ YouTube player UI.
 - Keyboard shortcuts to toggle on/off (`Alt+Shift+Y`) and jump to live
   (`Alt+Shift+L`) — `⌘+Shift+…` on Mac — remappable at
   `chrome://extensions/shortcuts`
+- Optional **latency badge on the toolbar icon** — glance whether you're at
+  live without opening the popup (per-tab, off by default)
 
 ## Settings
 

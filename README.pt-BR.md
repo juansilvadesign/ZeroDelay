@@ -39,6 +39,8 @@ YouTube.
 - Atalhos de teclado para ligar/desligar (`Alt+Shift+Y`) e pular para o ao vivo
   (`Alt+Shift+L`) — `⌘+Shift+…` no Mac —, reconfiguráveis em
   `chrome://extensions/shortcuts`
+- **Latência no ícone da extensão** (opcional) — confira se está no ao vivo
+  sem abrir o popup (por aba, desligado por padrão)
 
 ## Configurações
 

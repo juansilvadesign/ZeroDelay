@@ -101,6 +101,9 @@
    "showHealth": {
       "message": "Display current buffer health"
    },
+   "showBadge": {
+      "message": "Show latency on the toolbar icon"
+   },
    "reset": {
       "message": "Restore defaults"
    },

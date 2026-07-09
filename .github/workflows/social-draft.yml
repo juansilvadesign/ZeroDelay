@@ -1,0 +1,56 @@
+# Issue #27 — social presence with community co-created posts.
+# On every release (or on demand), draft a social post from that version's
+# CHANGELOG section and open a PR with it under social/drafts/. ALWAYS a
+# draft + PR — a human reviews, edits, and publishes; nothing goes out alone.
+#
+# The ANTHROPIC_API_KEY secret is OPTIONAL: with it the draft is AI-written
+# (grounded only in the changelog); without it a template draft is assembled
+# from the changelog bullets. Either way the flow works.
+name: Social draft
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to draft (e.g. 1.4.0); empty = latest released'
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Draft the post from the CHANGELOG
+        run: node scripts/social-draft.mjs "${{ inputs.version || github.event.release.tag_name }}"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Open a PR with the draft
+        run: |
+          if git diff --quiet && [ -z "$(git status --porcelain social/)" ]; then
+            echo "no draft produced — nothing to PR"; exit 0
+          fi
+          VERSION="${{ inputs.version || github.event.release.tag_name }}"
+          BRANCH="social/draft-${VERSION:-latest}-${{ github.run_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add social/
+          git commit -m "social: rascunho de post da versão ${VERSION:-mais recente}"
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "Social: rascunho de post — ${VERSION:-versão mais recente}" \
+            --body "Rascunho gerado automaticamente a partir do CHANGELOG (issue #27).
+
+**Antes de publicar:** revise o texto, ajuste o tom, confira que nada foi inventado e dê os créditos de quem contribuiu na versão (CONTRIBUTORS.md). O guia completo está em \`social/README.md\`." \
+            --label "social/content" || true
+        env:
+          GH_TOKEN: ${{ github.token }}

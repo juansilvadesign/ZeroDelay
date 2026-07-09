@@ -9,6 +9,9 @@ node_modules/
 # Marketing/store assets — não versionados (gerados a partir dos HTML localmente).
 publishing/assets/
 
+# Canary probe output (scripts/canary.mjs — uploaded as a CI artifact, never committed)
+canary-report.json
+
 # OS / editor / cloud cruft
 .DS_Store
 Thumbs.db

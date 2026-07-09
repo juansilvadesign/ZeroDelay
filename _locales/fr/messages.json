@@ -245,6 +245,17 @@
    "faqShortcutsA": {
       "message": "Deux raccourcis (sur Mac, remplacez Alt par ⌘ Command) :\n• Alt+Shift+Y — activer/désactiver ZeroDelay\n• Alt+Shift+L — aller au direct\nVous pouvez les voir et les modifier dans chrome://extensions/shortcuts."
    },
+   "whatsNewLabel": {
+      "message": "Nouveautés de la v$version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "whatsNewClose": {
+      "message": "Ignorer"
+   },
    "aboutLink": {
       "message": "À propos"
    },

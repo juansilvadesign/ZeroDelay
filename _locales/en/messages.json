@@ -245,6 +245,17 @@
    "faqShortcutsA": {
       "message": "Two shortcuts (on Mac, swap Alt for ⌘ Command):\n• Alt+Shift+Y — turn ZeroDelay on/off\n• Alt+Shift+L — jump to live\nYou can view and change them at chrome://extensions/shortcuts."
    },
+   "whatsNewLabel": {
+      "message": "What's new in v$version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "whatsNewClose": {
+      "message": "Dismiss"
+   },
    "aboutLink": {
       "message": "About ZeroDelay"
    },

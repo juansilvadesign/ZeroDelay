@@ -153,6 +153,9 @@ export const label = {
     faqShortcutsQ: msg('faqShortcutsQ', 'Existem atalhos de teclado?'),
     faqShortcutsA: msg('faqShortcutsA', 'São dois atalhos (no Mac, troque Alt por ⌘ Command):\n• Alt+Shift+Y — ativar/desativar o ZeroDelay\n• Alt+Shift+L — pular para o ao vivo\nVocê pode vê-los e mudá-los em chrome://extensions/shortcuts.'),
 
+    // "What's new" chip (shown once after an update; see lastSeenVersionKey).
+    whatsNewClose: msg('whatsNewClose', 'Dispensar'),
+
     // Footer links — project page + issue tracker on GitHub.
     aboutLink: msg('aboutLink', 'Sobre o ZeroDelay'),
     reportIssue: msg('reportIssue', 'Relatar um problema'),
@@ -208,6 +211,11 @@ export const lastModeKey = 'lastMode';
  * Kept out of `storage` (engine ignores it) and out of `donateKeys`, so
  * "Restore defaults" leaves the chosen theme alone. */
 export const themeKey = 'themePref';
+
+/** Last version whose changelog the user has seen (drives the popup's
+ * "what's new" chip after an update). Deliberately per-device local storage:
+ * store rollouts land on each browser at its own pace. */
+export const lastSeenVersionKey = 'lastSeenVersion';
 
 /**
  * Write a one-shot "jump to live" signal to storage.

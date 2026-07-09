@@ -5,6 +5,15 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado
+
+- **Aviso de novidades no popup**: depois de uma atualização, um chip discreto
+  aponta para o CHANGELOG até ser lido ou dispensado — as melhorias quase
+  diárias deixam de ficar escondidas no repositório (parte da issue #27).
+  Instalação nova não mostra nada. Nova chave local `lastSeenVersion`.
+
 ## [1.4.0] - 2026-07-07
 
 ### Adicionado

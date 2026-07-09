@@ -587,6 +587,32 @@ function renderSupport() {
     });
 }
 
+// ------------------------------------------------------------- What's new
+// After an update, a one-line chip links to the changelog until it is seen —
+// the project ships improvements near-daily and they were invisible unless
+// you read the repo (issue #27's root complaint, solved in-product).
+// `lastSeenVersion` is per-device on purpose: store rollouts land on each
+// browser at its own pace. A fresh install arms silently (nothing is "new").
+function renderWhatsNew() {
+    const box = $('#whatsnew');
+    const link = $('#whatsnew-link');
+    const close = $('#whatsnew-close');
+    const version = chrome.runtime.getManifest().version;
+    const seen = () => chrome.storage.local.set({ [common.lastSeenVersionKey]: version });
+
+    chrome.storage.local.get([common.lastSeenVersionKey], d => {
+        const last = d[common.lastSeenVersionKey];
+        if (!last) { seen(); return; }
+        if (last === version) return;
+        link.textContent = chrome.i18n.getMessage('whatsNewLabel', [version]) || `Novidades da v${version}`;
+        close.title = L.whatsNewClose;
+        close.setAttribute('aria-label', L.whatsNewClose);
+        link.addEventListener('click', seen);   // opening the changelog counts as seen
+        close.addEventListener('click', () => { box.hidden = true; seen(); });
+        box.hidden = false;
+    });
+}
+
 // ----------------------------------------------------------- Theme toggle
 // Light/dark switch in the header. A saved choice ('light' | 'dark' under
 // common.themeKey) wins over the system scheme via html[data-theme]; with
@@ -692,6 +718,7 @@ function updateChannelHint() {
     state = common.resolveSettings(data);
     renderStatic();
     renderThemeToggle();
+    renderWhatsNew();
     renderModes();
     renderChannelMemory();
     renderBandControl();

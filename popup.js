@@ -57,7 +57,9 @@ function sanitizeSvg(node) {
     for (const child of [...node.children]) sanitizeSvg(child);
 }
 
-const getStorage = keys => new Promise(res => chrome.storage.local.get(keys, res));
+// Settings-class keys roam via storage.sync (with a pre-migration fallback to
+// local) — see common.getSettings. Donation/meta keys keep using storage.local.
+const getStorage = keys => new Promise(res => common.getSettings(keys, res));
 
 /**
  * Wire ARIA radiogroup keyboard behavior: one tab-stop for the group (roving
@@ -165,18 +167,18 @@ let rovingModes = null;       // wireRadiogroup roving-tabindex setter for modes
 
 function setOne(key, val) {
     state[key] = val;
-    chrome.storage.local.set({ [key]: val });
+    common.setSettings({ [key]: val });
     refresh();
 }
 
 function applyPreset(name) {
     const preset = common.presets[name];
-    chrome.storage.local.set(preset);
+    common.setSettings(preset);
     Object.assign(state, preset);
     // Per-channel memory (opt-in): record this EXPLICIT pick for the current channel.
     if (channelMemoryOn && currentChannelId && name !== 'off') {
         channelModes = common.saveChannelMode({ [common.channelModesKey]: channelModes }, currentChannelId, name);
-        chrome.storage.local.set({ [common.channelModesKey]: channelModes });
+        common.setSettings({ [common.channelModesKey]: channelModes });
     }
     refresh();
 }
@@ -366,6 +368,8 @@ function renderReset() {
 
 function doReset() {
     // Only clear engine settings — keep the donation opt-out / snooze choices.
+    // Both areas: sync is where they live now, local catches pre-migration data.
+    common.settingsArea().remove(common.storage);
     chrome.storage.local.remove(common.storage);
     state = common.resolveSettings({});
     refresh();
@@ -604,7 +608,7 @@ function renderThemeToggle() {
         btn.setAttribute('aria-label', title);
     };
     relabel();
-    chrome.storage.local.get([common.themeKey], d => {
+    common.getSettings([common.themeKey], d => {
         const saved = d[common.themeKey];
         if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
         relabel();
@@ -612,7 +616,7 @@ function renderThemeToggle() {
     btn.addEventListener('click', () => {
         const next = current() === 'dark' ? 'light' : 'dark';
         root.dataset.theme = next;
-        chrome.storage.local.set({ [common.themeKey]: next });
+        common.setSettings({ [common.themeKey]: next });
         relabel();
     });
 }
@@ -645,7 +649,7 @@ function refresh() {
 function renderChannelMemory() {
     const rows = $('#channel-memory-rows');
     if (!rows) return;
-    const input = el('input', { type: 'checkbox', onchange: () => chrome.storage.local.set({ [common.channelMemoryKey]: input.checked }) });
+    const input = el('input', { type: 'checkbox', onchange: () => common.setSettings({ [common.channelMemoryKey]: input.checked }) });
     const sw = el('label', { class: 'switch' }, input, el('span', { class: 'track' }), el('span', { class: 'thumb' }));
     const row = buildRow({ label: L.channelMemoryLabel, control: sw });
     row.querySelector('.row-label').title = L.channelMemoryHint;
@@ -657,9 +661,11 @@ function renderChannelMemory() {
     forget.addEventListener('click', () => {
         if (!currentChannelId) return;
         channelModes = common.forgetChannelMode({ [common.channelModesKey]: channelModes }, currentChannelId);
-        chrome.storage.local.set({ [common.channelModesKey]: channelModes });
+        common.setSettings({ [common.channelModesKey]: channelModes });
     });
 
+    // The toggle + map roam (storage.sync); currentChannelId is this device's
+    // "channel of the tab last seen" and stays in storage.local.
     const sync = d => {
         channelMemoryOn = d[common.channelMemoryKey] == null ? common.defaultChannelMemory : !!d[common.channelMemoryKey];
         input.checked = channelMemoryOn;
@@ -667,10 +673,14 @@ function renderChannelMemory() {
         currentChannelId = d[common.currentChannelIdKey] || null;
         updateChannelHint();
     };
-    const keys = [common.channelMemoryKey, common.channelModesKey, common.currentChannelIdKey];
-    chrome.storage.local.get(keys, sync);
+    const roamKeys = [common.channelMemoryKey, common.channelModesKey];
+    const readAll = () => common.getSettings(roamKeys, roamed => {
+        chrome.storage.local.get([common.currentChannelIdKey], meta => sync({ ...roamed, ...meta }));
+    });
+    readAll();
     chrome.storage.onChanged.addListener((changes, area) => {
-        if (area === 'local' && keys.some(k => k in changes)) chrome.storage.local.get(keys, sync);
+        if (area !== 'sync' && area !== 'local') return;
+        if ([...roamKeys, common.currentChannelIdKey].some(k => k in changes)) readAll();
     });
 }
 
@@ -688,6 +698,10 @@ function updateChannelHint() {
     // screen readers and hyphenation (popup.html can't hardcode one).
     document.documentElement.lang = chrome.i18n.getUILanguage() || 'en';
 
+    // Belt-and-braces with the worker's boot: make sure existing users' data
+    // has moved to the roaming area before the first read or write from here.
+    await new Promise(res => common.ensureSettingsMigrated(res));
+
     const data = await getStorage(common.storage);
     state = common.resolveSettings(data);
     renderStatic();
@@ -703,9 +717,10 @@ function updateChannelHint() {
     refresh();
 
     // Keep the UI in sync with changes made elsewhere while the popup is open
-    // (keyboard shortcut, the player's stall offer, another options window).
+    // (keyboard shortcut, the player's stall offer, another options window —
+    // and now another DEVICE, via the sync area).
     chrome.storage.onChanged.addListener((changes, area) => {
-        if (area !== 'local' || !common.storage.some(k => k in changes)) return;
+        if ((area !== 'sync' && area !== 'local') || !common.storage.some(k => k in changes)) return;
         getStorage(common.storage).then(d => {
             state = common.resolveSettings(d);
             refresh();

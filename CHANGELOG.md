@@ -5,6 +5,18 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado
+
+- **Configurações que te acompanham (storage.sync)**: modo, indicadores,
+  memória por canal e tema agora seguem o perfil do navegador entre
+  computadores. Migração automática e única do `storage.local` na primeira
+  execução, com leitura de reserva no dado antigo até ela acontecer — nenhuma
+  chave é renomeada, e um downgrade encontra os padrões, nunca dado corrompido.
+  Ficam locais de propósito: contadores de doação (senão contariam em dobro),
+  o sinal de "ir ao vivo" e o canal da aba atual.
+
 ## [1.4.0] - 2026-07-07
 
 ### Adicionado

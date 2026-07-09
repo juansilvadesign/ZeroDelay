@@ -36,6 +36,8 @@ YouTube player UI.
 - Keyboard shortcuts to toggle on/off (`Alt+Shift+Y`) and jump to live
   (`Alt+Shift+L`) — `⌘+Shift+…` on Mac — remappable at
   `chrome://extensions/shortcuts`
+- Your mode, indicators and theme **follow your browser profile across
+  devices** (`storage.sync`) — donation choices and per-device state stay local
 
 ## Settings
 

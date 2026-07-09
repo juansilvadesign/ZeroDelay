@@ -22,7 +22,7 @@ const extensionAlive = () => Boolean(chrome.runtime?.id);
 function main(common) {
     function loadSettings() {
         if (!extensionAlive()) return;
-        chrome.storage.local.get(common.storage, data => {
+        common.getSettings(common.storage, data => {
             sendLoadSettingsEvent(common.resolveSettings(data));
         });
     }
@@ -52,8 +52,9 @@ function main(common) {
     // Reload only when an engine setting actually changed — the donation
     // counter and control keys write storage frequently, and re-sending
     // settings to every YouTube frame on each of those writes is pure churn.
+    // Settings roam via storage.sync, but 'local' still matters pre-migration.
     function onEngineSettingsChanged(changes, area) {
-        if (area === 'local' && common.storage.some(k => k in changes)) loadSettings();
+        if ((area === 'sync' || area === 'local') && common.storage.some(k => k in changes)) loadSettings();
     }
 
     /** Tell the engine (inject.js) to jump to the live edge now. */
@@ -109,7 +110,7 @@ function main(common) {
         document.addEventListener('_live_catch_up_video_meta', e => onChannelIdUpdate(common, e.detail));
         // Turning the feature ON should take effect on the channel you're already on.
         chrome.storage.onChanged.addListener((changes, area) => {
-            if (area === 'local' && changes[common.channelMemoryKey]?.newValue && lastChannelId) {
+            if ((area === 'sync' || area === 'local') && changes[common.channelMemoryKey]?.newValue && lastChannelId) {
                 onChannelIdUpdate(common, { channel_id: lastChannelId });
             }
         });
@@ -164,18 +165,22 @@ function initDonation(common) {
     const usageTimer = setInterval(() => {
         if (!extensionAlive()) { clearInterval(usageTimer); return; }
         if (document.hidden || Date.now() - donateLastActive > 5000) return;
-        chrome.storage.local.get(['enabled', 'donateUsageSeconds', 'donateLastCountedAt'], d => {
-            if (!common.value(d.enabled, common.defaultEnabled)) return;
-            // Every YouTube tab runs this loop; only one may count each minute
-            // of wall-clock time, or N tabs would accrue N× the real usage.
-            // (5s of slack absorbs timer jitter between the tabs.)
-            const now = Date.now();
-            if (now - (d.donateLastCountedAt || 0) < (TICK - 5) * 1000) return;
-            chrome.storage.local.set({
-                donateUsageSeconds: (d.donateUsageSeconds || 0) + TICK,
-                donateLastCountedAt: now,
+        // `enabled` roams with the settings (sync); the usage counter itself is
+        // deliberately per-device local — syncing it would double-count time.
+        common.getSettings(['enabled'], s => {
+            if (!common.value(s.enabled, common.defaultEnabled)) return;
+            chrome.storage.local.get(['donateUsageSeconds', 'donateLastCountedAt'], d => {
+                // Every YouTube tab runs this loop; only one may count each minute
+                // of wall-clock time, or N tabs would accrue N× the real usage.
+                // (5s of slack absorbs timer jitter between the tabs.)
+                const now = Date.now();
+                if (now - (d.donateLastCountedAt || 0) < (TICK - 5) * 1000) return;
+                chrome.storage.local.set({
+                    donateUsageSeconds: (d.donateUsageSeconds || 0) + TICK,
+                    donateLastCountedAt: now,
+                });
+                maybeShowBanner(common);
             });
-            maybeShowBanner(common);
         });
     }, TICK * 1000);
 }
@@ -354,7 +359,7 @@ let stallOfferShown = false;
 
 function onStallDetected(common) {
     if (stallOfferShown || stallOfferEl || !extensionAlive()) return;
-    chrome.storage.local.get(common.storage, data => {
+    common.getSettings(common.storage, data => {
         const target = common.calmerMode(common.deriveMode(data));
         if (!target) return; // already on the calmest mode (or off)
         showStallOffer(common, target);
@@ -379,7 +384,7 @@ function showStallOffer(common, target) {
     stallOfferEl = buildOverlayCard({
         side: 'left', maxWidth: '330px', content: body,
         ctaLabel: `${L.stallSwitch} ${common.modeMeta[target].title}`,
-        onCta: () => chrome.storage.local.set(common.presets[target]),
+        onCta: () => common.setSettings(common.presets[target]),
         closeLabel: L.donateBannerClose,
         autoHideMs: 14000,
         onRemove: () => { stallOfferEl = null; },
@@ -397,13 +402,17 @@ function onChannelIdUpdate(common, detail) {
     const channelId = detail && detail.channel_id;
     if (!channelId || !extensionAlive()) return;
     lastChannelId = channelId;
-    chrome.storage.local.get([common.channelMemoryKey, common.channelModesKey, common.currentChannelIdKey, ...common.storage], data => {
-        const upd = {};
-        if (data[common.currentChannelIdKey] !== channelId) upd[common.currentChannelIdKey] = channelId;
-        if (data[common.channelMemoryKey]) {
-            const saved = common.getSuggestedModeForChannel(data, channelId);
-            if (saved && common.deriveMode(data) !== saved) Object.assign(upd, common.presets[saved]);
-        }
-        if (Object.keys(upd).length) chrome.storage.local.set(upd);
+    // The channel map + engine settings roam (storage.sync); currentChannelId
+    // is this device's "channel of the tab last seen" and stays local.
+    common.getSettings([common.channelMemoryKey, common.channelModesKey, ...common.storage], data => {
+        chrome.storage.local.get([common.currentChannelIdKey], meta => {
+            if (meta[common.currentChannelIdKey] !== channelId) {
+                chrome.storage.local.set({ [common.currentChannelIdKey]: channelId });
+            }
+            if (data[common.channelMemoryKey]) {
+                const saved = common.getSuggestedModeForChannel(data, channelId);
+                if (saved && common.deriveMode(data) !== saved) common.setSettings(common.presets[saved]);
+            }
+        });
     });
 }

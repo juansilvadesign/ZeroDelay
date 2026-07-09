@@ -300,6 +300,105 @@ export function forgetChannelMode(data, channelId) {
     return modes;
 }
 
+// ---------------------------------------------------------------------------
+// Settings roaming (chrome.storage.sync). The PREFERENCE-class keys — engine
+// settings, last mode, channel memory, theme — follow the user's browser
+// profile across devices. Device-local state stays in storage.local:
+//   • donate* keys (usage time is per-device; syncing would double-count),
+//   • goLiveSignal (a transient one-shot),
+//   • currentChannelId (literally "the channel of the tab last seen HERE").
+// Reads go through getSettings(), which falls back to storage.local until the
+// one-time migration (ensureSettingsMigrated, run at worker boot and popup
+// open) has moved existing users' data over. All keys keep their names — no
+// rename, no reshape — so a downgrade simply finds defaults, never corruption.
+// ---------------------------------------------------------------------------
+export const syncedKeys = [...storage, lastModeKey, channelMemoryKey, channelModesKey, themeKey];
+
+const hasChromeStorage = typeof chrome !== 'undefined' && !!chrome.storage;
+
+/** The area settings live in: sync when the browser offers it, else local. */
+export function settingsArea() {
+    return (hasChromeStorage && chrome.storage.sync) ? chrome.storage.sync : chrome.storage.local;
+}
+
+/**
+ * Read settings-class keys. Prefers the sync area; when none of the requested
+ * keys exist there yet (pre-migration, or sync unavailable) it re-reads from
+ * storage.local so existing users never see a flash of defaults.
+ * @param {string[]} keys - Keys to read (settings-class only).
+ * @param {(items: Object) => void} cb - Receives the resolved values.
+ */
+export function getSettings(keys, cb) {
+    const area = settingsArea();
+    area.get(keys, vals => {
+        if (area === chrome.storage.local) { cb(vals); return; }
+        const empty = keys.every(k => vals[k] === undefined);
+        if (!empty) { cb(vals); return; }
+        chrome.storage.local.get(keys, cb);
+    });
+}
+
+/**
+ * Write settings-class keys to the roaming area. Best-effort: a quota/offline
+ * error is swallowed (the keys are tiny; the realistic trip is the per-minute
+ * write limit, which a retry naturally clears).
+ * @param {Object} items - Key/value pairs to persist.
+ * @param {() => void} [cb] - Called after the write settles.
+ */
+export function setSettings(items, cb) {
+    settingsArea().set(items, () => {
+        void chrome.runtime.lastError;
+        if (cb) cb();
+    });
+}
+
+/**
+ * Decide what the one-time local→sync migration should do. Pure, so the three
+ * outcomes stay unit-testable:
+ *   • local has settings, sync has none  -> copy them over, then clean local;
+ *   • sync already has settings          -> sync wins (another device migrated
+ *     first); just clean local so reads stop being ambiguous;
+ *   • local has nothing                  -> nothing to do.
+ * @param {Object} localData - Values read from storage.local.
+ * @param {Object} syncData - Values read from storage.sync.
+ * @param {string[]} [keys] - The settings-class key set.
+ * @returns {{copy: (Object|null), removeLocal: string[]}}
+ */
+export function planSyncMigration(localData, syncData, keys = syncedKeys) {
+    const localKeys = keys.filter(k => localData && localData[k] !== undefined);
+    if (!localKeys.length) return { copy: null, removeLocal: [] };
+    const syncHas = keys.some(k => syncData && syncData[k] !== undefined);
+    if (syncHas) return { copy: null, removeLocal: localKeys };
+    const copy = {};
+    for (const k of localKeys) copy[k] = localData[k];
+    return { copy, removeLocal: localKeys };
+}
+
+/**
+ * Run the local→sync migration once, idempotently. Safe to call from several
+ * contexts: after it has run, local holds none of the keys and the plan is a
+ * no-op. When the copy write fails (quota/offline) local is kept untouched so
+ * the next boot retries.
+ * @param {() => void} [done] - Called when the migration settles.
+ */
+export function ensureSettingsMigrated(done) {
+    if (!hasChromeStorage || !chrome.storage.sync) { if (done) done(); return; }
+    chrome.storage.local.get(syncedKeys, loc => {
+        chrome.storage.sync.get(syncedKeys, syn => {
+            const plan = planSyncMigration(loc, syn);
+            const clean = () => {
+                if (!plan.removeLocal.length) { if (done) done(); return; }
+                chrome.storage.local.remove(plan.removeLocal, () => { if (done) done(); });
+            };
+            if (!plan.copy) { clean(); return; }
+            chrome.storage.sync.set(plan.copy, () => {
+                if (chrome.runtime.lastError) { if (done) done(); return; }   // retry next boot
+                clean();
+            });
+        });
+    });
+}
+
 // International donation links — shown to users whose browser is NOT in pt_BR
 // (see `isBrazil`). Replace the placeholders with your own usernames/links.
 // Leave a value as '' (or keep the REPLACE placeholder) to hide that button.

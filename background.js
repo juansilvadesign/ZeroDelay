@@ -23,6 +23,7 @@ function evalBadge() {
 
 function boot() {
     common.ensureInstalledAt();
+    common.ensureSettingsMigrated();   // one-time local→sync move (idempotent)
     chrome.alarms.create('donate-eval', { periodInMinutes: 30 });
     evalBadge();
 }
@@ -82,11 +83,11 @@ function messageActiveTab(type) {
  */
 function onCommand(command) {
     if (command === 'toggle-enabled') {
-        chrome.storage.local.get([...common.storage, common.lastModeKey], data => {
+        common.getSettings([...common.storage, common.lastModeKey], data => {
             const { apply, remember } = common.toggleEnabledAction(data, data[common.lastModeKey]);
             const patch = { ...apply };
             if (remember) patch[common.lastModeKey] = remember;
-            chrome.storage.local.set(patch);
+            common.setSettings(patch);
         });
     } else if (command === 'go-live') {
         messageActiveTab('go-live');

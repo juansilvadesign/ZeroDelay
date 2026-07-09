@@ -44,7 +44,7 @@ if (!existsSync(localesDir)) {
 }
 
 // --- 2 & 3. Compare every locale against en (the reference) ----------------
-const REQUIRED = ['en', 'pt_BR', 'es', 'fr'];
+const REQUIRED = ['en', 'pt_BR', 'es', 'fr', 'de'];
 
 for (const locale of REQUIRED) {
     if (!(locale in localeFiles)) {

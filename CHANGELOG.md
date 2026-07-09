@@ -5,6 +5,13 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado
+
+- **Tradução para o alemão**: popup, indicadores do player e FAQ agora também
+  estão disponíveis em alemão (`_locales/de`).
+
 ## [1.4.0] - 2026-07-07
 
 ### Adicionado

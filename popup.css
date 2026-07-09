@@ -1045,6 +1045,45 @@ html {
     box-shadow: 0 0 0 3px var(--sync-soft), 0 0 8px -2px var(--sync-glow);
 }
 
+/* ----------------------------------------- Diagnostics / session-copy tools */
+/* Compact copy buttons at the end of the advanced panel (label left, action
+ * right, like the indicator rows). Neutral until they speak: green flash on a
+ * successful copy, amber when there is no live to read from. Mono, like every
+ * other number-adjacent affordance. */
+.tool-copy {
+    flex: none;
+    min-width: 88px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: color 150ms var(--ease), border-color 150ms var(--ease), background 150ms var(--ease);
+}
+
+.tool-copy:hover {
+    color: var(--text);
+    border-color: var(--text-faint);
+}
+
+.tool-copy:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--sync-soft);
+}
+
+.tool-copy.is-done {
+    color: var(--ok);
+    border-color: var(--ok);
+}
+
+.tool-copy.is-fail {
+    color: var(--warn);
+    border-color: var(--warn);
+}
+
 /* ---------------------------------------------------------------- Footer */
 .app-footer {
     display: flex;

@@ -245,6 +245,39 @@
    "faqShortcutsA": {
       "message": "São dois atalhos (no Mac, troque Alt por ⌘ Command):\n• Alt+Shift+Y — ativar/desativar o ZeroDelay\n• Alt+Shift+L — pular para o ao vivo\nVocê pode vê-los e mudá-los em chrome://extensions/shortcuts."
    },
+   "diagLabel": {
+      "message": "Diagnóstico (para relatar problemas)"
+   },
+   "summaryLabel": {
+      "message": "Resumo da sessão"
+   },
+   "toolCopy": {
+      "message": "Copiar"
+   },
+   "toolCopied": {
+      "message": "Copiado!"
+   },
+   "toolNoLive": {
+      "message": "Abra uma live"
+   },
+   "summaryTitle": {
+      "message": "resumo da sessão"
+   },
+   "summaryWatched": {
+      "message": "assistido"
+   },
+   "summaryRecovered": {
+      "message": "atraso recuperado"
+   },
+   "summaryJumps": {
+      "message": "pulos para o ao vivo"
+   },
+   "summaryStalls": {
+      "message": "travadas"
+   },
+   "summaryAvgLatency": {
+      "message": "latência média"
+   },
    "aboutLink": {
       "message": "Sobre o ZeroDelay"
    },

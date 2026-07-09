@@ -39,6 +39,9 @@ YouTube.
 - Atalhos de teclado para ligar/desligar (`Alt+Shift+Y`) e pular para o ao vivo
   (`Alt+Shift+L`) — `⌘+Shift+…` no Mac —, reconfiguráveis em
   `chrome://extensions/shortcuts`
+- **Copiar diagnóstico** em um toque (os últimos ~2 minutos do motor, pronto
+  para colar num relatório de bug) e um **resumo da sessão** compartilhável —
+  ambos 100% locais, copiados só quando você pede
 
 ## Configurações
 

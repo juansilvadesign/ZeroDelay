@@ -19,6 +19,7 @@ const files = [
     'inject.js',
     'overlay.js',
     'engine/controller.js',
+    'engine/telemetry.js',
     'pix.js',
     'popup.js',
     'popup.css',

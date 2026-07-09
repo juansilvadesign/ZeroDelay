@@ -36,6 +36,9 @@ YouTube player UI.
 - Keyboard shortcuts to toggle on/off (`Alt+Shift+Y`) and jump to live
   (`Alt+Shift+L`) — `⌘+Shift+…` on Mac — remappable at
   `chrome://extensions/shortcuts`
+- One-tap **Copy diagnostics** (the engine's last ~2 minutes, ready to paste
+  into a bug report) and a shareable **session summary** — both 100% local,
+  copied only when you ask
 
 ## Settings
 

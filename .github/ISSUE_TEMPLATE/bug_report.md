@@ -37,6 +37,17 @@ assignees: ''
 <!-- URL da transmissão ao vivo onde o problema ocorre, se puder compartilhar.
      Ajuda muito reproduzir o cenário exato. -->
 
+## Diagnóstico da extensão
+
+<!-- Com a live aberta, abra o popup do ZeroDelay > Indicadores no player >
+     "Diagnóstico" > Copiar, e cole o JSON aqui dentro do bloco abaixo.
+     Ele traz os últimos ~2 minutos do motor (latência, buffer, velocidade)
+     e as capacidades do player — nada além do que você vê no JSON. -->
+
+```json
+
+```
+
 ## Capturas de tela / console
 
 <!-- Se possível, anexe prints. Para erros de JavaScript, abra o DevTools

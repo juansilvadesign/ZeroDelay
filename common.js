@@ -82,6 +82,7 @@ export const label = {
     showPlaybackRate: msg('showPlaybackRate'),
     showLatency: msg('showLatency'),
     showHealth: msg('showHealth'),
+    showBadge: msg('showBadge', 'Exibir latência no ícone da extensão'),
 
     // Reset
     reset: msg('reset', 'Restaurar padrões'),
@@ -179,7 +180,7 @@ export const label = {
 // engine keeps resolving them (defaulting to off), even though the popup no
 // longer exposes a toggle for them.
 // ---------------------------------------------------------------------------
-export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'showCurrent', 'bufferTarget', 'auto', 'skip', 'skipThreathold', 'band', 'centerBuffer'];
+export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'showCurrent', 'showBadge', 'bufferTarget', 'auto', 'skip', 'skipThreathold', 'band', 'centerBuffer'];
 
 // ---------------------------------------------------------------------------
 // Donation nudge — gentle, optional, NEVER restricts usage. These keys live
@@ -348,6 +349,9 @@ export const defaultShowLatency = true;
 export const defaultShowHealth = true;
 export const defaultShowEstimation = false;
 export const defaultShowCurrent = false;
+// Latency on the toolbar icon — opt-in: a badge that changes every second is
+// eye-catching, so nobody gets it without asking.
+export const defaultShowBadge = false;
 
 // Catch-up speed (how fast it accelerates while reducing latency). Validated
 // on real streams: a gentle 1.25x reduces latency smoothly without overshoot.
@@ -474,6 +478,7 @@ export function resolveSettings(d) {
         showHealth: value(d.showHealth, defaultShowHealth),
         showEstimation: value(d.showEstimation, defaultShowEstimation),
         showCurrent: value(d.showCurrent, defaultShowCurrent),
+        showBadge: value(d.showBadge, defaultShowBadge),
         bufferTarget: limitValue(d.bufferTarget, defaultBufferTarget, minBufferTarget, maxBufferTarget, stepBufferTarget),
         auto: value(d.auto, defaultAuto),
         skip: value(d.skip, defaultSkip),

@@ -39,6 +39,8 @@ YouTube player UI.
 - One-tap **Copy diagnostics** (the engine's last ~2 minutes, ready to paste
   into a bug report) and a shareable **session summary** — both 100% local,
   copied only when you ask
+- Optional **latency badge on the toolbar icon** — glance whether you're at
+  live without opening the popup (per-tab, off by default)
 
 ## Settings
 

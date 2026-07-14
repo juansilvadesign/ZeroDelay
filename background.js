@@ -49,12 +49,25 @@ chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && common.donateKeys.some(k => k in changes)) evalBadge();
 });
 
-chrome.runtime.onMessage.addListener(msg => {
+// The latency badge is neutral (dark gray) on purpose: red is the donation
+// dot's voice, and a number that updates every second must not read as alert.
+const LATENCY_BADGE_COLOR = '#424242';
+
+chrome.runtime.onMessage.addListener((msg, sender) => {
     if (!msg) return;
     if (msg.type === 'donate-open') {
         chrome.tabs.create({ url: chrome.runtime.getURL('popup.html?donate=1') });
     } else if (msg.type === 'donate-seen') {
         chrome.action.setBadgeText({ text: '' });
+    } else if (msg.type === 'zd-badge' && sender?.tab?.id != null) {
+        // Tab-scoped: it never collides with the global donation dot on other
+        // tabs, and it dies with its tab (or on a full navigation). Clear with
+        // null (NOT ''): an empty string is a per-tab override that would mask
+        // the global donation dot on this tab; null removes the override so the
+        // tab falls back to the global badge.
+        const raw = typeof msg.text === 'string' ? msg.text.slice(0, 4) : '';
+        chrome.action.setBadgeText({ tabId: sender.tab.id, text: raw || null });
+        if (raw) chrome.action.setBadgeBackgroundColor({ tabId: sender.tab.id, color: LATENCY_BADGE_COLOR });
     }
 });
 

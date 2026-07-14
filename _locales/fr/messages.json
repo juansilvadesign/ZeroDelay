@@ -101,6 +101,9 @@
    "showHealth": {
       "message": "Afficher l'état actuel du tampon"
    },
+   "showBadge": {
+      "message": "Afficher la latence sur l'icône de l'extension"
+   },
    "reset": {
       "message": "Restaurer les valeurs par défaut"
    },

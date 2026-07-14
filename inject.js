@@ -15,6 +15,13 @@
     // only disables those two popup buttons, never the engine itself.
     const sampleLogFactory = (zd && typeof zd.createSampleLog === 'function') ? zd.createSampleLog : null;
     const sessionStatsFactory = (zd && typeof zd.createSessionStats === 'function') ? zd.createSessionStats : null;
+    const rateFactory = (zd && typeof zd.createRateApplier === 'function') ? zd.createRateApplier : null;
+
+    function is_gecko_engine() {
+        try { return typeof CSS !== 'undefined' && CSS.supports?.('-moz-appearance:none') === true; }
+        catch { /* fall through to UA fallback */ }
+        return typeof navigator !== 'undefined' && /\bFirefox\//.test(navigator.userAgent || '');
+    }
 
     // Pick the controller for the current settings: the buffer-regulation one
     // ("Personalizado") when `band` is on, otherwise the classic catch-up one. Both
@@ -26,6 +33,7 @@
     }
 
     let controller = make_controller(null);
+    const rate_applier = rateFactory ? rateFactory({ gecko: is_gecko_engine() }) : null;
     let controller_band = false;   // whether `controller` is the band variant
     let controller_center = null;  // its center (to detect slider changes)
     // Buffer level below which the health indicator turns red — shared with the
@@ -141,48 +149,7 @@
         button_current.style.display = 'none';
     }
 
-    // --- Playback-rate controller -------------------------------------------
-    // IMPORTANT: modern YouTube live (SABR / "manifestless") REVERTS direct
-    // `video.playbackRate` changes within ~250ms, so the only reliable way to
-    // speed up is the player API `setPlaybackRate()`. We remember the rate we
-    // applied; if the player's rate diverges we assume the viewer changed it and
-    // yield to them, re-engaging once they go back to 1.0x.
-    //
-    // The live player only accepts rates on a 0.05 grid (measured on production
-    // players: asking 1.0375 applies 1.0, asking 1.06 applies 1.05). So we (a)
-    // quantize what we ask to the grid, and (b) adopt the player's own echo as
-    // `applied_rate` right after setting — otherwise the quantized echo differs
-    // from what we asked, the divergence check reads it as a viewer override,
-    // and the engine locks itself out with the live stuck at e.g. 1.05x while
-    // the buffer dies (the v1.2.0 "1.05x" bug).
-    let applied_rate = 1.0;
-    let yielded_to_user = false;
-
-    const RATE_STEP = 0.05;   // the player's accepted playback-rate granularity
-    function quantize_rate(r) { return Math.round(r / RATE_STEP) * RATE_STEP; }
-
-    function apply_playback_rate(desired) {
-        if (!player?.setPlaybackRate || !player?.getPlaybackRate) return;
-        const cur = player.getPlaybackRate();
-        if (Math.abs(cur - applied_rate) > 0.01) {
-            if (Math.abs(cur - 1.0) < 0.01) {
-                applied_rate = 1.0;      // reset to 1.0 (YouTube reset or viewer) -> re-engage
-                yielded_to_user = false;
-            } else {
-                yielded_to_user = true;  // viewer picked a specific speed -> yield
-                applied_rate = cur;
-            }
-        }
-        if (yielded_to_user) return;
-        const grid = quantize_rate(desired);
-        if (Math.abs(grid - applied_rate) > 0.01) {
-            player.setPlaybackRate(grid);
-            // The echo is authoritative: whatever the player actually adopted
-            // is what the next tick must compare against, so quantization can
-            // never masquerade as a viewer override.
-            applied_rate = player.getPlaybackRate();
-        }
-    }
+    const applied_rate = () => rate_applier ? rate_applier.getState().applied_rate : 1.0;
 
     // Calm "good moment" state for the content script's optional donation motion.
     // We never claim to "reach live" (a live always trails its pipeline floor by a
@@ -192,14 +159,12 @@
     let last_ok_emit = 0;
 
     function set_playbackRate(speed, latency, health, bufferTarget, auto) {
-        if (!controller) return;
-        apply_playback_rate(controller.calcPlaybackRate(speed, latency, health, bufferTarget, auto));
+        if (!controller || !rate_applier) return;
+        rate_applier.apply(player, controller.calcPlaybackRate(speed, latency, health, bufferTarget, auto), video_instance());
     }
 
     function reset_playbackRate() {
-        if (applied_rate !== 1.0 && !yielded_to_user) {
-            apply_playback_rate(1.0);
-        }
+        if (rate_applier) rate_applier.reset(player, video_instance());
     }
 
     // Catch-up control logic + its tunables/state now live in
@@ -474,8 +439,8 @@
         // Local telemetry: one sample per second of what the engine saw and did
         // (applied_rate is the player's own echo — what actually played, not
         // what we asked for). Page-memory only; see engine/telemetry.js.
-        if (sample_log) sample_log.add(active_now, latency, health, applied_rate);
-        if (session_stats) session_stats.onTick(active_now, applied_rate, latency);
+        if (sample_log) sample_log.add(active_now, latency, health, applied_rate());
+        if (session_stats) session_stats.onTick(active_now, applied_rate(), latency);
 
         // Latency on the toolbar icon (whole seconds; a badge fits ~4 chars).
         if (settings.showBadge && isFinite(latency)) {
@@ -487,7 +452,7 @@
         // Calm "good moment" for the optional donation motion: stream stable (resting
         // at ~1.0x with a healthy buffer), held a few seconds, re-announced at most
         // every 20s. content.js gates it to an eligible viewer, once per session.
-        if (settings.enabled && applied_rate <= 1.01 && isFinite(health) && health >= 2.0) {
+        if (settings.enabled && applied_rate() <= 1.01 && isFinite(health) && health >= 2.0) {
             if (!calm_since) calm_since = active_now;
             if (active_now - calm_since > 5000 && active_now - last_ok_emit > 20000) {
                 last_ok_emit = active_now;
@@ -631,14 +596,15 @@
         if (caps?.videoData) {
             try { vd = player.getVideoData(); } catch { vd = null; }
         }
+        const rate_state = rate_applier ? rate_applier.getState() : null;
         document.dispatchEvent(new CustomEvent('_zd_diag_response', {
             detail: {
                 ok: true,
                 degraded: engine_degraded,
                 caps,
                 video: vd ? { id: vd.video_id || '', channel: vd.channel_id || '', isLive: vd.isLive === true } : null,
-                appliedRate: applied_rate,
-                yieldedToUser: yielded_to_user,
+                appliedRate: rate_state ? rate_state.applied_rate : 1.0,
+                yieldedToUser: rate_state ? rate_state.yielded_to_user : false,
                 controller: (controller && typeof controller.getState === 'function') ? controller.getState() : null,
                 session: session_stats ? session_stats.snapshot() : null,
                 samples,

@@ -21,6 +21,7 @@ const SHIP_FILES = [
     'overlay.js',
     'engine/controller.js',
     'engine/telemetry.js',
+    'engine/rate-applier.js',
     'pix.js',
     'popup.js',
     'popup.css',

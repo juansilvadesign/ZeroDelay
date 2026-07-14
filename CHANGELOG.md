@@ -37,6 +37,11 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   por exemplo usuários de Portugal que adicionam pt-BR por causa de conteúdo
   dublado. Quem não está com a interface em pt-BR vê o link internacional (Buy
   Me a Coffee). Reportado em #50.
+- **Firefox/Gecko: reduz risco de áudio adiantar ao acelerar lives**: o motor
+  agora aplica a velocidade por um adaptador testado que mantém cada degrau por
+  um curto intervalo no Gecko, volta para `1.0x` imediatamente ao descansar e
+  sincroniza o `<video>` com o eco real do player do YouTube. Isso evita rajadas
+  de microajustes de velocidade durante o catch-up em lives, mirando a issue #40.
 
 ## [1.4.0] - 2026-07-07
 

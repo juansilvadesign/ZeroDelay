@@ -152,6 +152,19 @@ export const label = {
     faqShortcutsQ: msg('faqShortcutsQ', 'Existem atalhos de teclado?'),
     faqShortcutsA: msg('faqShortcutsA', 'São dois atalhos (no Mac, troque Alt por ⌘ Command):\n• Alt+Shift+Y — ativar/desativar o ZeroDelay\n• Alt+Shift+L — pular para o ao vivo\nVocê pode vê-los e mudá-los em chrome://extensions/shortcuts.'),
 
+    // Diagnostics + session summary (the two copy tools in the advanced panel).
+    diagLabel: msg('diagLabel', 'Diagnóstico (para relatar problemas)'),
+    summaryLabel: msg('summaryLabel', 'Resumo da sessão'),
+    toolCopy: msg('toolCopy', 'Copiar'),
+    toolCopied: msg('toolCopied', 'Copiado!'),
+    toolNoLive: msg('toolNoLive', 'Abra uma live'),
+    summaryTitle: msg('summaryTitle', 'resumo da sessão'),
+    summaryWatched: msg('summaryWatched', 'assistido'),
+    summaryRecovered: msg('summaryRecovered', 'atraso recuperado'),
+    summaryJumps: msg('summaryJumps', 'pulos para o ao vivo'),
+    summaryStalls: msg('summaryStalls', 'travadas'),
+    summaryAvgLatency: msg('summaryAvgLatency', 'latência média'),
+
     // Footer links — project page + issue tracker on GitHub.
     aboutLink: msg('aboutLink', 'Sobre o ZeroDelay'),
     reportIssue: msg('reportIssue', 'Relatar um problema'),

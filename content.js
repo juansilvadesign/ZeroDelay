@@ -70,8 +70,32 @@ function main(common) {
 
     // Active-tab-only path: background.js sends this directly to the tab the
     // "go-live" shortcut was pressed on (PR #16).
-    function onRuntimeMessage(msg) {
+    function onRuntimeMessage(msg, _sender, sendResponse) {
         if (msg?.type === 'go-live') dispatchGoLive();
+        else if (msg?.type === 'zd-diagnostics') return relayDiagnostics(sendResponse);
+    }
+
+    // Popup → engine diagnostics relay. Every frame gets the request; only a
+    // frame whose engine has live samples answers (see inject.js), so the first
+    // response IS the live one. When no frame answers, the port simply closes
+    // unanswered and the popup's own timeout reads it as "no live here".
+    function relayDiagnostics(sendResponse) {
+        let settled = false;
+        const finish = payload => {
+            if (settled) return;
+            settled = true;
+            document.removeEventListener('_zd_diag_response', onResponse);
+            try { sendResponse(payload); } catch { /* popup closed while we waited */ }
+        };
+        const onResponse = e => { if (e.detail?.ok) finish(e.detail); };
+        document.addEventListener('_zd_diag_response', onResponse);
+        document.dispatchEvent(new CustomEvent('_zd_diag_request'));
+        setTimeout(() => {
+            if (settled) return;
+            settled = true;   // stop listening; deliberately never responds
+            document.removeEventListener('_zd_diag_response', onResponse);
+        }, 800);
+        return true;   // keep the message channel open for the async response
     }
 
     // Guard against double-registration if the content script re-inits in the
@@ -127,6 +151,7 @@ function main(common) {
         return s;
     };
     injectScript('engine/controller.js');
+    injectScript('engine/telemetry.js');
     injectScript('inject.js').id = '_live_catch_up';
 }
 

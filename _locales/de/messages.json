@@ -1,0 +1,301 @@
+{
+    "appDesc": {
+        "message": "Synchronisiert YouTube-Livestreams in Echtzeit, indem die Wiedergabe beschleunigt wird, um die Verzögerung zu verringern und dich nah am Live-Rand zu halten."
+    },
+    "appName": {
+        "message": "ZeroDelay"
+    },
+    "tagline": {
+        "message": "Halte YouTube-Livestreams in Echtzeit"
+    },
+    "sectionMode": {
+        "message": "Modus"
+    },
+    "modesNote": {
+        "message": "Beschleunigt nur so viel wie nötig, um die Latenz zu senken, und pendelt sich bei 1,0x ein (das hält die Latenz). Weniger Puffer = näher am Live-Rand, erfordert aber eine bessere Internetverbindung."
+    },
+    "modeOff": {
+        "message": "Ausgeschaltet"
+    },
+    "modeOffDesc": {
+        "message": "Normale Wiedergabe, ohne Anpassungen."
+    },
+    "modeOffConn": {
+        "message": "Jede Verbindung"
+    },
+    "modeOffGain": {
+        "message": "—"
+    },
+    "modeAuto": {
+        "message": "Automatisch"
+    },
+    "modeAutoDesc": {
+        "message": "Analysiert deine Verbindung und passt sich selbst an: näher am Live-Rand, wenn das Internet mitmacht, mehr Puffer, wenn es schwankt."
+    },
+    "modeAutoConn": {
+        "message": "Jede Verbindung (passt sich an)"
+    },
+    "modeAutoGain": {
+        "message": "anpassungsfähig"
+    },
+    "modeBalanced": {
+        "message": "Ausgewogen"
+    },
+    "modeBalancedDesc": {
+        "message": "Guter Mittelweg: niedrige Latenz bei ~4s Puffer."
+    },
+    "modeBalancedConn": {
+        "message": "Durchschnittliches Internet (~5–10 Mbit/s)"
+    },
+    "modeBalancedGain": {
+        "message": "Puffer ~4s"
+    },
+    "modeAggressive": {
+        "message": "Nah"
+    },
+    "modeAggressiveDesc": {
+        "message": "Sehr nah am Live-Rand, mit ~3s Puffer. Erfordert eine stabile Internetverbindung."
+    },
+    "modeAggressiveConn": {
+        "message": "Stabiles Internet (~15+ Mbit/s)"
+    },
+    "modeAggressiveGain": {
+        "message": "Puffer ~3s"
+    },
+    "modeExtreme": {
+        "message": "Extrem"
+    },
+    "modeExtremeDesc": {
+        "message": "Ganz am Live-Rand, mit nur ~2s Puffer. Nur für sehr schnelles, stabiles Internet — kann ruckeln."
+    },
+    "modeExtremeConn": {
+        "message": "Sehr schnelles, stabiles Internet (~50+ Mbit/s)"
+    },
+    "modeExtremeGain": {
+        "message": "Puffer ~2s"
+    },
+    "modePersonalizado": {
+        "message": "Benutzerdefiniert"
+    },
+    "modePersonalizadoDesc": {
+        "message": "Du legst den Zielpuffer fest (1 bis 6s). Da er unter 1,0x verlangsamt, um das Polster wieder aufzubauen, verträgt er aggressivere Ziele als die anderen Modi. Weniger Puffer = näher am Live-Rand, kann aber stocken."
+    },
+    "modePersonalizadoConn": {
+        "message": "Beliebige Verbindung (du stellst sie ein)"
+    },
+    "modePersonalizadoGain": {
+        "message": "einstellbarer Puffer"
+    },
+    "centerLabel": {
+        "message": "Zielpuffer"
+    },
+    "sectionIndicators": {
+        "message": "Anzeigen im Player"
+    },
+    "showPlaybackRate": {
+        "message": "Aktuelle Wiedergabegeschwindigkeit anzeigen"
+    },
+    "showLatency": {
+        "message": "Aktuelle Live-Latenz anzeigen"
+    },
+    "showHealth": {
+        "message": "Aktuellen Pufferzustand anzeigen"
+    },
+    "reset": {
+        "message": "Standardwerte wiederherstellen"
+    },
+    "resetHint": {
+        "message": "1 Sekunde gedrückt halten, um zurückzusetzen."
+    },
+    "supportTitle": {
+        "message": "Spendier mir ein Bier"
+    },
+    "supportNote": {
+        "message": "Gefällt dir die Erweiterung? Unterstütze die Entwicklung mit einer kleinen Spende."
+    },
+    "supportCustom": {
+        "message": "Andere"
+    },
+    "supportCustomPlaceholder": {
+        "message": "Betrag in R$"
+    },
+    "supportScan": {
+        "message": "Scanne mit der App deiner Bank oder kopiere den Code:"
+    },
+    "supportCopy": {
+        "message": "PIX-Code kopieren"
+    },
+    "supportCopied": {
+        "message": "Kopiert!"
+    },
+    "supportBmc": {
+        "message": "Buy me a coffee"
+    },
+    "donateNudge": {
+        "message": "Gefällt dir ZeroDelay? Wenn es dir hilft, kannst du es mit einem Bier unterstützen — völlig optional. 🙂"
+    },
+    "donateLater": {
+        "message": "Heute nicht"
+    },
+    "donateOptOut": {
+        "message": "Ich möchte nicht unterstützen"
+    },
+    "donateBannerText": {
+        "message": "Gefällt dir ZeroDelay? Unterstütze es mit einem Bier. 🍺"
+    },
+    "donateBannerCta": {
+        "message": "Unterstützen"
+    },
+    "donateBannerClose": {
+        "message": "Schließen"
+    },
+    "stallTitle": {
+        "message": "Der Stream bleibt hängen"
+    },
+    "stallDesc": {
+        "message": "Ein leichterer Modus hält mehr Puffer und stabilisiert die Wiedergabe."
+    },
+    "stallSwitch": {
+        "message": "Wechseln zu"
+    },
+    "channelMemoryLabel": {
+        "message": "Modus pro Kanal merken"
+    },
+    "channelMemoryHint": {
+        "message": "Speichert den gewählten Modus für jeden Kanal und wendet ihn bei deiner Rückkehr wieder an."
+    },
+    "channelRemembered": {
+        "message": "für diesen Kanal gemerkt"
+    },
+    "channelForget": {
+        "message": "vergessen"
+    },
+    "supportBtn": {
+        "message": "Unterstützen"
+    },
+    "supportCtaText": {
+        "message": "Gefällt's dir? Spendier mir ein Bier 🍺"
+    },
+    "supportCtaBtn": {
+        "message": "Per PIX unterstützen"
+    },
+    "commandToggleDesc": {
+        "message": "ZeroDelay ein-/ausschalten"
+    },
+    "commandGoLiveDesc": {
+        "message": "Zum Live-Rand springen"
+    },
+    "a11yPlaybackRate": {
+        "message": "Wiedergabegeschwindigkeit"
+    },
+    "a11yLatency": {
+        "message": "Live-Latenz"
+    },
+    "a11yHealth": {
+        "message": "Pufferzustand"
+    },
+    "a11yEstimation": {
+        "message": "Geschätzte Zeit, um den Live-Rand zu erreichen"
+    },
+    "a11yCurrent": {
+        "message": "Aktuelle Zeit (klicken, um den Link zu kopieren)"
+    },
+    "themeToLight": {
+        "message": "Zum hellen Design wechseln"
+    },
+    "themeToDark": {
+        "message": "Zum dunklen Design wechseln"
+    },
+    "faqTitle": {
+        "message": "Hilfe · So funktioniert's"
+    },
+    "faqWhatQ": {
+        "message": "Was macht ZeroDelay?"
+    },
+    "faqWhatA": {
+        "message": "Bei YouTube-Livestreams mit DVR fällt der Player oft hinter den Live-Rand zurück. ZeroDelay beschleunigt die Wiedergabe leicht, um dich zur Echtzeit zurückzubringen, und kehrt danach wieder zur Normalgeschwindigkeit zurück."
+    },
+    "faqStartQ": {
+        "message": "Wie fange ich an?"
+    },
+    "faqStartA": {
+        "message": "Wähle einen Modus im Popup. Automatisch wird empfohlen: Er misst deine Verbindung und passt sich selbst an."
+    },
+    "faqSpeedQ": {
+        "message": "Warum ändert sich die Geschwindigkeit von selbst?"
+    },
+    "faqSpeedA": {
+        "message": "Das ist der Aufholmodus: Solange du hinter dem Live-Rand liegst, steigt die Geschwindigkeit (bis ~1,25x), um den Puffer abzubauen; sobald du aufgeholt hast, kehrt sie zu 1,0x zurück."
+    },
+    "faqModeQ": {
+        "message": "Welchen Modus soll ich wählen?"
+    },
+    "faqModeA": {
+        "message": "Weniger Puffer bringt dich näher an den Live-Rand, erfordert aber eine bessere Internetverbindung. Im Zweifel nutze Automatisch, das sich an deine Verbindung anpasst."
+    },
+    "faqIndicatorsQ": {
+        "message": "Was bedeuten die Zahlen im Player?"
+    },
+    "faqIndicatorsA": {
+        "message": "Neben dem LIVE-Abzeichen siehst du die aktuelle Geschwindigkeit, die Latenz (wie weit du zurückliegst) und den Pufferzustand. Du kannst jede Anzeige im Abschnitt Anzeigen ein- oder ausschalten."
+    },
+    "faqShortcutsQ": {
+        "message": "Gibt es Tastenkürzel?"
+    },
+    "faqShortcutsA": {
+        "message": "Es gibt zwei Tastenkürzel (auf dem Mac ersetze Alt durch ⌘ Command):\n• Alt+Shift+Y — ZeroDelay ein-/ausschalten\n• Alt+Shift+L — zum Live-Rand springen\nDu kannst sie unter chrome://extensions/shortcuts einsehen und ändern."
+    },
+    "showBadge": {
+        "message": "Latenz auf dem Symbol in der Symbolleiste anzeigen"
+    },
+    "diagLabel": {
+        "message": "Diagnose (für Fehlerberichte)"
+    },
+    "summaryLabel": {
+        "message": "Sitzungsübersicht"
+    },
+    "toolCopy": {
+        "message": "Kopieren"
+    },
+    "toolCopied": {
+        "message": "Kopiert!"
+    },
+    "toolNoLive": {
+        "message": "Öffne einen Livestream"
+    },
+    "summaryTitle": {
+        "message": "Sitzungsübersicht"
+    },
+    "summaryWatched": {
+        "message": "angesehen"
+    },
+    "summaryRecovered": {
+        "message": "Verzögerung aufgeholt"
+    },
+    "summaryJumps": {
+        "message": "Sprünge zum Live-Rand"
+    },
+    "summaryStalls": {
+        "message": "Aussetzer"
+    },
+    "summaryAvgLatency": {
+        "message": "durchschnittliche Latenz"
+    },
+    "whatsNewLabel": {
+        "message": "Neuigkeiten in v$version$",
+        "placeholders": {
+            "version": {
+                "content": "$1"
+            }
+        }
+    },
+    "whatsNewClose": {
+        "message": "Schließen"
+    },
+    "aboutLink": {
+        "message": "Über ZeroDelay"
+    },
+    "reportIssue": {
+        "message": "Problem melden"
+    }
+}

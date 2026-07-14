@@ -27,6 +27,9 @@ e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   aponta para o CHANGELOG até ser lido ou dispensado — as melhorias quase
   diárias deixam de ficar escondidas no repositório (parte da issue #27).
   Instalação nova não mostra nada. Nova chave local `lastSeenVersion`.
+- **Tradução para o alemão**: popup, indicadores do player e FAQ agora também
+  estão disponíveis em alemão (`_locales/de`). Contribuição de
+  [@fsousac](https://github.com/fsousac).
 
 ### Corrigido
 

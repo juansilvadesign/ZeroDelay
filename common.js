@@ -13,28 +13,27 @@ const msg = (key, fallback) => {
 
 // pt-BR sees PIX; any other browser UI language sees the international donation
 // links instead. Decided automatically — there is no manual switcher. Must match
-// pt-BR specifically: PIX is Brazil-only, and pt-PT users can't use it.
+// pt-BR specifically: PIX is Brazil-only (needs a Brazilian bank + CPF), so
+// pt-PT users and everyone else abroad can't use it.
 //
-// We look at BOTH the UI language (getUILanguage) AND the user's ordered list of
-// accepted languages (navigator.languages): many Brazilians run the browser in
-// English yet still want PIX, so any pt-BR signal in either source counts (#21).
+// We key STRICTLY off the browser UI language (chrome.i18n.getUILanguage()) and
+// deliberately do NOT scan navigator.languages. A pt-BR entry in that list is
+// common on non-Brazilian machines — e.g. Portuguese users who add "Português
+// (Brasil)" for dubbed content — which leaked the useless PIX QR to people
+// abroad (#50). This narrows the earlier #21 heuristic on purpose: a Brazilian
+// who runs the browser in another language now gets the international link too.
 const isPtBr = tag => /^pt[-_]?br/i.test(tag || '');
 
 /**
- * True when a pt-BR tag appears in the UI language or the accepted-languages list.
- * Pure (sources injected) so it stays unit-testable without a browser.
+ * True only when the browser UI language is Brazilian Portuguese.
+ * Pure (source injected) so it stays unit-testable without a browser.
  * @param {string} uiLang - chrome.i18n.getUILanguage() (or '').
- * @param {string[]} languages - navigator.languages (or []).
  */
-export function prefersBrazil(uiLang, languages) {
-    if (isPtBr(uiLang)) return true;
-    return Array.isArray(languages) && languages.some(isPtBr);
+export function prefersBrazil(uiLang) {
+    return isPtBr(uiLang);
 }
 
-export const isBrazil = () => prefersBrazil(
-    i18n ? i18n.getUILanguage() : '',
-    (typeof navigator !== 'undefined' && navigator.languages) || [],
-);
+export const isBrazil = () => prefersBrazil(i18n ? i18n.getUILanguage() : '');
 
 export const label = {
     // App

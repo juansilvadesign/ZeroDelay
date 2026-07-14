@@ -5,6 +5,18 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Corrigido
+
+- PIX só aparece agora quando a interface do navegador está em português do
+  Brasil (`pt-BR`). Antes, bastava ter "Português (Brasil)" em qualquer posição
+  da lista de idiomas aceitos do navegador para o QR do PIX aparecer, o que
+  exibia o PIX (inútil sem CPF e conta no Brasil) para quem está fora do país,
+  por exemplo usuários de Portugal que adicionam pt-BR por causa de conteúdo
+  dublado. Quem não está com a interface em pt-BR vê o link internacional (Buy
+  Me a Coffee). Reportado em #50.
+
 ## [1.4.0] - 2026-07-07
 
 ### Adicionado

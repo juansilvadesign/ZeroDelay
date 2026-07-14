@@ -45,7 +45,7 @@
       "page": "popup.html"
    },
    "permissions": [ "alarms", "storage" ],
-   "version": "1.4.0",
+   "version": "1.5.0",
    "web_accessible_resources": [ {
       "matches": [ "https://www.youtube.com/*" ],
       "resources": [ "common.js", "inject.js", "engine/controller.js", "engine/telemetry.js", "engine/rate-applier.js", "overlay.js", "pix.js", "vendor/qrcode.js", "fonts/DepartureMono-Regular.woff2" ]

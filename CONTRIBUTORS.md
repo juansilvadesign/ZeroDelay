@@ -13,11 +13,18 @@ with every newly merged contribution.
 - **Gabriel Fernandes** ([@GbrFrn](https://github.com/GbrFrn)) — Zen Browser
   development tooling: the `npm run run:zen` script and its docs, reusing the
   shared Firefox/Gecko build — **PR #26 (merged)**.
+- **resolvicomai** ([@resolvicomai](https://github.com/resolvicomai)) — Firefox/
+  Gecko playback-rate sync extracted into a tested `engine/rate-applier.js`
+  adapter (per-step hold on Gecko, immediate return to 1.0x), targeting the
+  audio-ahead drift during catch-up — **PR #42 (merged)**.
 
 ## Engine, tests and automation
 - **juansilvadesign** ([@juansilvadesign](https://github.com/juansilvadesign)) —
-  catch-up engine resilience, tests (`node:test`) and release tooling —
-  **PR #5 (merged)**.
+  catch-up engine resilience, tests (`node:test`) and release tooling
+  (**PR #5**); the **copy-diagnostics + session-summary** tools backed by an
+  in-page telemetry ring log (**PR #43**); the opt-in **latency badge** on the
+  toolbar icon (**PR #44**); and the **"what's new" chip** in the popup after an
+  update (**PR #45**) — all merged.
 - **jrlucas1** ([@jrlucas1](https://github.com/jrlucas1)) — **predictive** catch-up
   from the buffer trend — **PR #13 (merged)** — plus the base for the CI pipeline
   and release automation (**PR #2**).
@@ -62,6 +69,9 @@ with every newly merged contribution.
 - **aantonioprado** ([@aantonioprado](https://github.com/aantonioprado)) —
   preventive XSS hardening in the popup's SVG parsing (sanitizing `on*`,
   `javascript:`/`data:` and scriptable nodes) — **PR #30 (merged)**.
+- **fsousac** ([@fsousac](https://github.com/fsousac)) — complete **German
+  translation** (`_locales/de`) of the popup, player indicators and FAQ —
+  **PR #49 (merged)**.
 
 ## Hexa Mode
 - **botelllhx** ([@botelllhx](https://github.com/botelllhx)) — the green-and-yellow
@@ -75,6 +85,11 @@ with every newly merged contribution.
   management from arrival variation (**issue #12**), implemented in PR #13.
 - **fsousac** ([@fsousac](https://github.com/fsousac)) — proposal to standardize
   the project's governance (**issue #3**).
+- **zerorobs** ([@zerorobs](https://github.com/zerorobs)) — report of audio
+  drifting ahead of video on Firefox during catch-up (**issue #40**).
+- **SergioGlorias** ([@SergioGlorias](https://github.com/SergioGlorias)) — report
+  that PIX was shown to viewers outside Brazil instead of the international
+  donation link (**issue #50**).
 
 ---
 

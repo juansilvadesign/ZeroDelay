@@ -281,6 +281,17 @@
    "summaryAvgLatency": {
       "message": "latencia media"
    },
+   "whatsNewLabel": {
+      "message": "Novedades de la v$version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "whatsNewClose": {
+      "message": "Descartar"
+   },
    "aboutLink": {
       "message": "Acerca de ZeroDelay"
    },

@@ -281,6 +281,17 @@
    "summaryAvgLatency": {
       "message": "latence moyenne"
    },
+   "whatsNewLabel": {
+      "message": "Nouveautés de la v$version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "whatsNewClose": {
+      "message": "Ignorer"
+   },
    "aboutLink": {
       "message": "À propos"
    },
